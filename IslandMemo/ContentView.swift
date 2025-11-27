@@ -241,6 +241,13 @@ private extension ContentView {
                                             memo = ""
                                             isDeleteConfirmationActive = false
                                             deleteConfirmationTask?.cancel()
+
+                                            // Live Activity 종료
+                                            if activityManager.isActivityRunning {
+                                                Task {
+                                                    await activityManager.endActivity()
+                                                }
+                                            }
                                         } else {
                                             // 첫 번째 클릭: 확인 상태로 전환
                                             HapticManager.light()
