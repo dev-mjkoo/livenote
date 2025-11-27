@@ -178,9 +178,8 @@ private extension ContentView {
                             .fill(strokeColor.opacity(colorScheme == .dark ? 1.0 : 0.7))
                             .frame(width: 28, height: 4)
 
-                        Text(AppStrings.appName)
+                        Text(formattedDate)
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .textCase(.uppercase)
                             .foregroundStyle(
                                 colorScheme == .dark
                                 ? Color.white.opacity(0.7)
@@ -328,6 +327,22 @@ private extension ContentView {
 
     var canStart: Bool {
         !memo.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var formattedDate: String {
+        let preferred = Locale.preferredLanguages.first ?? "en"
+        let isAsian = preferred.hasPrefix("ko") || preferred.hasPrefix("ja") || preferred.hasPrefix("zh")
+
+        let dateLocale = isAsian ? Locale(identifier: preferred) : Locale(identifier: "en_US")
+
+        return Date.now.formatted(
+            .dateTime
+                .year()
+                .month(.wide)
+                .day()
+                .weekday(.wide)
+                .locale(dateLocale)
+        )
     }
 
     func startGlowAnimation() {
