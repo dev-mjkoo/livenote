@@ -34,7 +34,7 @@ final class LiveActivityManager: ObservableObject {
             return
         }
 
-        let attributes = MemoryNoteAttributes(label: "기억해!")
+        let attributes = MemoryNoteAttributes(label: AppStrings.appName)
         let initialState = MemoryNoteAttributes.ContentState(memo: memo)
 
         do {

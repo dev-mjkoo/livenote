@@ -13,12 +13,12 @@ struct MemoryNoteAttributes: ActivityAttributes {
 
 extension MemoryNoteAttributes {
     static var preview: MemoryNoteAttributes {
-        MemoryNoteAttributes(label: "기억해!")
+        MemoryNoteAttributes(label: AppStrings.appName)
     }
 }
 
 extension MemoryNoteAttributes.ContentState {
     static var sample: MemoryNoteAttributes.ContentState {
-        MemoryNoteAttributes.ContentState(memo: "샘플 메모 미리보기")
+        MemoryNoteAttributes.ContentState(memo: AppStrings.sampleMemo)
     }
 }

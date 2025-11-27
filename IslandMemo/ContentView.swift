@@ -22,11 +22,17 @@ struct ContentView: View {
             VStack(spacing: 28) {
                 header
                 previewCard
-                inputField
                 Spacer(minLength: 0)
                 controlDock
             }
             .padding(20)
+            .onChange(of: memo) { _, newValue in
+                if activityManager.isActivityRunning {
+                    Task {
+                        await activityManager.updateActivity(with: newValue)
+                    }
+                }
+            }
         }
     }
 }
@@ -72,7 +78,7 @@ private extension ContentView {
                                 radius: activityManager.isActivityRunning ? 4 : 0
                             )
 
-                        Text(activityManager.isActivityRunning ? "LIVE ACTIVITY" : "IDLE")
+                        Text(activityManager.isActivityRunning ? AppStrings.statusLive : AppStrings.statusIdle)
                             .font(.system(size: 11, weight: .medium, design: .rounded))
                             .tracking(2)
                             .textCase(.uppercase)
@@ -87,7 +93,7 @@ private extension ContentView {
                 .strokeBorder(headerForeground.opacity(0.3), lineWidth: 1)
                 .frame(width: 32, height: 32)
                 .overlay(
-                    Text("기")
+                    Text(AppStrings.appIcon)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .foregroundStyle(headerForeground)
                 )
@@ -119,7 +125,7 @@ private extension ContentView {
     var previewCard: some View {
         let baseBackground: Color = {
             if colorScheme == .dark {
-                return Color.black.opacity(0.85)
+                return Color(white: 0.15)
             } else {
                 return Color.white
             }
@@ -127,7 +133,7 @@ private extension ContentView {
 
         let strokeColor: Color = {
             if colorScheme == .dark {
-                return Color.white.opacity(0.08)
+                return Color.white.opacity(0.12)
             } else {
                 return Color.black.opacity(0.06)
             }
@@ -150,7 +156,7 @@ private extension ContentView {
                             .fill(strokeColor.opacity(colorScheme == .dark ? 1.0 : 0.7))
                             .frame(width: 28, height: 4)
 
-                        Text("기억해!")
+                        Text(AppStrings.appName)
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .textCase(.uppercase)
                             .foregroundStyle(
@@ -162,21 +168,61 @@ private extension ContentView {
                         Spacer()
                     }
 
-                    Text(displayMemo)
-                        .font(.system(size: 24, weight: .semibold, design: .rounded))
-                        .foregroundStyle(
-                            colorScheme == .dark
-                            ? Color.white
-                            : Color.black
-                        )
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(3)
-                        .minimumScaleFactor(0.7)
+                    ZStack(alignment: .topLeading) {
+                        if memo.isEmpty {
+                            Text(AppStrings.inputPlaceholder)
+                                .font(.system(size: 24, weight: .semibold, design: .rounded))
+                                .foregroundStyle(
+                                    colorScheme == .dark
+                                    ? Color.white.opacity(0.3)
+                                    : Color.black.opacity(0.3)
+                                )
+                                .padding(.top, 8)
+                        }
+
+                        TextEditor(text: $memo)
+                            .focused($isFieldFocused)
+                            .font(.system(size: 24, weight: .semibold, design: .rounded))
+                            .foregroundStyle(
+                                colorScheme == .dark
+                                ? Color.white
+                                : Color.black
+                            )
+                            .scrollContentBackground(.hidden)
+                            .background(Color.clear)
+                            .textInputAutocapitalization(.none)
+                            .disableAutocorrection(true)
+
+                        // Clear button
+                        if isFieldFocused && !memo.isEmpty {
+                            VStack {
+                                HStack {
+                                    Spacer()
+                                    Button {
+                                        HapticManager.light()
+                                        memo = ""
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .font(.system(size: 20))
+                                            .foregroundStyle(
+                                                colorScheme == .dark
+                                                ? Color.white.opacity(0.5)
+                                                : Color.black.opacity(0.3)
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                                Spacer()
+                            }
+                            .padding(.top, 4)
+                        }
+                    }
+                    .frame(minHeight: 80)
 
                     Spacer(minLength: 0)
 
                     HStack {
-                        Text(activityManager.isActivityRunning ? "ON SCREEN" : "READY")
+                        Text(activityManager.isActivityRunning ? AppStrings.statusOnScreen : AppStrings.statusReady)
                             .font(.system(size: 11, weight: .medium, design: .monospaced))
                             .foregroundStyle(
                                 colorScheme == .dark
@@ -201,39 +247,6 @@ private extension ContentView {
             .frame(maxWidth: .infinity, minHeight: 140)
     }
 
-    var displayMemo: String {
-        let trimmed = memo.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return "한 줄 메모가 잠금 화면과 Dynamic Island에 그대로 고정됩니다."
-        }
-        return trimmed
-    }
-
-    // MARK: Input Field
-
-    var inputField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            TextField(
-                "",
-                text: $memo,
-                prompt: Text("메모 입력")
-                    .foregroundStyle(.secondary)
-            )
-            .focused($isFieldFocused)
-            .font(.system(size: 20, weight: .medium, design: .rounded))
-            .foregroundStyle(Color.primary)
-            .textInputAutocapitalization(.none)
-            .disableAutocorrection(true)
-
-            Rectangle()
-                .fill(
-                    (isFieldFocused ? Color.primary : Color.secondary)
-                        .opacity(isFieldFocused ? 0.6 : 0.25)
-                )
-                .frame(height: 1)
-        }
-    }
-
     // MARK: Control Dock
 
     var controlDock: some View {
@@ -255,6 +268,7 @@ private extension ContentView {
 
             // Start
             Button {
+                HapticManager.medium()
                 Task { await activityManager.startActivity(with: memo) }
             } label: {
                 Image(systemName: activityManager.isActivityRunning ? "play.fill" : "play")
@@ -267,22 +281,9 @@ private extension ContentView {
             .buttonStyle(.plain)
             .disabled(!canStart)
 
-            // Update
+            // End activity
             Button {
-                Task { await activityManager.updateActivity(with: memo) }
-            } label: {
-                Image(systemName: "arrow.clockwise")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(
-                        activityManager.isActivityRunning ? iconColorActive : iconColorInactive
-                    )
-                    .frame(width: 32, height: 32)
-            }
-            .buttonStyle(.plain)
-            .disabled(!activityManager.isActivityRunning)
-
-            // End
-            Button {
+                HapticManager.medium()
                 Task { await activityManager.endActivity() }
             } label: {
                 Image(systemName: "xmark")
