@@ -199,13 +199,28 @@ private struct ExpandedIslandView: View {
         return min(max(progress, 0), 1.0)
     }
 
+    private func formatFullDate() -> String {
+        let preferred = Locale.preferredLanguages.first ?? "en"
+        let isAsian = preferred.hasPrefix("ko") || preferred.hasPrefix("ja") || preferred.hasPrefix("zh")
+        let dateLocale = isAsian ? Locale(identifier: preferred) : Locale(identifier: "en_US")
+
+        return Date.now.formatted(
+            .dateTime
+                .year()
+                .month(.wide)
+                .day()
+                .weekday(.wide)
+                .locale(dateLocale)
+        )
+    }
+
     var body: some View {
+        let formattedDate = formatFullDate()
+
         VStack(alignment: .leading, spacing: 8) {
-            Text(context.attributes.label)
-                .font(.system(size: 13, weight: .medium, design: .rounded))
+            Text(formattedDate)
+                .font(.system(size: 11, weight: .medium, design: .rounded))
                 .foregroundColor(.white.opacity(0.7))
-                .textCase(.uppercase)
-                .tracking(3)
 
             Text(context.state.memo)
                 .font(.system(size: 20, weight: .semibold, design: .rounded))
@@ -239,26 +254,73 @@ private struct CompactLeadingView: View {
     let context: ActivityViewContext<MemoryNoteAttributes>
 
     var body: some View {
-        Text("기억")
+        let preferred = Locale.preferredLanguages.first ?? "en"
+        let day = Calendar.current.component(.day, from: Date())
+
+        let dayText = formatDayText(day: day, locale: preferred)
+
+        Text(dayText)
             .font(.system(size: 13, weight: .bold, design: .rounded))
             .foregroundColor(.white)
+    }
+
+    private func formatDayText(day: Int, locale: String) -> String {
+        if locale.hasPrefix("ko") {
+            return "\(day)일"
+        } else if locale.hasPrefix("ja") {
+            return "\(day)日"
+        } else if locale.hasPrefix("zh") {
+            return "\(day)日"
+        } else {
+            // 영어: 서수 형식
+            let suffix: String
+            switch day {
+            case 1, 21, 31:
+                suffix = "st"
+            case 2, 22:
+                suffix = "nd"
+            case 3, 23:
+                suffix = "rd"
+            default:
+                suffix = "th"
+            }
+            return "\(day)\(suffix)"
+        }
     }
 }
 
 private struct CompactTrailingView: View {
     let context: ActivityViewContext<MemoryNoteAttributes>
 
-    private let activityDuration: TimeInterval = 8 * 60 * 60 // 8시간
+    var body: some View {
+        let preferred = Locale.preferredLanguages.first ?? "en"
+        let weekday = Calendar.current.component(.weekday, from: Date())
 
-    private var endDate: Date {
-        context.state.startDate.addingTimeInterval(activityDuration)
+        let weekdayText = formatWeekdayText(weekday: weekday, locale: preferred)
+
+        Text(weekdayText)
+            .font(.system(size: 13, weight: .bold, design: .rounded))
+            .foregroundColor(.white)
     }
 
-    var body: some View {
-        Text(endDate, style: .timer)
-            .font(.system(size: 13, weight: .medium, design: .rounded).monospacedDigit())
-            .lineLimit(1)
-            .foregroundColor(.white.opacity(0.9))
+    private func formatWeekdayText(weekday: Int, locale: String) -> String {
+        if locale.hasPrefix("ko") {
+            // 한국어: 일월화수목금토
+            let weekdays = ["일", "월", "화", "수", "목", "금", "토"]
+            return weekdays[weekday - 1]
+        } else if locale.hasPrefix("ja") {
+            // 일본어: 日月火水木金土 (한자)
+            let weekdays = ["日", "月", "火", "水", "木", "金", "土"]
+            return weekdays[weekday - 1]
+        } else if locale.hasPrefix("zh") {
+            // 중국어: 日月火水木金土 (한자)
+            let weekdays = ["日", "月", "火", "水", "木", "金", "土"]
+            return weekdays[weekday - 1]
+        } else {
+            // 영어: MON/TUE/WED/THU/FRI/SAT/SUN
+            let weekdays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+            return weekdays[weekday - 1]
+        }
     }
 }
 
@@ -266,13 +328,38 @@ private struct MinimalIslandView: View {
     let context: ActivityViewContext<MemoryNoteAttributes>
 
     var body: some View {
-        Circle()
-            .strokeBorder(Color.white, lineWidth: 1.5)
-            .overlay(
-                Text("기")
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-            )
+        let preferred = Locale.preferredLanguages.first ?? "en"
+        let day = Calendar.current.component(.day, from: Date())
+
+        let dayText = formatDayText(day: day, locale: preferred)
+
+        Text(dayText)
+            .font(.system(size: 11, weight: .bold, design: .rounded))
+            .foregroundColor(.white)
+    }
+
+    private func formatDayText(day: Int, locale: String) -> String {
+        if locale.hasPrefix("ko") {
+            return "\(day)일"
+        } else if locale.hasPrefix("ja") {
+            return "\(day)日"
+        } else if locale.hasPrefix("zh") {
+            return "\(day)日"
+        } else {
+            // 영어: 서수 형식
+            let suffix: String
+            switch day {
+            case 1, 21, 31:
+                suffix = "st"
+            case 2, 22:
+                suffix = "nd"
+            case 3, 23:
+                suffix = "rd"
+            default:
+                suffix = "th"
+            }
+            return "\(day)\(suffix)"
+        }
     }
 }
 
