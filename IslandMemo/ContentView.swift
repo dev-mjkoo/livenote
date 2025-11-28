@@ -114,7 +114,7 @@ private extension ContentView {
                 // Glow effect for status capsule
                 if activityManager.isActivityRunning {
                     Capsule()
-                        .stroke(headerForeground, lineWidth: 2)
+                        .stroke(headerDotOn, lineWidth: 2)
                         .frame(height: 32)
                         .blur(radius: 6)
                         .opacity(glowOpacity)
@@ -130,9 +130,9 @@ private extension ContentView {
                                 .frame(width: 8, height: 8)
                                 .shadow(
                                     color: activityManager.isActivityRunning
-                                        ? headerDotOn.opacity(0.7)
-                                        : .clear,
-                                    radius: activityManager.isActivityRunning ? 4 : 0
+                                        ? headerDotOn.opacity(0.6)
+                                        : headerDotOff.opacity(0.5),
+                                    radius: 4
                                 )
 
                             Text(activityManager.isActivityRunning ? AppStrings.statusLive : AppStrings.statusIdle)
@@ -189,11 +189,11 @@ private extension ContentView {
     }
 
     var headerDotOn: Color {
-        colorScheme == .dark ? .white : .black
+        .green
     }
 
     var headerDotOff: Color {
-        .secondary.opacity(0.5)
+        .red
     }
 
     // MARK: Preview Card (Live Activity 스타일)
