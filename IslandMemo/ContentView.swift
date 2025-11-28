@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var glowOpacity: Double = 0.3
     @State private var isDeleteConfirmationActive: Bool = false
     @State private var deleteConfirmationTask: Task<Void, Never>?
+    @State private var isColorPaletteVisible: Bool = false
 
     var body: some View {
         ZStack {
@@ -22,6 +23,11 @@ struct ContentView: View {
                     withAnimation(.easeOut(duration: 0.15)) {
                         isFieldFocused = false
                     }
+                    if isColorPaletteVisible {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            isColorPaletteVisible = false
+                        }
+                    }
                 }
 
             VStack(spacing: 28) {
@@ -31,24 +37,47 @@ struct ContentView: View {
                 controlDock
             }
             .padding(20)
-            .onChange(of: memo) { _, newValue in
-                if activityManager.isActivityRunning {
-                    Task {
-                        await activityManager.updateActivity(with: newValue)
-                    }
-                }
-
-                // 메모가 비워지면 확인 상태 리셋
-                if newValue.isEmpty {
-                    isDeleteConfirmationActive = false
-                    deleteConfirmationTask?.cancel()
+        }
+        .overlay(alignment: .bottom) {
+            // 색상 팔레트 (동적으로 표시, overlay로 레이아웃 영향 없음)
+            if isColorPaletteVisible {
+                colorPalette
+                    .padding(.bottom, 100) // dock 위에 표시
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
+        .onChange(of: memo) { _, newValue in
+            if activityManager.isActivityRunning {
+                Task {
+                    await activityManager.updateActivity(with: newValue)
                 }
             }
-            .onChange(of: isFieldFocused) { _, isFocused in
-                if !isFocused {
-                    // 키보드가 내려가면 확인 상태 리셋
-                    isDeleteConfirmationActive = false
-                    deleteConfirmationTask?.cancel()
+
+            // 메모가 비워지면 확인 상태 리셋
+            if newValue.isEmpty {
+                isDeleteConfirmationActive = false
+                deleteConfirmationTask?.cancel()
+            }
+        }
+        .onChange(of: isFieldFocused) { _, isFocused in
+            if !isFocused {
+                // 키보드가 내려가면 확인 상태 리셋
+                isDeleteConfirmationActive = false
+                deleteConfirmationTask?.cancel()
+            } else {
+                // 키보드가 올라오면 팔레트 닫기
+                if isColorPaletteVisible {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        isColorPaletteVisible = false
+                    }
+                }
+            }
+        }
+        .onChange(of: activityManager.selectedBackgroundColor) { _, _ in
+            // Live Activity가 동작 중이면 색상 즉시 업데이트
+            if activityManager.isActivityRunning {
+                Task {
+                    await activityManager.updateBackgroundColor()
                 }
             }
         }
@@ -170,24 +199,18 @@ private extension ContentView {
     // MARK: Preview Card (Live Activity 스타일)
 
     var previewCard: some View {
-        let baseBackground: Color = {
-            if colorScheme == .dark {
-                return Color(white: 0.15)
-            } else {
-                return Color.white
-            }
-        }()
+        let baseBackground: Color = activityManager.selectedBackgroundColor.color
 
-        let strokeColor: Color = {
-            if colorScheme == .dark {
-                return Color.white.opacity(0.12)
-            } else {
-                return Color.black.opacity(0.06)
-            }
-        }()
+        // 밝은 배경색인지 확인 (핑크, 오렌지는 밝은 색상)
+        let isLightBackground = [ActivityBackgroundColor.pink, .orange].contains(activityManager.selectedBackgroundColor)
+
+        let strokeColor: Color = Color.white.opacity(0.12)
+        let textColor: Color = .white
+        let secondaryTextColor: Color = .white.opacity(0.7)
 
         return RoundedRectangle(cornerRadius: 26, style: .continuous)
             .fill(baseBackground)
+            .animation(.easeInOut(duration: 0.2), value: baseBackground)
             .overlay(
                 RoundedRectangle(cornerRadius: 26, style: .continuous)
                     .stroke(strokeColor, lineWidth: 1)
@@ -200,16 +223,12 @@ private extension ContentView {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(spacing: 6) {
                         Capsule()
-                            .fill(strokeColor.opacity(colorScheme == .dark ? 1.0 : 0.7))
+                            .fill(strokeColor)
                             .frame(width: 28, height: 4)
 
                         Text(formattedDate)
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .foregroundStyle(
-                                colorScheme == .dark
-                                ? Color.white.opacity(0.7)
-                                : Color.black.opacity(0.6)
-                            )
+                            .foregroundStyle(secondaryTextColor)
 
                         Spacer()
                     }
@@ -218,22 +237,14 @@ private extension ContentView {
                         if memo.isEmpty {
                             Text(AppStrings.inputPlaceholder)
                                 .font(.system(size: 24, weight: .semibold, design: .rounded))
-                                .foregroundStyle(
-                                    colorScheme == .dark
-                                    ? Color.white.opacity(0.3)
-                                    : Color.black.opacity(0.3)
-                                )
+                                .foregroundStyle(textColor.opacity(0.3))
                                 .padding(.top, 8)
                         }
 
                         TextEditor(text: $memo)
                             .focused($isFieldFocused)
                             .font(.system(size: 24, weight: .semibold, design: .rounded))
-                            .foregroundStyle(
-                                colorScheme == .dark
-                                ? Color.white
-                                : Color.black
-                            )
+                            .foregroundStyle(textColor)
                             .scrollContentBackground(.hidden)
                             .background(Color.clear)
                             .textInputAutocapitalization(.none)
@@ -277,8 +288,8 @@ private extension ContentView {
                                             .font(.system(size: 20))
                                             .foregroundStyle(
                                                 isDeleteConfirmationActive
-                                                ? (colorScheme == .dark ? Color.red.opacity(0.9) : Color.red.opacity(0.7))
-                                                : (colorScheme == .dark ? Color.white.opacity(0.5) : Color.black.opacity(0.3))
+                                                ? Color.red.opacity(0.9)
+                                                : textColor.opacity(0.5)
                                             )
                                             .contentTransition(.symbolEffect(.replace))
                                     }
@@ -295,26 +306,18 @@ private extension ContentView {
                     Spacer(minLength: 0)
 
                     if activityManager.isActivityRunning, let activity = activityManager.currentActivity {
-                        activityTimerSection(activity: activity)
+                        activityTimerSection(activity: activity, textColor: textColor, secondaryTextColor: secondaryTextColor)
                     } else {
                         HStack {
                             Text(AppStrings.statusReady)
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                .foregroundStyle(
-                                    colorScheme == .dark
-                                    ? Color.white.opacity(0.6)
-                                    : Color.black.opacity(0.45)
-                                )
+                                .foregroundStyle(secondaryTextColor)
 
                             Spacer()
 
                             Image(systemName: "lock.slash")
                                 .font(.system(size: 11, weight: .regular))
-                                .foregroundStyle(
-                                    colorScheme == .dark
-                                    ? Color.white.opacity(0.5)
-                                    : Color.black.opacity(0.35)
-                                )
+                                .foregroundStyle(secondaryTextColor.opacity(0.8))
                         }
                     }
                 }
@@ -322,6 +325,69 @@ private extension ContentView {
                 .padding(.vertical, 18)
             )
             .frame(maxWidth: .infinity, minHeight: 140)
+    }
+
+    // MARK: Color Palette
+
+    var colorPalette: some View {
+        let selectedColor = activityManager.selectedBackgroundColor
+
+        let paletteBackground: Color = {
+            if colorScheme == .dark {
+                return Color.white.opacity(0.08)
+            } else {
+                return Color.black.opacity(0.05)
+            }
+        }()
+
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(ActivityBackgroundColor.allCases, id: \.self) { bgColor in
+                    Button {
+                        HapticManager.light()
+                        activityManager.selectedBackgroundColor = bgColor
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .fill(bgColor.color)
+                                .frame(width: 32, height: 32)
+                                .overlay(
+                                    Circle()
+                                        .strokeBorder(
+                                            selectedColor == bgColor
+                                            ? (colorScheme == .dark ? Color.white : Color.black)
+                                            : Color.clear,
+                                            lineWidth: 2
+                                        )
+                                )
+                                .shadow(
+                                    color: bgColor.color.opacity(0.4),
+                                    radius: selectedColor == bgColor ? 6 : 3,
+                                    y: 2
+                                )
+
+                            if selectedColor == bgColor {
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(paletteBackground)
+                .shadow(
+                    color: Color.black.opacity(colorScheme == .dark ? 0.5 : 0.15),
+                    radius: 20, x: 0, y: 10
+                )
+        )
+        .padding(.horizontal, 20)
     }
 
     // MARK: Control Dock
@@ -357,6 +423,31 @@ private extension ContentView {
             }
             .buttonStyle(.plain)
             .disabled(!canStart)
+
+            // Color palette toggle
+            Button {
+                HapticManager.light()
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                    isColorPaletteVisible.toggle()
+                }
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(activityManager.selectedBackgroundColor.color)
+                        .frame(width: 32, height: 32)
+                        .overlay(
+                            Circle()
+                                .strokeBorder(iconColorActive.opacity(0.3), lineWidth: 2)
+                        )
+
+                    Image(systemName: isColorPaletteVisible ? "paintpalette.fill" : "paintpalette")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .contentTransition(.symbolEffect(.replace))
+                }
+            }
+            .buttonStyle(.plain)
+            .animation(.none, value: activityManager.selectedBackgroundColor)
 
             // End activity
             Button {
@@ -415,7 +506,7 @@ private extension ContentView {
     // MARK: Activity Timer Section
 
     @ViewBuilder
-    func activityTimerSection(activity: Activity<MemoryNoteAttributes>) -> some View {
+    func activityTimerSection(activity: Activity<MemoryNoteAttributes>, textColor: Color, secondaryTextColor: Color) -> some View {
         let activityDuration: TimeInterval = 8 * 60 * 60 // 8시간
         let endDate = activity.contentState.startDate.addingTimeInterval(activityDuration)
         let elapsed = Date().timeIntervalSince(activity.contentState.startDate)
@@ -424,44 +515,28 @@ private extension ContentView {
         VStack(spacing: 6) {
             // 프로그레스 바
             ProgressView(value: progress)
-                .tint(colorScheme == .dark ? .white.opacity(0.7) : .black.opacity(0.6))
+                .tint(textColor.opacity(0.7))
 
             // 타이머
             HStack {
                 Text(AppStrings.statusOnScreen)
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundStyle(
-                        colorScheme == .dark
-                        ? Color.white.opacity(0.6)
-                        : Color.black.opacity(0.45)
-                    )
+                    .foregroundStyle(secondaryTextColor)
 
                 Spacer()
 
                 HStack(spacing: 4) {
                     Text("남은 시간:")
                         .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(
-                            colorScheme == .dark
-                            ? Color.white.opacity(0.5)
-                            : Color.black.opacity(0.4)
-                        )
+                        .foregroundStyle(secondaryTextColor.opacity(0.8))
 
                     Text(endDate, style: .timer)
                         .font(.system(size: 10, weight: .semibold, design: .monospaced).monospacedDigit())
-                        .foregroundStyle(
-                            colorScheme == .dark
-                            ? Color.white.opacity(0.7)
-                            : Color.black.opacity(0.6)
-                        )
+                        .foregroundStyle(textColor)
 
                     Image(systemName: "lock.slash")
                         .font(.system(size: 10, weight: .regular))
-                        .foregroundStyle(
-                            colorScheme == .dark
-                            ? Color.white.opacity(0.5)
-                            : Color.black.opacity(0.35)
-                        )
+                        .foregroundStyle(secondaryTextColor.opacity(0.8))
                 }
             }
         }

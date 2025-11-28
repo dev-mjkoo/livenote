@@ -7,7 +7,7 @@ struct MemoryActivityWidget: Widget {
         ActivityConfiguration(for: MemoryNoteAttributes.self) { context in
             // Lock Screen / Banner Live Activity
             LockScreenView(context: context)
-                .activityBackgroundTint(.black)  // 전체 배경은 검정
+                .activityBackgroundTint(context.state.backgroundColor.color)
                 .activitySystemActionForegroundColor(.white)
 
         } dynamicIsland: { context in

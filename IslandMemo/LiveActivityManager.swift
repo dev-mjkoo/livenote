@@ -15,6 +15,7 @@ final class LiveActivityManager: ObservableObject {
     static let shared = LiveActivityManager()
 
     @Published private(set) var currentActivity: Activity<MemoryNoteAttributes>?
+    @Published var selectedBackgroundColor: ActivityBackgroundColor = .darkGray
     private var dismissalTask: Task<Void, Never>?
 
     private init() {}
@@ -36,7 +37,11 @@ final class LiveActivityManager: ObservableObject {
         }
 
         let attributes = MemoryNoteAttributes(label: AppStrings.appName)
-        let initialState = MemoryNoteAttributes.ContentState(memo: memo, startDate: Date())
+        let initialState = MemoryNoteAttributes.ContentState(
+            memo: memo,
+            startDate: Date(),
+            backgroundColor: selectedBackgroundColor
+        )
 
         do {
             let activity = try Activity.request(
@@ -59,13 +64,41 @@ final class LiveActivityManager: ObservableObject {
         await updateActivity(memo: memo, activity: activity)
     }
 
+    func updateBackgroundColor() async {
+        guard let activity = currentActivity else { return }
+        await updateActivity(
+            memo: activity.contentState.memo,
+            backgroundColor: selectedBackgroundColor,
+            activity: activity
+        )
+    }
+
     private func updateActivity(memo: String,
                                 activity: Activity<MemoryNoteAttributes>) async {
-        // 기존 startDate 유지
+        // 기존 startDate와 backgroundColor 유지
         let startDate = activity.contentState.startDate
-        let updatedState = MemoryNoteAttributes.ContentState(memo: memo, startDate: startDate)
+        let backgroundColor = activity.contentState.backgroundColor
+        let updatedState = MemoryNoteAttributes.ContentState(
+            memo: memo,
+            startDate: startDate,
+            backgroundColor: backgroundColor
+        )
         await activity.update(using: updatedState)
         print("Activity updated")
+    }
+
+    private func updateActivity(memo: String,
+                                backgroundColor: ActivityBackgroundColor,
+                                activity: Activity<MemoryNoteAttributes>) async {
+        // startDate는 유지, memo와 backgroundColor 업데이트
+        let startDate = activity.contentState.startDate
+        let updatedState = MemoryNoteAttributes.ContentState(
+            memo: memo,
+            startDate: startDate,
+            backgroundColor: backgroundColor
+        )
+        await activity.update(using: updatedState)
+        print("Activity updated with new color: \(backgroundColor.displayName)")
     }
 
     func endActivity() async {
@@ -75,7 +108,11 @@ final class LiveActivityManager: ObservableObject {
         dismissalTask?.cancel()
         dismissalTask = nil
 
-        let finalState = MemoryNoteAttributes.ContentState(memo: "", startDate: Date())
+        let finalState = MemoryNoteAttributes.ContentState(
+            memo: "",
+            startDate: Date(),
+            backgroundColor: activity.contentState.backgroundColor
+        )
         await activity.end(using: finalState, dismissalPolicy: .immediate)
         currentActivity = nil
         print("Activity ended")
