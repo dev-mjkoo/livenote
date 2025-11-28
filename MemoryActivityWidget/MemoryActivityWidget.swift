@@ -25,13 +25,13 @@ private struct CalendarGridView: View {
         let lastWeekStartIndex = (lastDayIndex / 7) * 7
         let numberOfWeeksToShow = (lastWeekStartIndex + 6) / 7 + 1
 
-        VStack(spacing: 2) {
+        VStack(spacing: 1) {
             // 요일 헤더
             HStack(spacing: 0) {
                 ForEach(["일", "월", "화", "수", "목", "금", "토"], id: \.self) { day in
                     Text(day)
                         .font(.system(size: 9, weight: .medium))
-                        .frame(maxWidth: .infinity)
+                        .frame(width: 18)
                         .foregroundColor(
                             day == "일" ? .red :
                             day == "토" ? .blue :
@@ -39,7 +39,7 @@ private struct CalendarGridView: View {
                         )
                 }
             }
-            .padding(.bottom, 2)
+            .padding(.bottom, 1)
 
             // 날짜 그리드
             ForEach(0..<numberOfWeeksToShow, id: \.self) { row in
@@ -51,13 +51,13 @@ private struct CalendarGridView: View {
                             // 이전 달의 날짜
                             Text("\(daysInPreviousMonth + dayNumber)")
                                 .font(.system(size: 9, weight: .regular))
-                                .frame(maxWidth: .infinity, minHeight: 14)
+                                .frame(width: 18, height: 12)
                                 .foregroundColor(.white.opacity(0.3))
                         } else if dayNumber <= daysInMonth {
                             // 현재 달의 날짜
                             Text("\(dayNumber)")
                                 .font(.system(size: 9, weight: today == dayNumber ? .bold : .regular))
-                                .frame(maxWidth: .infinity, minHeight: 14)
+                                .frame(width: 18, height: 12)
                                 .foregroundColor(
                                     today == dayNumber ? .black :
                                     column == 0 ? .red :
@@ -68,25 +68,24 @@ private struct CalendarGridView: View {
                                     today == dayNumber ?
                                         RoundedRectangle(cornerRadius: 3)
                                             .fill(.white)
-                                            .frame(width: 16, height: 13)
+                                            .frame(width: 18, height: 13)
                                         : nil
                                 )
                         } else if row * 7 + column <= lastWeekStartIndex + 6 {
                             // 다음 달의 날짜
                             Text("\(dayNumber - daysInMonth)")
                                 .font(.system(size: 9, weight: .regular))
-                                .frame(maxWidth: .infinity, minHeight: 14)
+                                .frame(width: 18, height: 12)
                                 .foregroundColor(.white.opacity(0.3))
                         } else {
                             // 빈 공간
                             Text("")
-                                .frame(maxWidth: .infinity, minHeight: 14)
+                                .frame(width: 18, height: 12)
                         }
                     }
                 }
             }
         }
-        .frame(maxWidth: .infinity)
     }
 }
 
@@ -128,10 +127,9 @@ private struct LockScreenView: View {
     }
 
     var body: some View {
-        HStack(spacing: 8) {
-            // 왼쪽: 달력 (50%)
+        HStack(alignment: .top, spacing: 8) {
+            // 왼쪽: 달력
             CalendarGridView()
-                .frame(maxWidth: .infinity)
 
             // 구분선
             Rectangle()
