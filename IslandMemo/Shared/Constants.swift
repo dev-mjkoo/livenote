@@ -8,7 +8,7 @@ enum AppStrings {
     static let appIcon = "📅"
 
     // MARK: - Status
-    static let statusLive = "LIVE ACTIVITY"
+    static let statusLive = "LIVE"
     static let statusIdle = "IDLE"
     static let statusOnScreen = "ON SCREEN"
     static let statusReady = "READY"

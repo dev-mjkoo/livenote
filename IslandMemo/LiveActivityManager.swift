@@ -16,6 +16,7 @@ final class LiveActivityManager: ObservableObject {
 
     @Published private(set) var currentActivity: Activity<MemoryNoteAttributes>?
     @Published var selectedBackgroundColor: ActivityBackgroundColor = .darkGray
+    @Published var activityStartDate: Date? = nil // 실제 startDate 추적
     private var dismissalTask: Task<Void, Never>?
 
     private init() {}
@@ -37,9 +38,10 @@ final class LiveActivityManager: ObservableObject {
         }
 
         let attributes = MemoryNoteAttributes(label: AppStrings.appName)
+        let startDate = Date()
         let initialState = MemoryNoteAttributes.ContentState(
             memo: memo,
-            startDate: Date(),
+            startDate: startDate,
             backgroundColor: selectedBackgroundColor
         )
 
@@ -50,6 +52,7 @@ final class LiveActivityManager: ObservableObject {
                 pushType: nil // 로컬 업데이트만 사용
             )
             currentActivity = activity
+            activityStartDate = startDate
             print("Activity started: \(activity.id)")
 
             // 8시간 후 자동 종료 스케줄
@@ -71,6 +74,25 @@ final class LiveActivityManager: ObservableObject {
             backgroundColor: selectedBackgroundColor,
             activity: activity
         )
+    }
+
+    func extendTime() async {
+        guard let activity = currentActivity else { return }
+        // startDate를 현재 시간으로 리셋 (8시간 다시 시작)
+        let newStartDate = Date()
+        let updatedState = MemoryNoteAttributes.ContentState(
+            memo: activity.contentState.memo,
+            startDate: newStartDate,
+            backgroundColor: activity.contentState.backgroundColor
+        )
+        await activity.update(using: updatedState)
+
+        // UI 업데이트
+        activityStartDate = newStartDate
+
+        // 자동 종료 태스크 재스케줄
+        scheduleAutoDismissal()
+        print("Activity time extended: 8 hours reset to \(newStartDate)")
     }
 
     private func updateActivity(memo: String,
@@ -115,6 +137,7 @@ final class LiveActivityManager: ObservableObject {
         )
         await activity.end(using: finalState, dismissalPolicy: .immediate)
         currentActivity = nil
+        activityStartDate = nil
         print("Activity ended")
     }
 

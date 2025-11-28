@@ -127,14 +127,8 @@ private struct LockScreenView: View {
         context.state.startDate.addingTimeInterval(activityDuration)
     }
 
-    private var progress: Double {
-        let elapsed = Date().timeIntervalSince(context.state.startDate)
-        let progress = elapsed / activityDuration
-        return min(max(progress, 0), 1.0)
-    }
-
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {
             // 왼쪽: 달력 (50%)
             CalendarGridView()
                 .frame(maxWidth: .infinity)
@@ -161,20 +155,15 @@ private struct LockScreenView: View {
 
                 Spacer(minLength: 0)
 
-                // 프로그레스 바 + 타이머
-                VStack(spacing: 4) {
-                    ProgressView(value: progress)
-                        .tint(.white)
+                // 타이머
+                HStack(spacing: 4) {
+                    Image(systemName: "clock")
+                        .font(.system(size: 10))
+                        .foregroundColor(.white.opacity(0.6))
 
-                    HStack(spacing: 4) {
-                        Image(systemName: "clock")
-                            .font(.system(size: 9))
-                            .foregroundColor(.white.opacity(0.6))
-
-                        Text(endDate, style: .timer)
-                            .font(.system(size: 10, weight: .medium).monospacedDigit())
-                            .foregroundColor(.white.opacity(0.8))
-                    }
+                    Text(endDate, style: .timer)
+                        .font(.system(size: 11, weight: .medium).monospacedDigit())
+                        .foregroundColor(.white.opacity(0.9))
                 }
             }
             .frame(maxWidth: .infinity)

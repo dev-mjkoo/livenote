@@ -110,50 +110,39 @@ private extension ContentView {
 
     var header: some View {
         HStack {
-            ZStack {
-                // Glow effect for status capsule
-                if activityManager.isActivityRunning {
-                    Capsule()
-                        .stroke(headerDotOn, lineWidth: 2)
-                        .frame(height: 32)
-                        .blur(radius: 6)
-                        .opacity(glowOpacity)
-                }
-
-                Capsule()
-                    .fill(headerBackground)
-                    .frame(height: 32)
-                    .overlay(
-                        HStack(spacing: 8) {
-                            Circle()
-                                .fill(activityManager.isActivityRunning ? headerDotOn : headerDotOff)
-                                .frame(width: 8, height: 8)
-                                .shadow(
-                                    color: activityManager.isActivityRunning
-                                        ? headerDotOn.opacity(0.6)
-                                        : headerDotOff.opacity(0.5),
-                                    radius: 4
-                                )
+            Capsule()
+                .fill(headerBackground)
+                .frame(height: 32)
+                .overlay(
+                    HStack(spacing: 8) {
+                        Circle()
+                            .fill(activityManager.isActivityRunning ? headerDotOn : headerDotOff)
+                            .frame(width: 8, height: 8)
+                            .shadow(
+                                color: activityManager.isActivityRunning
+                                    ? headerDotOn.opacity(glowOpacity)
+                                    : headerDotOff.opacity(0.5),
+                                radius: activityManager.isActivityRunning ? 6 : 4
+                            )
 
                             Text(activityManager.isActivityRunning ? AppStrings.statusLive : AppStrings.statusIdle)
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .tracking(2)
                                 .textCase(.uppercase)
                                 .foregroundStyle(headerForeground)
-                        }
-                        .padding(.horizontal, 10)
-                    )
-            }
-            .onAppear {
-                startGlowAnimation()
-            }
-            .onChange(of: activityManager.isActivityRunning) { _, isRunning in
-                if isRunning {
+                    }
+                    .padding(.horizontal, 10)
+                )
+                .onAppear {
                     startGlowAnimation()
-                } else {
-                    glowOpacity = 0.3
                 }
-            }
+                .onChange(of: activityManager.isActivityRunning) { _, isRunning in
+                    if isRunning {
+                        startGlowAnimation()
+                    } else {
+                        glowOpacity = 0.3
+                    }
+                }
 
             Spacer()
 
@@ -407,7 +396,7 @@ private extension ContentView {
 
         let iconColorInactive: Color = .secondary.opacity(0.35)
 
-        return HStack(spacing: 32) {
+        return HStack(spacing: 24) {
 
             // Start
             Button {
@@ -448,6 +437,21 @@ private extension ContentView {
             }
             .buttonStyle(.plain)
             .animation(.none, value: activityManager.selectedBackgroundColor)
+
+            // Extend time
+            Button {
+                HapticManager.medium()
+                Task { await activityManager.extendTime() }
+            } label: {
+                Image(systemName: "clock.arrow.circlepath")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(
+                        activityManager.isActivityRunning ? iconColorActive : iconColorInactive
+                    )
+                    .frame(width: 32, height: 32)
+            }
+            .buttonStyle(.plain)
+            .disabled(!activityManager.isActivityRunning)
 
             // End activity
             Button {
@@ -508,8 +512,10 @@ private extension ContentView {
     @ViewBuilder
     func activityTimerSection(activity: Activity<MemoryNoteAttributes>, textColor: Color, secondaryTextColor: Color) -> some View {
         let activityDuration: TimeInterval = 8 * 60 * 60 // 8시간
-        let endDate = activity.contentState.startDate.addingTimeInterval(activityDuration)
-        let elapsed = Date().timeIntervalSince(activity.contentState.startDate)
+        // activityStartDate 사용 (항상 최신 값)
+        let startDate = activityManager.activityStartDate ?? Date()
+        let endDate = startDate.addingTimeInterval(activityDuration)
+        let elapsed = Date().timeIntervalSince(startDate)
         let progress = min(max(elapsed / activityDuration, 0), 1.0)
 
         VStack(spacing: 6) {
