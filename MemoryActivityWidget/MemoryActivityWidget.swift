@@ -299,9 +299,15 @@ private struct CompactTrailingView: View {
 
         let weekdayText = formatWeekdayText(weekday: weekday, locale: preferred)
 
-        Text(weekdayText)
-            .font(.system(size: 13, weight: .bold, design: .rounded))
-            .foregroundColor(.white)
+        ZStack {
+            Circle()
+                .fill(Color.white.opacity(0.2))
+                .frame(width: 28, height: 28)
+
+            Text(weekdayText)
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundColor(.white)
+        }
     }
 
     private func formatWeekdayText(weekday: Int, locale: String) -> String {

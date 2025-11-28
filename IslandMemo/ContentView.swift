@@ -9,6 +9,7 @@ struct ContentView: View {
     @FocusState private var isFieldFocused: Bool
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
     @State private var glowOpacity: Double = 0.3
     @State private var isDeleteConfirmationActive: Bool = false
     @State private var deleteConfirmationTask: Task<Void, Never>?
@@ -26,6 +27,16 @@ struct ContentView: View {
                     if isColorPaletteVisible {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             isColorPaletteVisible = false
+                        }
+                    }
+                }
+                .onAppear {
+                    // 앱 시작 시 복원된 Activity의 메모 내용 가져오기
+                    Task {
+                        // 복원 완료까지 약간 대기
+                        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+                        if let activity = activityManager.currentActivity {
+                            memo = activity.contentState.memo
                         }
                     }
                 }
@@ -79,6 +90,20 @@ struct ContentView: View {
                 Task {
                     await activityManager.updateBackgroundColor()
                 }
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            // 앱이 active가 되면 날짜 변경 체크
+            if newPhase == .active {
+                Task {
+                    await activityManager.checkDateChangeAndUpdate()
+                }
+            }
+        }
+        .onChange(of: activityManager.currentActivity?.id) { _, _ in
+            // Activity가 복원되거나 변경되면 메모 동기화
+            if let activity = activityManager.currentActivity, memo.isEmpty {
+                memo = activity.contentState.memo
             }
         }
     }

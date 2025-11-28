@@ -18,11 +18,49 @@ final class LiveActivityManager: ObservableObject {
     @Published var selectedBackgroundColor: ActivityBackgroundColor = .darkGray
     @Published var activityStartDate: Date? = nil // 실제 startDate 추적
     private var dismissalTask: Task<Void, Never>?
+    private var midnightUpdateTask: Task<Void, Never>?
+    private var lastUpdateDate: Date?
 
-    private init() {}
+    private init() {
+        // 앱 시작 시 실행 중인 Live Activity 복원
+        Task {
+            await restoreActivityIfNeeded()
+        }
+    }
 
     var isActivityRunning: Bool {
         currentActivity != nil
+    }
+
+    // MARK: - Activity Restoration
+
+    func restoreActivityIfNeeded() async {
+        // 이미 Activity가 있으면 복원 불필요
+        guard currentActivity == nil else { return }
+
+        // 시스템에서 실행 중인 Activity 찾기
+        let activities = Activity<MemoryNoteAttributes>.activities
+        guard let activity = activities.first else {
+            print("No running activity found")
+            return
+        }
+
+        // Activity 상태 복원
+        currentActivity = activity
+        activityStartDate = activity.contentState.startDate
+        selectedBackgroundColor = activity.contentState.backgroundColor
+        lastUpdateDate = Date()
+
+        print("Activity restored from system:")
+        print("- Memo: \(activity.contentState.memo)")
+        print("- Start Date: \(activity.contentState.startDate)")
+        print("- Background Color: \(activity.contentState.backgroundColor.displayName)")
+
+        // 자동 종료 스케줄 (남은 시간 계산)
+        scheduleAutoDismissal()
+
+        // 자정 업데이트 스케줄
+        scheduleMidnightUpdate()
     }
 
     func startActivity(with memo: String) async {
@@ -53,10 +91,14 @@ final class LiveActivityManager: ObservableObject {
             )
             currentActivity = activity
             activityStartDate = startDate
+            lastUpdateDate = Date()
             print("Activity started: \(activity.id)")
 
             // 8시간 후 자동 종료 스케줄
             scheduleAutoDismissal()
+
+            // 자정 자동 업데이트 스케줄
+            scheduleMidnightUpdate()
         } catch {
             print("Failed to start activity: \(error)")
         }
@@ -89,9 +131,14 @@ final class LiveActivityManager: ObservableObject {
 
         // UI 업데이트
         activityStartDate = newStartDate
+        lastUpdateDate = newStartDate
 
         // 자동 종료 태스크 재스케줄
         scheduleAutoDismissal()
+
+        // 자정 업데이트 태스크 재스케줄
+        scheduleMidnightUpdate()
+
         print("Activity time extended: 8 hours reset to \(newStartDate)")
     }
 
@@ -130,6 +177,10 @@ final class LiveActivityManager: ObservableObject {
         dismissalTask?.cancel()
         dismissalTask = nil
 
+        // 자정 업데이트 태스크 취소
+        midnightUpdateTask?.cancel()
+        midnightUpdateTask = nil
+
         let finalState = MemoryNoteAttributes.ContentState(
             memo: "",
             startDate: Date(),
@@ -138,7 +189,29 @@ final class LiveActivityManager: ObservableObject {
         await activity.end(using: finalState, dismissalPolicy: .immediate)
         currentActivity = nil
         activityStartDate = nil
+        lastUpdateDate = nil
         print("Activity ended")
+    }
+
+    func checkDateChangeAndUpdate() async {
+        guard let activity = currentActivity,
+              let lastDate = lastUpdateDate else { return }
+
+        let calendar = Calendar.current
+        let today = Date()
+
+        // 날짜가 바뀌었는지 체크
+        if !calendar.isDate(lastDate, inSameDayAs: today) {
+            // 날짜가 바뀌었으면 업데이트 (내용은 그대로, state만 업데이트해서 UI 리프레시)
+            let updatedState = MemoryNoteAttributes.ContentState(
+                memo: activity.contentState.memo,
+                startDate: activity.contentState.startDate,
+                backgroundColor: activity.contentState.backgroundColor
+            )
+            await activity.update(using: updatedState)
+            lastUpdateDate = today
+            print("Activity updated due to date change")
+        }
     }
 
     // MARK: - Private Methods
@@ -154,6 +227,34 @@ final class LiveActivityManager: ObservableObject {
             if !Task.isCancelled {
                 await endActivity()
                 print("Activity auto-dismissed after 8 hours")
+            }
+        }
+    }
+
+    private func scheduleMidnightUpdate() {
+        midnightUpdateTask?.cancel()
+
+        midnightUpdateTask = Task {
+            while !Task.isCancelled {
+                // 다음 자정까지의 시간 계산
+                let calendar = Calendar.current
+                let now = Date()
+
+                guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: now),
+                      let midnight = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: tomorrow) else {
+                    return
+                }
+
+                let timeUntilMidnight = midnight.timeIntervalSince(now)
+
+                // 자정까지 대기
+                try? await Task.sleep(nanoseconds: UInt64(timeUntilMidnight * 1_000_000_000))
+
+                if !Task.isCancelled {
+                    // 자정이 되면 날짜 업데이트
+                    await checkDateChangeAndUpdate()
+                    print("Activity updated at midnight")
+                }
             }
         }
     }
