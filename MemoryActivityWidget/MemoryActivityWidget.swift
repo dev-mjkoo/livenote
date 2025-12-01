@@ -32,11 +32,7 @@ private struct CalendarGridView: View {
                     Text(day)
                         .font(.system(size: 9, weight: .medium))
                         .frame(width: 18)
-                        .foregroundColor(
-                            day == "일" ? .red :
-                            day == "토" ? .blue :
-                            .white.opacity(0.7)
-                        )
+                        .foregroundColor(.white.opacity(0.7))
                 }
             }
             .padding(.bottom, 1)
@@ -58,12 +54,7 @@ private struct CalendarGridView: View {
                             Text("\(dayNumber)")
                                 .font(.system(size: 9, weight: today == dayNumber ? .bold : .regular))
                                 .frame(width: 18, height: 12)
-                                .foregroundColor(
-                                    today == dayNumber ? .black :
-                                    column == 0 ? .red :
-                                    column == 6 ? .blue :
-                                    .white
-                                )
+                                .foregroundColor(today == dayNumber ? .black : .white)
                                 .background(
                                     today == dayNumber ?
                                         RoundedRectangle(cornerRadius: 3)
