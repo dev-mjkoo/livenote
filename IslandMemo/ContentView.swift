@@ -2,6 +2,7 @@
 
 import SwiftUI
 import ActivityKit
+import UIKit
 
 struct ContentView: View {
     @State private var memo: String = ""
@@ -14,22 +15,18 @@ struct ContentView: View {
     @State private var isDeleteConfirmationActive: Bool = false
     @State private var deleteConfirmationTask: Task<Void, Never>?
     @State private var isColorPaletteVisible: Bool = false
+    @State private var savedLinks: [LinkItem] = [] // 저장된 링크들
+    @State private var pastedLink: String? = nil // 붙여넣은 링크 임시 저장
+    @State private var categories: [String] = ["개발", "디자인", "기타"] // 기본 카테고리
+    @State private var selectedCategory: String = "개발"
+    @State private var isShowingNewCategoryAlert: Bool = false
+    @State private var newCategoryName: String = ""
+    @State private var isShowingLinksSheet: Bool = false
 
     var body: some View {
         ZStack {
             // 배경: 탭하면 키보드 내려감
             background
-                .contentShape(Rectangle())   // 빈 공간도 터치 가능하게
-                .onTapGesture {
-                    withAnimation(.easeOut(duration: 0.15)) {
-                        isFieldFocused = false
-                    }
-                    if isColorPaletteVisible {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            isColorPaletteVisible = false
-                        }
-                    }
-                }
                 .onAppear {
                     // 앱 시작 시 복원된 Activity의 메모 내용 가져오기
                     Task {
@@ -40,6 +37,21 @@ struct ContentView: View {
                         }
                     }
                 }
+
+            // 빈 공간 터치용 (버튼들을 피하기 위해 분리)
+            Color.clear
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation(.easeOut(duration: 0.15)) {
+                        isFieldFocused = false
+                    }
+                    if isColorPaletteVisible {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            isColorPaletteVisible = false
+                        }
+                    }
+                }
+                .allowsHitTesting(isFieldFocused || isColorPaletteVisible) // 키보드나 팔레트 있을 때만 터치 받기
 
             VStack(spacing: 28) {
                 header
@@ -106,6 +118,24 @@ struct ContentView: View {
                 memo = activity.contentState.memo
             }
         }
+        .alert("새 카테고리", isPresented: $isShowingNewCategoryAlert) {
+            TextField("카테고리 이름", text: $newCategoryName)
+            Button("취소", role: .cancel) {
+                newCategoryName = ""
+            }
+            Button("추가") {
+                if !newCategoryName.isEmpty && !categories.contains(newCategoryName) {
+                    categories.append(newCategoryName)
+                    selectedCategory = newCategoryName
+                }
+                newCategoryName = ""
+            }
+        } message: {
+            Text("새로운 카테고리 이름을 입력하세요")
+        }
+        .sheet(isPresented: $isShowingLinksSheet) {
+            LinksListView(links: savedLinks, categories: categories)
+        }
     }
 }
 
@@ -171,22 +201,50 @@ private extension ContentView {
 
             Spacer()
 
-            Button {
-                HapticManager.light()
-                if let url = URL(string: "calshow://") {
-                    openURL(url)
+            HStack(spacing: 8) {
+                // 링크 보기 버튼
+                Button {
+                    HapticManager.light()
+                    isShowingLinksSheet = true
+                } label: {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(headerForeground.opacity(0.3), lineWidth: 1)
+                        .frame(width: 32, height: 32)
+                        .overlay(
+                            ZStack {
+                                Image(systemName: "link")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(headerForeground)
+
+                                if !savedLinks.isEmpty {
+                                    Circle()
+                                        .fill(Color.red)
+                                        .frame(width: 8, height: 8)
+                                        .offset(x: 8, y: -8)
+                                }
+                            }
+                        )
                 }
-            } label: {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(headerForeground.opacity(0.3), lineWidth: 1)
-                    .frame(width: 32, height: 32)
-                    .overlay(
-                        Text(AppStrings.appIcon)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundStyle(headerForeground)
-                    )
+                .buttonStyle(.plain)
+
+                // 달력 버튼
+                Button {
+                    HapticManager.light()
+                    if let url = URL(string: "calshow://") {
+                        openURL(url)
+                    }
+                } label: {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(headerForeground.opacity(0.3), lineWidth: 1)
+                        .frame(width: 32, height: 32)
+                        .overlay(
+                            Text(AppStrings.appIcon)
+                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .foregroundStyle(headerForeground)
+                        )
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
     }
 
@@ -234,118 +292,276 @@ private extension ContentView {
                 radius: 18, x: 0, y: 12
             )
             .overlay(
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 6) {
-                        Capsule()
-                            .fill(strokeColor)
-                            .frame(width: 28, height: 4)
+                VStack(alignment: .leading, spacing: 0) {
+                    // 상단: 메모 영역
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 6) {
+                            Capsule()
+                                .fill(strokeColor)
+                                .frame(width: 28, height: 4)
 
-                        Text(formattedDate)
-                            .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .foregroundStyle(secondaryTextColor)
+                            Text(formattedDate)
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                .foregroundStyle(secondaryTextColor)
 
-                        Spacer()
-                    }
-
-                    ZStack(alignment: .topLeading) {
-                        if memo.isEmpty && !isFieldFocused {
-                            Text(AppStrings.inputPlaceholder)
-                                .font(.system(size: 24, weight: .semibold, design: .rounded))
-                                .foregroundStyle(textColor.opacity(0.3))
-                                .padding(.top, 8)
+                            Spacer()
                         }
 
-                        TextEditor(text: $memo)
-                            .focused($isFieldFocused)
-                            .font(.system(size: 24, weight: .semibold, design: .rounded))
-                            .foregroundStyle(textColor)
-                            .scrollContentBackground(.hidden)
-                            .background(Color.clear)
-                            .textInputAutocapitalization(.sentences)
-                            .padding(.trailing, isFieldFocused && !memo.isEmpty ? 40 : 0)
-
-                        // Clear button
-                        if isFieldFocused && !memo.isEmpty {
-                            VStack {
-                                HStack {
-                                    Spacer()
-                                    Button {
-                                        if isDeleteConfirmationActive {
-                                            // 두 번째 클릭: 진짜 삭제
-                                            HapticManager.medium()
-                                            memo = ""
-                                            isDeleteConfirmationActive = false
-                                            deleteConfirmationTask?.cancel()
-
-                                            // Live Activity 종료
-                                            if activityManager.isActivityRunning {
-                                                Task {
-                                                    await activityManager.endActivity()
-                                                }
-                                            }
-                                        } else {
-                                            // 첫 번째 클릭: 확인 상태로 전환
-                                            HapticManager.light()
-                                            isDeleteConfirmationActive = true
-
-                                            // 3초 후 자동으로 확인 상태 해제
-                                            deleteConfirmationTask?.cancel()
-                                            deleteConfirmationTask = Task {
-                                                try? await Task.sleep(for: .seconds(3))
-                                                if !Task.isCancelled {
-                                                    isDeleteConfirmationActive = false
-                                                }
-                                            }
-                                        }
-                                    } label: {
-                                        Image(systemName: isDeleteConfirmationActive ? "trash.fill" : "xmark.circle.fill")
-                                            .font(.system(size: 20))
-                                            .foregroundStyle(
-                                                isDeleteConfirmationActive
-                                                ? Color.red.opacity(0.9)
-                                                : textColor.opacity(0.5)
-                                            )
-                                            .contentTransition(.symbolEffect(.replace))
-                                            .padding(6)
-                                            .background(
-                                                Circle()
-                                                    .fill(baseBackground)
-                                                    .shadow(
-                                                        color: Color.black.opacity(0.3),
-                                                        radius: 4, x: 0, y: 2
-                                                    )
-                                            )
-                                    }
-                                    .buttonStyle(.plain)
-                                    .animation(.easeInOut(duration: 0.2), value: isDeleteConfirmationActive)
-                                }
-                                Spacer()
+                        ZStack(alignment: .topLeading) {
+                            if memo.isEmpty && !isFieldFocused {
+                                Text(AppStrings.inputPlaceholder)
+                                    .font(.system(size: 24, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(textColor.opacity(0.3))
+                                    .padding(.top, 8)
                             }
-                            .padding(.top, 4)
+
+                            TextEditor(text: $memo)
+                                .focused($isFieldFocused)
+                                .font(.system(size: 24, weight: .semibold, design: .rounded))
+                                .foregroundStyle(textColor)
+                                .scrollContentBackground(.hidden)
+                                .background(Color.clear)
+                                .textInputAutocapitalization(.sentences)
+                                .padding(.trailing, isFieldFocused && !memo.isEmpty ? 40 : 0)
+
+                            // Clear button
+                            if isFieldFocused && !memo.isEmpty {
+                                VStack {
+                                    HStack {
+                                        Spacer()
+                                        Button {
+                                            if isDeleteConfirmationActive {
+                                                // 두 번째 클릭: 진짜 삭제
+                                                HapticManager.medium()
+                                                memo = ""
+                                                isDeleteConfirmationActive = false
+                                                deleteConfirmationTask?.cancel()
+
+                                                // Live Activity 종료
+                                                if activityManager.isActivityRunning {
+                                                    Task {
+                                                        await activityManager.endActivity()
+                                                    }
+                                                }
+                                            } else {
+                                                // 첫 번째 클릭: 확인 상태로 전환
+                                                HapticManager.light()
+                                                isDeleteConfirmationActive = true
+
+                                                // 3초 후 자동으로 확인 상태 해제
+                                                deleteConfirmationTask?.cancel()
+                                                deleteConfirmationTask = Task {
+                                                    try? await Task.sleep(for: .seconds(3))
+                                                    if !Task.isCancelled {
+                                                        isDeleteConfirmationActive = false
+                                                    }
+                                                }
+                                            }
+                                        } label: {
+                                            Image(systemName: isDeleteConfirmationActive ? "trash.fill" : "xmark.circle.fill")
+                                                .font(.system(size: 20))
+                                                .foregroundStyle(
+                                                    isDeleteConfirmationActive
+                                                    ? Color.red.opacity(0.9)
+                                                    : textColor.opacity(0.5)
+                                                )
+                                                .contentTransition(.symbolEffect(.replace))
+                                                .padding(6)
+                                                .background(
+                                                    Circle()
+                                                        .fill(baseBackground)
+                                                        .shadow(
+                                                            color: Color.black.opacity(0.3),
+                                                            radius: 4, x: 0, y: 2
+                                                        )
+                                                )
+                                        }
+                                        .buttonStyle(.plain)
+                                        .animation(.easeInOut(duration: 0.2), value: isDeleteConfirmationActive)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.top, 4)
+                            }
+                        }
+                        .frame(minHeight: 60)
+
+                        if activityManager.isActivityRunning, let activity = activityManager.currentActivity {
+                            activityTimerSection(activity: activity, textColor: textColor, secondaryTextColor: secondaryTextColor)
+                        } else {
+                            HStack {
+                                Text(AppStrings.statusReady)
+                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                    .foregroundStyle(secondaryTextColor)
+
+                                Spacer()
+
+                                Image(systemName: "lock.slash")
+                                    .font(.system(size: 11, weight: .regular))
+                                    .foregroundStyle(secondaryTextColor.opacity(0.8))
+                            }
                         }
                     }
-                    .frame(minHeight: 80)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 18)
 
-                    Spacer(minLength: 0)
+                    // 구분선
+                    Rectangle()
+                        .fill(strokeColor)
+                        .frame(height: 1)
+                        .padding(.horizontal, 20)
 
-                    if activityManager.isActivityRunning, let activity = activityManager.currentActivity {
-                        activityTimerSection(activity: activity, textColor: textColor, secondaryTextColor: secondaryTextColor)
-                    } else {
+                    // 하단: 링크 영역
+                    VStack(spacing: 8) {
                         HStack {
-                            Text(AppStrings.statusReady)
-                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                            Text("링크 저장")
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
                                 .foregroundStyle(secondaryTextColor)
 
                             Spacer()
 
-                            Image(systemName: "lock.slash")
-                                .font(.system(size: 11, weight: .regular))
-                                .foregroundStyle(secondaryTextColor.opacity(0.8))
+                            if pastedLink == nil {
+                                Button {
+                                    HapticManager.medium()
+                                    pasteFromClipboard()
+                                } label: {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "doc.on.clipboard")
+                                            .font(.system(size: 12, weight: .semibold))
+                                        Text("붙여넣기")
+                                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                    }
+                                    .foregroundStyle(textColor)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        Capsule()
+                                            .fill(strokeColor)
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+
+                        if let link = pastedLink {
+                            // 붙여넣은 링크 미리보기
+                            VStack(spacing: 10) {
+                                // 링크 URL
+                                HStack(spacing: 8) {
+                                    Image(systemName: "link")
+                                        .font(.system(size: 10))
+                                        .foregroundStyle(secondaryTextColor.opacity(0.7))
+
+                                    Text(link)
+                                        .font(.system(size: 11, weight: .regular, design: .monospaced))
+                                        .foregroundStyle(textColor.opacity(0.9))
+                                        .lineLimit(2)
+                                        .truncationMode(.middle)
+
+                                    Spacer()
+                                }
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(strokeColor.opacity(0.5))
+                                )
+
+                                // 카테고리 선택
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("카테고리")
+                                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(secondaryTextColor.opacity(0.7))
+
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack(spacing: 6) {
+                                            ForEach(categories, id: \.self) { category in
+                                                Button {
+                                                    HapticManager.light()
+                                                    selectedCategory = category
+                                                } label: {
+                                                    Text(category)
+                                                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                                        .foregroundStyle(selectedCategory == category ? textColor : secondaryTextColor)
+                                                        .padding(.horizontal, 12)
+                                                        .padding(.vertical, 6)
+                                                        .background(
+                                                            Capsule()
+                                                                .fill(selectedCategory == category ? strokeColor : strokeColor.opacity(0.3))
+                                                        )
+                                                }
+                                                .buttonStyle(.plain)
+                                            }
+
+                                            // 새 카테고리 추가 버튼
+                                            Button {
+                                                HapticManager.light()
+                                                isShowingNewCategoryAlert = true
+                                            } label: {
+                                                Image(systemName: "plus")
+                                                    .font(.system(size: 11, weight: .semibold))
+                                                    .foregroundStyle(secondaryTextColor)
+                                                    .frame(width: 28, height: 28)
+                                                    .background(
+                                                        Circle()
+                                                            .fill(strokeColor.opacity(0.3))
+                                                    )
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                    }
+                                }
+
+                                // 취소/저장 버튼
+                                HStack(spacing: 8) {
+                                    Button {
+                                        HapticManager.light()
+                                        pastedLink = nil
+                                    } label: {
+                                        Text("취소")
+                                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                            .foregroundStyle(secondaryTextColor)
+                                            .padding(.horizontal, 16)
+                                            .padding(.vertical, 6)
+                                            .background(
+                                                Capsule()
+                                                    .fill(strokeColor.opacity(0.5))
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+
+                                    Button {
+                                        HapticManager.medium()
+                                        if let link = pastedLink {
+                                            let linkItem = LinkItem(url: link, category: selectedCategory)
+                                            savedLinks.append(linkItem)
+                                            print("링크 저장됨: \(link), 카테고리: \(selectedCategory)")
+                                        }
+                                        pastedLink = nil
+                                    } label: {
+                                        Text("저장")
+                                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                            .foregroundStyle(textColor)
+                                            .padding(.horizontal, 16)
+                                            .padding(.vertical, 6)
+                                            .background(
+                                                Capsule()
+                                                    .fill(strokeColor)
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        } else {
+                            Text("\(savedLinks.count)개의 링크 저장됨")
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .foregroundStyle(secondaryTextColor.opacity(0.7))
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 18)
             )
             .frame(maxWidth: .infinity, minHeight: 140)
     }
@@ -544,6 +760,31 @@ private extension ContentView {
         ) {
             glowOpacity = 1.0
         }
+    }
+
+    // MARK: Link Management
+
+    func pasteFromClipboard() {
+        #if os(iOS)
+        if let clipboardString = UIPasteboard.general.string, !clipboardString.isEmpty {
+            // URL 검증
+            if isValidURL(clipboardString) {
+                pastedLink = clipboardString
+                print("클립보드에서 링크 가져옴: \(clipboardString)")
+            } else {
+                print("유효하지 않은 URL")
+            }
+        }
+        #endif
+    }
+
+    func isValidURL(_ string: String) -> Bool {
+        if let url = URL(string: string),
+           let scheme = url.scheme,
+           (scheme == "http" || scheme == "https") {
+            return true
+        }
+        return false
     }
 
     // MARK: Activity Timer Section
