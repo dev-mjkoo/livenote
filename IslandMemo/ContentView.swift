@@ -11,23 +11,32 @@ struct ContentView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
+    @State private var savedLinks: [LinkItem] = [] // UserDefaults로 저장
     @State private var glowOpacity: Double = 0.3
     @State private var isDeleteConfirmationActive: Bool = false
     @State private var deleteConfirmationTask: Task<Void, Never>?
     @State private var isColorPaletteVisible: Bool = false
-    @State private var savedLinks: [LinkItem] = [] // 저장된 링크들
     @State private var pastedLink: String? = nil // 붙여넣은 링크 임시 저장
+    @State private var linkTitle: String = "" // 링크 제목 (선택)
     @State private var categories: [String] = ["개발", "디자인", "기타"] // 기본 카테고리
     @State private var selectedCategory: String = "개발"
     @State private var isShowingNewCategoryAlert: Bool = false
     @State private var newCategoryName: String = ""
     @State private var isShowingLinksSheet: Bool = false
+    @State private var isShowingClipboardConfirm: Bool = false // 클립보드 링크 저장 확인
+    @State private var clipboardURL: String = "" // 클립보드에서 가져온 URL
+    @State private var isShowingManualInput: Bool = false // 수동 입력 alert
+    @State private var manualLinkInput: String = "" // 수동 입력된 링크
+    @State private var isShowingTitleInput: Bool = false // 제목 입력 alert
 
     var body: some View {
         ZStack {
             // 배경: 탭하면 키보드 내려감
             background
                 .onAppear {
+                    // 저장된 링크 불러오기
+                    loadLinks()
+
                     // 앱 시작 시 복원된 Activity의 메모 내용 가져오기
                     Task {
                         // 복원 완료까지 약간 대기
@@ -133,6 +142,48 @@ struct ContentView: View {
         } message: {
             Text("새로운 카테고리 이름을 입력하세요")
         }
+        .alert("복사한 링크를 입력하시겠어요?", isPresented: $isShowingClipboardConfirm) {
+            Button("취소", role: .cancel) {
+                clipboardURL = ""
+            }
+            Button("직접 입력") {
+                clipboardURL = ""
+                isShowingManualInput = true
+            }
+            Button("자동 입력") {
+                pastedLink = clipboardURL
+                clipboardURL = ""
+            }
+        } message: {
+            Text(clipboardURL)
+                .lineLimit(2)
+        }
+        .alert("링크 주소를 입력하세요", isPresented: $isShowingManualInput) {
+            TextField("https://", text: $manualLinkInput)
+            Button("취소", role: .cancel) {
+                manualLinkInput = ""
+            }
+            Button("확인") {
+                if isValidURL(manualLinkInput) {
+                    pastedLink = manualLinkInput
+                }
+                manualLinkInput = ""
+            }
+        }
+        .alert("제목을 추가하시겠어요?", isPresented: $isShowingTitleInput) {
+            TextField("제목 (선택)", text: $linkTitle)
+            Button("건너뛰기") {
+                saveLinkWithTitle(title: nil)
+                linkTitle = ""
+            }
+            Button("저장") {
+                let title = linkTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                saveLinkWithTitle(title: title.isEmpty ? nil : title)
+                linkTitle = ""
+            }
+        } message: {
+            Text("링크에 제목을 추가할 수 있어요")
+        }
         .sheet(isPresented: $isShowingLinksSheet) {
             LinksListView(links: savedLinks, categories: categories)
         }
@@ -201,50 +252,23 @@ private extension ContentView {
 
             Spacer()
 
-            HStack(spacing: 8) {
-                // 링크 보기 버튼
-                Button {
-                    HapticManager.light()
-                    isShowingLinksSheet = true
-                } label: {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(headerForeground.opacity(0.3), lineWidth: 1)
-                        .frame(width: 32, height: 32)
-                        .overlay(
-                            ZStack {
-                                Image(systemName: "link")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(headerForeground)
-
-                                if !savedLinks.isEmpty {
-                                    Circle()
-                                        .fill(Color.red)
-                                        .frame(width: 8, height: 8)
-                                        .offset(x: 8, y: -8)
-                                }
-                            }
-                        )
+            // 달력 버튼
+            Button {
+                HapticManager.light()
+                if let url = URL(string: "calshow://") {
+                    openURL(url)
                 }
-                .buttonStyle(.plain)
-
-                // 달력 버튼
-                Button {
-                    HapticManager.light()
-                    if let url = URL(string: "calshow://") {
-                        openURL(url)
-                    }
-                } label: {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(headerForeground.opacity(0.3), lineWidth: 1)
-                        .frame(width: 32, height: 32)
-                        .overlay(
-                            Text(AppStrings.appIcon)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
-                                .foregroundStyle(headerForeground)
-                        )
-                }
-                .buttonStyle(.plain)
+            } label: {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(headerForeground.opacity(0.3), lineWidth: 1)
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        Text(AppStrings.appIcon)
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundStyle(headerForeground)
+                    )
             }
+            .buttonStyle(.plain)
         }
     }
 
@@ -412,37 +436,7 @@ private extension ContentView {
                         .padding(.horizontal, 20)
 
                     // 하단: 링크 영역
-                    VStack(spacing: 8) {
-                        HStack {
-                            Text("링크 저장")
-                                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                                .foregroundStyle(secondaryTextColor)
-
-                            Spacer()
-
-                            if pastedLink == nil {
-                                Button {
-                                    HapticManager.medium()
-                                    pasteFromClipboard()
-                                } label: {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "doc.on.clipboard")
-                                            .font(.system(size: 12, weight: .semibold))
-                                        Text("붙여넣기")
-                                            .font(.system(size: 12, weight: .semibold, design: .rounded))
-                                    }
-                                    .foregroundStyle(textColor)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        Capsule()
-                                            .fill(strokeColor)
-                                    )
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-
+                    VStack(spacing: 12) {
                         if let link = pastedLink {
                             // 붙여넣은 링크 미리보기
                             VStack(spacing: 10) {
@@ -532,12 +526,8 @@ private extension ContentView {
 
                                     Button {
                                         HapticManager.medium()
-                                        if let link = pastedLink {
-                                            let linkItem = LinkItem(url: link, category: selectedCategory)
-                                            savedLinks.append(linkItem)
-                                            print("링크 저장됨: \(link), 카테고리: \(selectedCategory)")
-                                        }
-                                        pastedLink = nil
+                                        // 제목 입력 alert 띄우기
+                                        isShowingTitleInput = true
                                     } label: {
                                         Text("저장")
                                             .font(.system(size: 12, weight: .semibold, design: .rounded))
@@ -553,14 +543,57 @@ private extension ContentView {
                                 }
                             }
                         } else {
-                            Text("\(savedLinks.count)개의 링크 저장됨")
-                                .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                .foregroundStyle(secondaryTextColor.opacity(0.7))
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                            // 빈 상태 - 심플한 버튼 두 개
+                            HStack(spacing: 8) {
+                                // 링크 저장하기 버튼
+                                Button {
+                                    HapticManager.medium()
+                                    handleLinkSaveAction()
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "plus.circle.fill")
+                                            .font(.system(size: 14, weight: .semibold))
+
+                                        Text("링크 저장")
+                                            .font(.system(size: 13, weight: .bold, design: .rounded))
+                                    }
+                                    .foregroundStyle(textColor)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .fill(strokeColor)
+                                    )
+                                }
+                                .buttonStyle(.plain)
+
+                                // 저장된 링크 보기 버튼
+                                Button {
+                                    HapticManager.medium()
+                                    isShowingLinksSheet = true
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Text(savedLinks.isEmpty ? "링크 없음" : "\(savedLinks.count)개")
+                                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 10, weight: .semibold))
+                                            .foregroundStyle(secondaryTextColor.opacity(0.7))
+                                    }
+                                    .foregroundStyle(textColor.opacity(0.9))
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .fill(strokeColor.opacity(0.6))
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, 16)
                 }
             )
             .frame(maxWidth: .infinity, minHeight: 140)
@@ -764,18 +797,23 @@ private extension ContentView {
 
     // MARK: Link Management
 
-    func pasteFromClipboard() {
+    func handleLinkSaveAction() {
         #if os(iOS)
+        // 클립보드 체크
         if let clipboardString = UIPasteboard.general.string, !clipboardString.isEmpty {
             // URL 검증
             if isValidURL(clipboardString) {
-                pastedLink = clipboardString
-                print("클립보드에서 링크 가져옴: \(clipboardString)")
-            } else {
-                print("유효하지 않은 URL")
+                // 클립보드에 링크가 있으면 확인 alert
+                clipboardURL = clipboardString
+                isShowingClipboardConfirm = true
+                print("클립보드 링크 발견: \(clipboardString)")
+                return
             }
         }
         #endif
+
+        // 클립보드에 링크가 없으면 수동 입력
+        isShowingManualInput = true
     }
 
     func isValidURL(_ string: String) -> Bool {
@@ -826,6 +864,33 @@ private extension ContentView {
                 }
             }
         }
+    }
+
+    // MARK: UserDefaults 저장/로드
+
+    private func saveLinks() {
+        if let encoded = try? JSONEncoder().encode(savedLinks) {
+            UserDefaults.standard.set(encoded, forKey: "savedLinks")
+        }
+    }
+
+    private func loadLinks() {
+        if let data = UserDefaults.standard.data(forKey: "savedLinks"),
+           let decoded = try? JSONDecoder().decode([LinkItem].self, from: data) {
+            savedLinks = decoded
+        }
+    }
+
+    private func saveLinkWithTitle(title: String?) {
+        guard let link = pastedLink else { return }
+
+        let linkItem = LinkItem(url: link, title: title, category: selectedCategory)
+        savedLinks.insert(linkItem, at: 0) // 맨 앞에 추가
+        saveLinks() // UserDefaults에 저장
+        print("링크 저장됨: \(link), 제목: \(title ?? "없음"), 카테고리: \(selectedCategory)")
+
+        // 초기화
+        pastedLink = nil
     }
 }
 

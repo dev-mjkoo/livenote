@@ -122,15 +122,29 @@ struct LinksListView: View {
                     )
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(link.url)
-                        .font(.system(size: 13, weight: .medium, design: .monospaced))
-                        .foregroundStyle(colorScheme == .dark ? .white : .black)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
+                    // 제목이 있으면 제목, 없으면 URL
+                    if let title = link.title, !title.isEmpty {
+                        Text(title)
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .foregroundStyle(colorScheme == .dark ? .white : .black)
+                            .lineLimit(1)
 
-                    Text(link.createdAt, style: .relative)
-                        .font(.system(size: 11, weight: .regular, design: .rounded))
-                        .foregroundStyle(.secondary.opacity(0.8))
+                        Text(link.url)
+                            .font(.system(size: 11, weight: .regular, design: .monospaced))
+                            .foregroundStyle(.secondary.opacity(0.8))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    } else {
+                        Text(link.url)
+                            .font(.system(size: 13, weight: .medium, design: .monospaced))
+                            .foregroundStyle(colorScheme == .dark ? .white : .black)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+
+                        Text(link.createdAt, style: .relative)
+                            .font(.system(size: 11, weight: .regular, design: .rounded))
+                            .foregroundStyle(.secondary.opacity(0.8))
+                    }
                 }
 
                 Spacer()
@@ -158,8 +172,8 @@ struct LinksListView: View {
 #Preview {
     LinksListView(
         links: [
-            LinkItem(url: "https://github.com/example", category: "개발"),
-            LinkItem(url: "https://figma.com/example", category: "디자인"),
+            LinkItem(url: "https://github.com/example", title: "GitHub 예제", category: "개발"),
+            LinkItem(url: "https://figma.com/example", title: "Figma 디자인", category: "디자인"),
             LinkItem(url: "https://youtube.com/example", category: "기타")
         ],
         categories: ["개발", "디자인", "기타"]
