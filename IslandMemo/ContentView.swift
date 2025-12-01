@@ -369,6 +369,11 @@ private extension ContentView {
                     Button {
                         HapticManager.light()
                         activityManager.selectedBackgroundColor = bgColor
+
+                        // 색상 선택 후 팔레트 닫기
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            isColorPaletteVisible = false
+                        }
                     } label: {
                         ZStack {
                             Circle()
