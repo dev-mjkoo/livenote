@@ -128,26 +128,45 @@ final class LiveActivityManager: ObservableObject {
 
     func extendTime() async {
         guard let activity = currentActivity else { return }
-        // startDate를 현재 시간으로 리셋 (8시간 다시 시작)
+
+        // 현재 메모와 색상 저장
+        let currentMemo = activity.contentState.memo
+        let currentColor = activity.contentState.backgroundColor
+
+        // 기존 Activity 종료
+        await activity.end(nil, dismissalPolicy: .immediate)
+        currentActivity = nil
+
+        print("🔄 Activity 재시작 중...")
+
+        // 새로운 Activity 시작 (시스템 타이머 완전 리셋)
+        let attributes = MemoryNoteAttributes(label: AppStrings.appName)
         let newStartDate = Date()
-        let updatedState = MemoryNoteAttributes.ContentState(
-            memo: activity.contentState.memo,
+        let initialState = MemoryNoteAttributes.ContentState(
+            memo: currentMemo,
             startDate: newStartDate,
-            backgroundColor: activity.contentState.backgroundColor
+            backgroundColor: currentColor
         )
-        await activity.update(using: updatedState)
 
-        // UI 업데이트
-        activityStartDate = newStartDate
-        lastUpdateDate = newStartDate
+        do {
+            let newActivity = try Activity.request(
+                attributes: attributes,
+                contentState: initialState,
+                pushType: nil
+            )
+            currentActivity = newActivity
+            activityStartDate = newStartDate
+            lastUpdateDate = Date()
+            print("✅ Activity 연장 완료: 8시간 타이머 리셋")
 
-        // 자동 종료 태스크 재스케줄
-        scheduleAutoDismissal()
+            // 8시간 후 자동 종료 스케줄
+            scheduleAutoDismissal()
 
-        // 자정 업데이트 태스크 재스케줄
-        scheduleMidnightUpdate()
-
-        print("Activity time extended: 8 hours reset to \(newStartDate)")
+            // 자정 자동 업데이트 스케줄
+            scheduleMidnightUpdate()
+        } catch {
+            print("❌ Activity 재시작 실패: \(error)")
+        }
     }
 
     private func updateActivity(memo: String,
