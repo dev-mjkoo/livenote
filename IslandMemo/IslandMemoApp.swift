@@ -13,6 +13,6 @@ struct IslandMemoApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: LinkItem.self)
+        .modelContainer(for: [LinkItem.self, Category.self])
     }
 }

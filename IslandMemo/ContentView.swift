@@ -14,24 +14,31 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \LinkItem.createdAt, order: .reverse) private var savedLinks: [LinkItem]
+    @Query(sort: \Category.createdAt, order: .forward) private var storedCategories: [Category]
     @State private var glowOpacity: Double = 0.3
     @State private var isDeleteConfirmationActive: Bool = false
     @State private var deleteConfirmationTask: Task<Void, Never>?
     @State private var isColorPaletteVisible: Bool = false
     @State private var pastedLink: String? = nil // 붙여넣은 링크 임시 저장
     @State private var linkTitle: String = "" // 링크 제목 (선택)
-    @State private var categories: [String] = ["개발", "디자인", "기타"] // 기본 카테고리
     @State private var selectedCategory: String = "개발"
     @State private var isShowingNewCategoryAlert: Bool = false
     @State private var newCategoryName: String = ""
     @State private var isShowingLinksSheet: Bool = false
     @State private var isShowingLinkInputSheet: Bool = false
 
+    private var categories: [String] {
+        storedCategories.map { $0.name }
+    }
+
     var body: some View {
         ZStack {
             // 배경: 탭하면 키보드 내려감
             background
                 .onAppear {
+                    // 기본 카테고리 생성
+                    initializeDefaultCategories()
+
                     // 앱 시작 시 복원된 Activity의 메모 내용 가져오기
                     Task {
                         // 복원 완료까지 약간 대기
@@ -129,7 +136,7 @@ struct ContentView: View {
             }
             Button("추가") {
                 if !newCategoryName.isEmpty && !categories.contains(newCategoryName) {
-                    categories.append(newCategoryName)
+                    addNewCategory(newCategoryName)
                     selectedCategory = newCategoryName
                 }
                 newCategoryName = ""
@@ -138,14 +145,13 @@ struct ContentView: View {
             Text("새로운 카테고리 이름을 입력하세요")
         }
         .sheet(isPresented: $isShowingLinksSheet) {
-            LinksListView(links: savedLinks, categories: categories)
+            LinksListView(categories: categories)
         }
         .sheet(isPresented: $isShowingLinkInputSheet) {
             LinkInputSheet(
                 linkURL: $pastedLink,
                 linkTitle: $linkTitle,
                 selectedCategory: $selectedCategory,
-                categories: $categories,
                 onSave: {
                     saveLinkWithTitle(title: linkTitle.isEmpty ? nil : linkTitle)
                     isShowingLinkInputSheet = false
@@ -753,6 +759,38 @@ private extension ContentView {
         pastedLink = nil
         linkTitle = ""
     }
+
+    // MARK: - Category Management
+
+    private func initializeDefaultCategories() {
+        // 기본 카테고리가 없으면 생성
+        let defaultCategories = ["개발", "디자인", "기타"]
+        for categoryName in defaultCategories {
+            if !categories.contains(categoryName) {
+                let category = Category(name: categoryName)
+                modelContext.insert(category)
+            }
+        }
+
+        do {
+            try modelContext.save()
+            print("✅ 기본 카테고리 초기화 완료")
+        } catch {
+            print("❌ 카테고리 초기화 실패: \(error)")
+        }
+    }
+
+    private func addNewCategory(_ name: String) {
+        let category = Category(name: name)
+        modelContext.insert(category)
+
+        do {
+            try modelContext.save()
+            print("✅ 카테고리 '\(name)' 추가 성공 (iCloud 자동 동기화)")
+        } catch {
+            print("❌ 카테고리 추가 실패: \(error)")
+        }
+    }
 }
 
 // MARK: - Link Input Sheet
@@ -761,13 +799,18 @@ struct LinkInputSheet: View {
     @Binding var linkURL: String?
     @Binding var linkTitle: String
     @Binding var selectedCategory: String
-    @Binding var categories: [String]
     let onSave: () -> Void
     let onCancel: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Category.createdAt, order: .forward) private var storedCategories: [Category]
     @State private var isShowingNewCategoryAlert: Bool = false
     @State private var newCategoryName: String = ""
+
+    private var categories: [String] {
+        storedCategories.map { $0.name }
+    }
 
     private var canSave: Bool {
         guard let url = linkURL, !url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -784,6 +827,18 @@ struct LinkInputSheet: View {
 
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+
+    private func addNewCategory(_ name: String) {
+        let category = Category(name: name)
+        modelContext.insert(category)
+
+        do {
+            try modelContext.save()
+            print("✅ 카테고리 '\(name)' 추가 성공 (iCloud 자동 동기화)")
+        } catch {
+            print("❌ 카테고리 추가 실패: \(error)")
+        }
     }
 
     var body: some View {
@@ -903,7 +958,7 @@ struct LinkInputSheet: View {
                 }
                 Button("추가") {
                     if !newCategoryName.isEmpty && !categories.contains(newCategoryName) {
-                        categories.append(newCategoryName)
+                        addNewCategory(newCategoryName)
                         selectedCategory = newCategoryName
                     }
                     newCategoryName = ""
@@ -919,5 +974,5 @@ struct LinkInputSheet: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: LinkItem.self, inMemory: true)
+        .modelContainer(for: [LinkItem.self, Category.self], inMemory: true)
 }
