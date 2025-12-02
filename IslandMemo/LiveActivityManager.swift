@@ -15,13 +15,21 @@ final class LiveActivityManager: ObservableObject {
     static let shared = LiveActivityManager()
 
     @Published private(set) var currentActivity: Activity<MemoryNoteAttributes>?
-    @Published var selectedBackgroundColor: ActivityBackgroundColor = .darkGray
+    @Published var selectedBackgroundColor: ActivityBackgroundColor = .darkGray {
+        didSet {
+            // 색상 변경될 때마다 저장
+            saveSelectedColor()
+        }
+    }
     @Published var activityStartDate: Date? = nil // 실제 startDate 추적
     private var dismissalTask: Task<Void, Never>?
     private var midnightUpdateTask: Task<Void, Never>?
     private var lastUpdateDate: Date?
 
     private init() {
+        // 저장된 색상 불러오기
+        loadSelectedColor()
+
         // 앱 시작 시 실행 중인 Live Activity 복원
         Task {
             await restoreActivityIfNeeded()
@@ -256,6 +264,20 @@ final class LiveActivityManager: ObservableObject {
                     print("Activity updated at midnight")
                 }
             }
+        }
+    }
+
+    // MARK: - Color Persistence
+
+    private func saveSelectedColor() {
+        UserDefaults.standard.set(selectedBackgroundColor.rawValue, forKey: "selectedBackgroundColor")
+    }
+
+    private func loadSelectedColor() {
+        if let rawValue = UserDefaults.standard.string(forKey: "selectedBackgroundColor"),
+           let color = ActivityBackgroundColor(rawValue: rawValue) {
+            selectedBackgroundColor = color
+            print("✅ 저장된 색상 불러옴: \(color.displayName)")
         }
     }
 }
