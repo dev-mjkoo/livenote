@@ -20,11 +20,13 @@ final class LinkItem {
     var metaDescription: String?
     var metaImageURL: String?
     var metaImageData: Data?
+    var needsMetadataFetch: Bool = false  // 메타데이터를 아직 못 가져온 경우 true
 
-    init(url: String, title: String? = nil, category: String) {
+    init(url: String, title: String? = nil, category: String, needsMetadataFetch: Bool = false) {
         self.url = url
         self.title = title
         self.category = category
         self.createdAt = Date()
+        self.needsMetadataFetch = needsMetadataFetch
     }
 }

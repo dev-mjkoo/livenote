@@ -10,6 +10,7 @@
 		1AD095E32ED6C1E700A540EC /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AD095E22ED6C1E700A540EC /* WidgetKit.framework */; };
 		1AD095E52ED6C1E700A540EC /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AD095E42ED6C1E700A540EC /* SwiftUI.framework */; };
 		1AD095F42ED6C1E800A540EC /* MemoryActivityWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1AD096502EDFEABA00A540EC /* IslandMemoShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1AD096462EDFEABA00A540EC /* IslandMemoShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -19,6 +20,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1AD095DF2ED6C1E700A540EC;
 			remoteInfo = MemoryActivityWidgetExtension;
+		};
+		1AD0964E2EDFEABA00A540EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AD095C02ED6BF9D00A540EC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1AD096452EDFEABA00A540EC;
+			remoteInfo = IslandMemoShareExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -30,6 +38,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				1AD095F42ED6C1E800A540EC /* MemoryActivityWidgetExtension.appex in Embed Foundation Extensions */,
+				1AD096502EDFEABA00A540EC /* IslandMemoShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -41,6 +50,7 @@
 		1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MemoryActivityWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AD095E22ED6C1E700A540EC /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		1AD095E42ED6C1E700A540EC /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		1AD096462EDFEABA00A540EC /* IslandMemoShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = IslandMemoShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -66,6 +76,23 @@
 			);
 			target = 1AD095C72ED6BF9D00A540EC /* IslandMemo */;
 		};
+		1AD096542EDFEABA00A540EC /* Exceptions for "IslandMemoShareExtension" folder in "IslandMemoShareExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */;
+		};
+		1AD096582EDFFDD400A540EC /* Exceptions for "IslandMemo" folder in "IslandMemoShareExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/Category.swift,
+				Models/LinkItem.swift,
+				Services/LinkMetadataService.swift,
+				Services/SharedModelContainer.swift,
+			);
+			target = 1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -74,6 +101,7 @@
 			exceptions = (
 				1AD096002ED6C36C00A540EC /* Exceptions for "IslandMemo" folder in "IslandMemo" target */,
 				1AD095FB2ED6C1F700A540EC /* Exceptions for "IslandMemo" folder in "MemoryActivityWidgetExtension" target */,
+				1AD096582EDFFDD400A540EC /* Exceptions for "IslandMemo" folder in "IslandMemoShareExtension" target */,
 			);
 			path = IslandMemo;
 			sourceTree = "<group>";
@@ -84,6 +112,14 @@
 				1AD095F52ED6C1E800A540EC /* Exceptions for "MemoryActivityWidget" folder in "MemoryActivityWidgetExtension" target */,
 			);
 			path = MemoryActivityWidget;
+			sourceTree = "<group>";
+		};
+		1AD096472EDFEABA00A540EC /* IslandMemoShareExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1AD096542EDFEABA00A540EC /* Exceptions for "IslandMemoShareExtension" folder in "IslandMemoShareExtension" target */,
+			);
+			path = IslandMemoShareExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -105,6 +141,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1AD096432EDFEABA00A540EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -113,6 +156,7 @@
 			children = (
 				1AD095CA2ED6BF9D00A540EC /* IslandMemo */,
 				1AD095E62ED6C1E700A540EC /* MemoryActivityWidget */,
+				1AD096472EDFEABA00A540EC /* IslandMemoShareExtension */,
 				1AD095E12ED6C1E700A540EC /* Frameworks */,
 				1AD095C92ED6BF9D00A540EC /* Products */,
 			);
@@ -123,6 +167,7 @@
 			children = (
 				1AD095C82ED6BF9D00A540EC /* IslandMemo.app */,
 				1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */,
+				1AD096462EDFEABA00A540EC /* IslandMemoShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -152,6 +197,7 @@
 			);
 			dependencies = (
 				1AD095F32ED6C1E800A540EC /* PBXTargetDependency */,
+				1AD0964F2EDFEABA00A540EC /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				1AD095CA2ED6BF9D00A540EC /* IslandMemo */,
@@ -185,6 +231,28 @@
 			productReference = 1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1AD096512EDFEABA00A540EC /* Build configuration list for PBXNativeTarget "IslandMemoShareExtension" */;
+			buildPhases = (
+				1AD096422EDFEABA00A540EC /* Sources */,
+				1AD096432EDFEABA00A540EC /* Frameworks */,
+				1AD096442EDFEABA00A540EC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				1AD096472EDFEABA00A540EC /* IslandMemoShareExtension */,
+			);
+			name = IslandMemoShareExtension;
+			packageProductDependencies = (
+			);
+			productName = IslandMemoShareExtension;
+			productReference = 1AD096462EDFEABA00A540EC /* IslandMemoShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -199,6 +267,9 @@
 						CreatedOnToolsVersion = 26.1.1;
 					};
 					1AD095DF2ED6C1E700A540EC = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
+					1AD096452EDFEABA00A540EC = {
 						CreatedOnToolsVersion = 26.1.1;
 					};
 				};
@@ -219,6 +290,7 @@
 			targets = (
 				1AD095C72ED6BF9D00A540EC /* IslandMemo */,
 				1AD095DF2ED6C1E700A540EC /* MemoryActivityWidgetExtension */,
+				1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -232,6 +304,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1AD095DE2ED6C1E700A540EC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1AD096442EDFEABA00A540EC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -255,6 +334,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1AD096422EDFEABA00A540EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -262,6 +348,11 @@
 			isa = PBXTargetDependency;
 			target = 1AD095DF2ED6C1E700A540EC /* MemoryActivityWidgetExtension */;
 			targetProxy = 1AD095F22ED6C1E800A540EC /* PBXContainerItemProxy */;
+		};
+		1AD0964F2EDFEABA00A540EC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */;
+			targetProxy = 1AD0964E2EDFEABA00A540EC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -523,6 +614,64 @@
 			};
 			name = Release;
 		};
+		1AD096522EDFEABA00A540EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = IslandMemoShareExtension/IslandMemoShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GZLLG9NWF4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IslandMemoShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = IslandMemoShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.islandmemo.IslandMemoShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1AD096532EDFEABA00A540EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = IslandMemoShareExtension/IslandMemoShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GZLLG9NWF4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IslandMemoShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = IslandMemoShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.islandmemo.IslandMemoShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -549,6 +698,15 @@
 			buildConfigurations = (
 				1AD095F72ED6C1E800A540EC /* Debug */,
 				1AD095F82ED6C1E800A540EC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1AD096512EDFEABA00A540EC /* Build configuration list for PBXNativeTarget "IslandMemoShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1AD096522EDFEABA00A540EC /* Debug */,
+				1AD096532EDFEABA00A540EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

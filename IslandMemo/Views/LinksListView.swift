@@ -14,7 +14,7 @@ struct LinksListView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \LinkItem.createdAt, order: .reverse) private var links: [LinkItem]
-    @Query(sort: \Category.createdAt, order: .forward) private var storedCategories: [Category]
+    @Query(sort: \Category.createdAt, order: .reverse) private var storedCategories: [Category]
 
     let categories: [String]
 
@@ -269,9 +269,14 @@ struct CategoryLinksView: View {
 
     @State private var deletingLinkID: PersistentIdentifier? = nil
     @State private var deleteConfirmationTask: Task<Void, Never>?
+    @State private var hasFetchedMetadata: Bool = false  // 메타데이터 가져왔는지 추적
 
     private var links: [LinkItem] {
         allLinks.filter { $0.category == category }
+    }
+
+    private var pendingLinksCount: Int {
+        links.filter { $0.needsMetadataFetch }.count
     }
 
     var body: some View {
@@ -297,6 +302,18 @@ struct CategoryLinksView: View {
         }
         .navigationTitle(category)
         .navigationBarTitleDisplayMode(.inline)
+        .task(id: pendingLinksCount) {
+            // pendingLinksCount가 변경될 때만 실행 (새 링크 추가 시)
+            guard pendingLinksCount > 0 && !hasFetchedMetadata else { return }
+            await fetchPendingMetadata()
+            hasFetchedMetadata = true
+        }
+        .onChange(of: pendingLinksCount) { oldValue, newValue in
+            // 새로운 pending 링크가 추가되면 다시 fetch 가능하도록
+            if newValue > 0 && newValue > oldValue {
+                hasFetchedMetadata = false
+            }
+        }
     }
 
     @ViewBuilder
@@ -309,34 +326,40 @@ struct CategoryLinksView: View {
         } label: {
             HStack(spacing: 12) {
                 // 썸네일 이미지 또는 기본 아이콘
-                if let imageData = link.metaImageData,
-                   let uiImage = UIImage(data: imageData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 60, height: 60)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                } else {
-                    Image(systemName: "link")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(.secondary.opacity(0.7))
-                        .frame(width: 60, height: 60)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.secondary.opacity(0.1))
-                        )
+                ZStack {
+                    if let imageData = link.metaImageData,
+                       let uiImage = UIImage(data: imageData) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 60, height: 60)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } else {
+                        Image(systemName: "link")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(.secondary.opacity(0.7))
+                            .frame(width: 60, height: 60)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.secondary.opacity(0.1))
+                            )
+                    }
+
+                    // 메타데이터 로딩 중 표시
+                    if link.needsMetadataFetch {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.black.opacity(0.5))
+                            .frame(width: 60, height: 60)
+
+                        ProgressView()
+                            .tint(.white)
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
-                    // 우선순위: 메타 제목 > 사용자 입력 제목 > URL
+                    // 우선순위: 메타 제목 > 도메인 (메인 타이틀)
                     if let metaTitle = link.metaTitle, !metaTitle.isEmpty {
                         Text(metaTitle)
-                            .font(.system(size: 14, weight: .semibold, design: .rounded))
-                            .foregroundStyle(colorScheme == .dark ? .white : .black)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.leading)
-                    } else if let title = link.title, !title.isEmpty {
-                        Text(title)
                             .font(.system(size: 14, weight: .semibold, design: .rounded))
                             .foregroundStyle(colorScheme == .dark ? .white : .black)
                             .lineLimit(2)
@@ -348,7 +371,15 @@ struct CategoryLinksView: View {
                             .lineLimit(1)
                     }
 
-                    // URL (도메인만 표시)
+                    // 사용자 입력 제목 (추가 설명)
+                    if let title = link.title, !title.isEmpty {
+                        Text(title)
+                            .font(.system(size: 12, weight: .regular, design: .rounded))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+
+                    // URL
                     Text(link.url)
                         .font(.system(size: 11, weight: .regular, design: .monospaced))
                         .foregroundStyle(.secondary.opacity(0.8))
@@ -419,6 +450,51 @@ struct CategoryLinksView: View {
             print("✅ 링크 삭제 성공")
         } catch {
             print("❌ 삭제 실패: \(error)")
+        }
+    }
+
+    private func fetchPendingMetadata() async {
+        // 메타데이터가 필요한 링크들만 필터링
+        let pendingLinks = links.filter { $0.needsMetadataFetch }
+
+        guard !pendingLinks.isEmpty else { return }
+
+        print("🔍 메타데이터 필요한 링크 \(pendingLinks.count)개 발견, 가져오는 중...")
+
+        // 각 링크에 대해 메타데이터 가져오기 (동시에 최대 3개씩)
+        await withTaskGroup(of: Void.self) { group in
+            for link in pendingLinks.prefix(3) {  // 한 번에 최대 3개만
+                group.addTask {
+                    await fetchMetadataForLink(link)
+                }
+            }
+        }
+    }
+
+    private func fetchMetadataForLink(_ link: LinkItem) async {
+        do {
+            let metadata = try await LinkMetadataService.shared.fetchMetadata(for: link.url)
+
+            // 메인 스레드에서 업데이트
+            await MainActor.run {
+                link.metaTitle = metadata.title
+                link.metaImageData = metadata.imageData
+                link.needsMetadataFetch = false  // 플래그 해제
+
+                do {
+                    try modelContext.save()
+                    print("✅ 메타데이터 업데이트 성공: \(metadata.title ?? link.url)")
+                } catch {
+                    print("❌ 메타데이터 저장 실패: \(error)")
+                }
+            }
+        } catch {
+            print("⚠️ 메타데이터 가져오기 실패 (\(link.url)): \(error)")
+            // 실패해도 플래그는 해제 (무한 재시도 방지)
+            await MainActor.run {
+                link.needsMetadataFetch = false
+                try? modelContext.save()
+            }
         }
     }
 }

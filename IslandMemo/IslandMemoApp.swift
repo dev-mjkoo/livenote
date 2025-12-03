@@ -9,10 +9,12 @@ import SwiftData
 
 @main
 struct IslandMemoApp: App {
+    let sharedModelContainer = SharedModelContainer.create()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: [LinkItem.self, Category.self])
+        .modelContainer(sharedModelContainer)
     }
 }

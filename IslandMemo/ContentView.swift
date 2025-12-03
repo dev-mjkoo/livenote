@@ -14,7 +14,7 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \LinkItem.createdAt, order: .reverse) private var savedLinks: [LinkItem]
-    @Query(sort: \Category.createdAt, order: .forward) private var storedCategories: [Category]
+    @Query(sort: \Category.createdAt, order: .reverse) private var storedCategories: [Category]
     @State private var glowOpacity: Double = 0.3
     @State private var isDeleteConfirmationActive: Bool = false
     @State private var deleteConfirmationTask: Task<Void, Never>?
@@ -745,7 +745,7 @@ private extension ContentView {
     private func saveLinkWithTitle(title: String?) {
         guard let link = pastedLink else { return }
 
-        let linkItem = LinkItem(url: link, title: title, category: selectedCategory)
+        let linkItem = LinkItem(url: link, title: title, category: selectedCategory, needsMetadataFetch: false)
         modelContext.insert(linkItem)
 
         do {
@@ -789,6 +789,9 @@ private extension ContentView {
     // MARK: - Category Management
 
     private func initializeDefaultCategories() {
+        // 중복 카테고리 제거
+        removeDuplicateCategories()
+
         // 기본 카테고리가 없으면 생성
         let defaultCategories = ["💻 개발", "🎨 디자인", "📌 기타"]
         for name in defaultCategories {
@@ -803,6 +806,36 @@ private extension ContentView {
             print("✅ 기본 카테고리 초기화 완료")
         } catch {
             print("❌ 카테고리 초기화 실패: \(error)")
+        }
+    }
+
+    private func removeDuplicateCategories() {
+        // 카테고리 이름별로 그룹화
+        var seenNames: Set<String> = []
+        var duplicates: [Category] = []
+
+        for category in storedCategories {
+            if seenNames.contains(category.name) {
+                // 중복 발견
+                duplicates.append(category)
+                print("⚠️ 중복 카테고리 발견: \(category.name)")
+            } else {
+                seenNames.insert(category.name)
+            }
+        }
+
+        // 중복된 카테고리 삭제
+        for duplicate in duplicates {
+            modelContext.delete(duplicate)
+        }
+
+        if !duplicates.isEmpty {
+            do {
+                try modelContext.save()
+                print("✅ 중복 카테고리 \(duplicates.count)개 삭제 완료")
+            } catch {
+                print("❌ 중복 카테고리 삭제 실패: \(error)")
+            }
         }
     }
 
@@ -830,7 +863,7 @@ struct LinkInputSheet: View {
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Category.createdAt, order: .forward) private var storedCategories: [Category]
+    @Query(sort: \Category.createdAt, order: .reverse) private var storedCategories: [Category]
     @Query(sort: \LinkItem.createdAt, order: .reverse) private var allLinks: [LinkItem]
     @State private var isShowingNewCategoryAlert: Bool = false
     @State private var newCategoryName: String = ""
@@ -920,13 +953,13 @@ struct LinkInputSheet: View {
                         .autocorrectionDisabled()
                     }
 
-                    // 제목 입력 (선택)
+                    // 메모 입력 (선택)
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("제목 (선택)")
+                        Text("메모 (선택)")
                             .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
 
-                        TextField("링크 제목을 입력하세요", text: $linkTitle)
+                        TextField("메모를 입력하세요", text: $linkTitle)
                             .font(.system(size: 14, weight: .regular, design: .rounded))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 12)
