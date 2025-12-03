@@ -13,14 +13,29 @@ struct LinksListView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \LinkItem.createdAt, order: .reverse) private var links: [LinkItem]
+    @Query(sort: \Category.createdAt, order: .forward) private var storedCategories: [Category]
 
     let categories: [String]
 
+    @State private var isEditMode: Bool = false
+    @State private var selectedCategories: Set<String> = []
+
     private var categoriesWithLinks: [(category: String, count: Int)] {
-        categories.compactMap { category in
+        categories.map { category in
             let count = links.filter { $0.category == category }.count
-            return count > 0 ? (category, count) : nil
+            return (category, count)
         }
+    }
+
+    // 카테고리 이름에서 이모지 추출
+    private func extractEmoji(from categoryName: String) -> String {
+        let emoji = categoryName.first(where: { $0.isEmoji }) ?? "📁"
+        return String(emoji)
+    }
+
+    // 카테고리 이름에서 텍스트 부분 추출
+    private func extractText(from categoryName: String) -> String {
+        return categoryName.filter { !$0.isEmoji }.trimmingCharacters(in: .whitespaces)
     }
 
     var body: some View {
@@ -36,14 +51,14 @@ struct LinksListView: View {
                 )
                 .ignoresSafeArea()
 
-                if links.isEmpty {
+                if categoriesWithLinks.isEmpty {
                     // 빈 상태
                     VStack(spacing: 16) {
-                        Image(systemName: "link.circle")
+                        Image(systemName: "folder.badge.plus")
                             .font(.system(size: 64))
                             .foregroundStyle(.secondary.opacity(0.5))
 
-                        Text("저장된 링크가 없습니다")
+                        Text("카테고리가 없습니다")
                             .font(.system(size: 18, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
                     }
@@ -55,12 +70,7 @@ struct LinksListView: View {
                             GridItem(.flexible(), spacing: 12)
                         ], spacing: 12) {
                             ForEach(categoriesWithLinks, id: \.category) { item in
-                                NavigationLink(destination: CategoryLinksView(
-                                    category: item.category
-                                )) {
-                                    categoryCard(category: item.category, count: item.count)
-                                }
-                                .buttonStyle(.plain)
+                                categoryCard(category: item.category, count: item.count)
                             }
                         }
                         .padding(20)
@@ -70,6 +80,17 @@ struct LinksListView: View {
             .navigationTitle("저장된 링크")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if isEditMode {
+                        Button("취소") {
+                            HapticManager.light()
+                            isEditMode = false
+                            selectedCategories.removeAll()
+                        }
+                        .foregroundStyle(Color.accentColor)
+                    }
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         HapticManager.light()
@@ -81,20 +102,110 @@ struct LinksListView: View {
                     }
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                if isEditMode && !selectedCategories.isEmpty {
+                    Button {
+                        HapticManager.medium()
+                        deleteSelectedCategories()
+                    } label: {
+                        HStack {
+                            Image(systemName: "trash.fill")
+                                .font(.system(size: 16, weight: .semibold))
+                            Text("\(selectedCategories.count)개 카테고리 삭제")
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.red)
+                        )
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 8)
+                    .background(
+                        LinearGradient(
+                            colors: colorScheme == .dark
+                                ? [Color.black.opacity(0), Color.black]
+                                : [Color.white.opacity(0), Color.white],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .ignoresSafeArea()
+                    )
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
         }
     }
 
     @ViewBuilder
     func categoryCard(category: String, count: Int) -> some View {
+        let emoji = extractEmoji(from: category)
+        let text = extractText(from: category)
+        let isSelected = selectedCategories.contains(category)
+
+        Button {
+            if isEditMode {
+                // 편집 모드: 선택/해제
+                HapticManager.light()
+                if selectedCategories.contains(category) {
+                    selectedCategories.remove(category)
+                } else {
+                    selectedCategories.insert(category)
+                }
+            }
+        } label: {
+            ZStack(alignment: .topLeading) {
+                // 메인 카드 컨텐츠
+                if isEditMode {
+                    cardContent(emoji: emoji, text: text, count: count)
+                } else {
+                    // 일반 모드: NavigationLink
+                    NavigationLink(destination: CategoryLinksView(category: category)) {
+                        cardContent(emoji: emoji, text: text, count: count)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                // 체크박스 (편집 모드일 때만)
+                if isEditMode {
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundStyle(isSelected ? Color.accentColor : Color.secondary.opacity(0.5))
+                        .padding(12)
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.5)
+                .onEnded { _ in
+                    HapticManager.medium()
+                    withAnimation {
+                        isEditMode = true
+                        selectedCategories.insert(category)
+                    }
+                }
+        )
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isEditMode)
+        .animation(.easeInOut(duration: 0.2), value: isSelected)
+    }
+
+    @ViewBuilder
+    private func cardContent(emoji: String, text: String, count: Int) -> some View {
         VStack(spacing: 12) {
-            Image(systemName: "folder.fill")
-                .font(.system(size: 32, weight: .semibold))
-                .foregroundStyle(Color.accentColor)
+            Text(emoji)
+                .font(.system(size: 40))
 
             VStack(spacing: 4) {
-                Text(category)
-                    .font(.system(size: 15, weight: .bold, design: .rounded))
-                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                if !text.isEmpty {
+                    Text(text)
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundStyle(colorScheme == .dark ? .white : .black)
+                }
 
                 Text("\(count)개")
                     .font(.system(size: 13, weight: .medium, design: .rounded))
@@ -113,6 +224,35 @@ struct LinksListView: View {
                     radius: 12, x: 0, y: 4
                 )
         )
+    }
+
+    private func deleteSelectedCategories() {
+        var totalLinksDeleted = 0
+
+        for categoryName in selectedCategories {
+            // 카테고리에 속한 모든 링크 삭제
+            let linksToDelete = links.filter { $0.category == categoryName }
+            totalLinksDeleted += linksToDelete.count
+            for link in linksToDelete {
+                modelContext.delete(link)
+            }
+
+            // 카테고리 삭제
+            if let category = storedCategories.first(where: { $0.name == categoryName }) {
+                modelContext.delete(category)
+            }
+        }
+
+        do {
+            try modelContext.save()
+            print("✅ \(selectedCategories.count)개 카테고리 및 관련 링크 \(totalLinksDeleted)개 삭제 성공")
+        } catch {
+            print("❌ 카테고리 삭제 실패: \(error)")
+        }
+
+        // 편집 모드 종료
+        isEditMode = false
+        selectedCategories.removeAll()
     }
 }
 
@@ -261,7 +401,16 @@ struct CategoryLinksView: View {
     }
 }
 
+// MARK: - Character Extension
+
+extension Character {
+    var isEmoji: Bool {
+        guard let scalar = unicodeScalars.first else { return false }
+        return scalar.properties.isEmoji && (scalar.value > 0x238C || unicodeScalars.count > 1)
+    }
+}
+
 #Preview {
-    LinksListView(categories: ["개발", "디자인", "기타"])
+    LinksListView(categories: ["💻 개발", "🎨 디자인", "📌 기타"])
         .modelContainer(for: [LinkItem.self, Category.self], inMemory: true)
 }

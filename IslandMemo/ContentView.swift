@@ -21,7 +21,7 @@ struct ContentView: View {
     @State private var isColorPaletteVisible: Bool = false
     @State private var pastedLink: String? = nil // 붙여넣은 링크 임시 저장
     @State private var linkTitle: String = "" // 링크 제목 (선택)
-    @State private var selectedCategory: String = "개발"
+    @State private var selectedCategory: String = "💻 개발"
     @State private var isShowingNewCategoryAlert: Bool = false
     @State private var newCategoryName: String = ""
     @State private var isShowingLinksSheet: Bool = false
@@ -130,7 +130,7 @@ struct ContentView: View {
             }
         }
         .alert("새 카테고리", isPresented: $isShowingNewCategoryAlert) {
-            TextField("카테고리 이름", text: $newCategoryName)
+            TextField("예: 🎬 영화", text: $newCategoryName)
             Button("취소", role: .cancel) {
                 newCategoryName = ""
             }
@@ -142,7 +142,7 @@ struct ContentView: View {
                 newCategoryName = ""
             }
         } message: {
-            Text("새로운 카테고리 이름을 입력하세요")
+            Text("카테고리 이름을 입력하세요 (이모지 포함 가능)")
         }
         .sheet(isPresented: $isShowingLinksSheet) {
             LinksListView(categories: categories)
@@ -764,10 +764,10 @@ private extension ContentView {
 
     private func initializeDefaultCategories() {
         // 기본 카테고리가 없으면 생성
-        let defaultCategories = ["개발", "디자인", "기타"]
-        for categoryName in defaultCategories {
-            if !categories.contains(categoryName) {
-                let category = Category(name: categoryName)
+        let defaultCategories = ["💻 개발", "🎨 디자인", "📌 기타"]
+        for name in defaultCategories {
+            if !categories.contains(name) {
+                let category = Category(name: name)
                 modelContext.insert(category)
             }
         }
@@ -805,8 +805,11 @@ struct LinkInputSheet: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Category.createdAt, order: .forward) private var storedCategories: [Category]
+    @Query(sort: \LinkItem.createdAt, order: .reverse) private var allLinks: [LinkItem]
     @State private var isShowingNewCategoryAlert: Bool = false
     @State private var newCategoryName: String = ""
+    @State private var deletingCategoryName: String? = nil
+    @State private var deleteConfirmationTask: Task<Void, Never>?
 
     private var categories: [String] {
         storedCategories.map { $0.name }
@@ -838,6 +841,31 @@ struct LinkInputSheet: View {
             print("✅ 카테고리 '\(name)' 추가 성공 (iCloud 자동 동기화)")
         } catch {
             print("❌ 카테고리 추가 실패: \(error)")
+        }
+    }
+
+    private func deleteCategory(_ categoryName: String) {
+        // 카테고리에 속한 모든 링크 삭제
+        let linksToDelete = allLinks.filter { $0.category == categoryName }
+        for link in linksToDelete {
+            modelContext.delete(link)
+        }
+
+        // 카테고리 삭제
+        if let category = storedCategories.first(where: { $0.name == categoryName }) {
+            modelContext.delete(category)
+        }
+
+        // 삭제된 카테고리가 선택되어 있었다면 기본값으로 변경
+        if selectedCategory == categoryName {
+            selectedCategory = storedCategories.first(where: { $0.name != categoryName })?.name ?? "💻 개발"
+        }
+
+        do {
+            try modelContext.save()
+            print("✅ 카테고리 '\(categoryName)' 및 관련 링크 \(linksToDelete.count)개 삭제 성공")
+        } catch {
+            print("❌ 카테고리 삭제 실패: \(error)")
         }
     }
 
@@ -890,25 +918,7 @@ struct LinkInputSheet: View {
 
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                ForEach(categories, id: \.self) { category in
-                                    Button {
-                                        HapticManager.light()
-                                        selectedCategory = category
-                                    } label: {
-                                        Text(category)
-                                            .font(.system(size: 13, weight: .semibold, design: .rounded))
-                                            .foregroundStyle(selectedCategory == category ? .white : .primary)
-                                            .padding(.horizontal, 16)
-                                            .padding(.vertical, 8)
-                                            .background(
-                                                Capsule()
-                                                    .fill(selectedCategory == category ? Color.accentColor : Color(uiColor: .secondarySystemBackground))
-                                            )
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-
-                                // 새 카테고리 추가 버튼
+                                // 새 카테고리 추가 버튼 (맨 앞으로 이동)
                                 Button {
                                     HapticManager.light()
                                     isShowingNewCategoryAlert = true
@@ -923,6 +933,62 @@ struct LinkInputSheet: View {
                                         )
                                 }
                                 .buttonStyle(.plain)
+
+                                ForEach(storedCategories, id: \.name) { category in
+                                    let isDeleting = deletingCategoryName == category.name
+
+                                    HStack(spacing: 0) {
+                                        // 카테고리 선택 버튼
+                                        Button {
+                                            HapticManager.light()
+                                            selectedCategory = category.name
+                                        } label: {
+                                            Text(category.name)
+                                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                                .foregroundStyle(selectedCategory == category.name ? .white : .primary)
+                                                .padding(.leading, 14)
+                                                .padding(.trailing, 8)
+                                                .padding(.vertical, 8)
+                                        }
+                                        .buttonStyle(.plain)
+
+                                        // 삭제 버튼
+                                        Button {
+                                            if isDeleting {
+                                                // 두 번째 클릭: 실제 삭제
+                                                HapticManager.medium()
+                                                deleteCategory(category.name)
+                                                deletingCategoryName = nil
+                                                deleteConfirmationTask?.cancel()
+                                            } else {
+                                                // 첫 번째 클릭: 확인 상태로 전환
+                                                HapticManager.light()
+                                                deletingCategoryName = category.name
+
+                                                // 3초 후 자동으로 확인 상태 해제
+                                                deleteConfirmationTask?.cancel()
+                                                deleteConfirmationTask = Task {
+                                                    try? await Task.sleep(for: .seconds(3))
+                                                    if !Task.isCancelled {
+                                                        deletingCategoryName = nil
+                                                    }
+                                                }
+                                            }
+                                        } label: {
+                                            Image(systemName: isDeleting ? "trash.fill" : "xmark")
+                                                .font(.system(size: 10, weight: .semibold))
+                                                .foregroundStyle(isDeleting ? .white : .secondary.opacity(0.7))
+                                                .frame(width: 16, height: 16)
+                                                .padding(.trailing, 10)
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                    .background(
+                                        Capsule()
+                                            .fill(isDeleting ? Color.red : (selectedCategory == category.name ? Color.accentColor : Color(uiColor: .secondarySystemBackground)))
+                                    )
+                                    .animation(.easeInOut(duration: 0.2), value: isDeleting)
+                                }
                             }
                         }
                     }
@@ -952,7 +1018,7 @@ struct LinkInputSheet: View {
                 }
             }
             .alert("새 카테고리", isPresented: $isShowingNewCategoryAlert) {
-                TextField("카테고리 이름", text: $newCategoryName)
+                TextField("예: 🎬 영화", text: $newCategoryName)
                 Button("취소", role: .cancel) {
                     newCategoryName = ""
                 }
@@ -964,7 +1030,7 @@ struct LinkInputSheet: View {
                     newCategoryName = ""
                 }
             } message: {
-                Text("새로운 카테고리 이름을 입력하세요")
+                Text("카테고리 이름을 입력하세요 (이모지 포함 가능)")
             }
         }
     }
