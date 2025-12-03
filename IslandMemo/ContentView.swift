@@ -751,6 +751,11 @@ private extension ContentView {
         do {
             try modelContext.save()
             print("✅ 링크 저장 성공 (iCloud 자동 동기화)")
+
+            // 백그라운드에서 메타데이터 가져오기
+            Task {
+                await fetchAndUpdateMetadata(for: linkItem)
+            }
         } catch {
             print("❌ 저장 실패: \(error)")
         }
@@ -758,6 +763,27 @@ private extension ContentView {
         // 초기화
         pastedLink = nil
         linkTitle = ""
+    }
+
+    private func fetchAndUpdateMetadata(for linkItem: LinkItem) async {
+        do {
+            let metadata = try await LinkMetadataService.shared.fetchMetadata(for: linkItem.url)
+
+            // 메인 스레드에서 업데이트
+            await MainActor.run {
+                linkItem.metaTitle = metadata.title
+                linkItem.metaImageData = metadata.imageData
+
+                do {
+                    try modelContext.save()
+                    print("✅ 메타데이터 업데이트 성공: \(metadata.title ?? "제목 없음")")
+                } catch {
+                    print("❌ 메타데이터 저장 실패: \(error)")
+                }
+            }
+        } catch {
+            print("⚠️ 메타데이터 가져오기 실패: \(error)")
+        }
     }
 
     // MARK: - Category Management

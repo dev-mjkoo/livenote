@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct LinksListView: View {
     @Environment(\.dismiss) private var dismiss
@@ -300,94 +301,115 @@ struct CategoryLinksView: View {
 
     @ViewBuilder
     func linkCard(_ link: LinkItem) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "link")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.secondary.opacity(0.7))
-                .frame(width: 32, height: 32)
-                .background(
-                    Circle()
-                        .fill(Color.secondary.opacity(0.1))
-                )
-
-            Button {
-                HapticManager.light()
-                if let url = URL(string: link.url) {
-                    openURL(url)
+        Button {
+            HapticManager.light()
+            if let url = URL(string: link.url) {
+                openURL(url)
+            }
+        } label: {
+            HStack(spacing: 12) {
+                // 썸네일 이미지 또는 기본 아이콘
+                if let imageData = link.metaImageData,
+                   let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 60, height: 60)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else {
+                    Image(systemName: "link")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(.secondary.opacity(0.7))
+                        .frame(width: 60, height: 60)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.secondary.opacity(0.1))
+                        )
                 }
-            } label: {
+
                 VStack(alignment: .leading, spacing: 4) {
-                    // 제목이 있으면 제목, 없으면 URL
-                    if let title = link.title, !title.isEmpty {
+                    // 우선순위: 메타 제목 > 사용자 입력 제목 > URL
+                    if let metaTitle = link.metaTitle, !metaTitle.isEmpty {
+                        Text(metaTitle)
+                            .font(.system(size: 14, weight: .semibold, design: .rounded))
+                            .foregroundStyle(colorScheme == .dark ? .white : .black)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                    } else if let title = link.title, !title.isEmpty {
                         Text(title)
-                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .font(.system(size: 14, weight: .semibold, design: .rounded))
                             .foregroundStyle(colorScheme == .dark ? .white : .black)
-                            .lineLimit(1)
-
-                        Text(link.url)
-                            .font(.system(size: 11, weight: .regular, design: .monospaced))
-                            .foregroundStyle(.secondary.opacity(0.8))
-                            .lineLimit(1)
-                            .truncationMode(.middle)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
                     } else {
-                        Text(link.url)
-                            .font(.system(size: 13, weight: .medium, design: .monospaced))
+                        Text(extractDomain(from: link.url))
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
                             .foregroundStyle(colorScheme == .dark ? .white : .black)
                             .lineLimit(1)
-                            .truncationMode(.middle)
-
-                        Text(link.createdAt, style: .relative)
-                            .font(.system(size: 11, weight: .regular, design: .rounded))
-                            .foregroundStyle(.secondary.opacity(0.8))
                     }
+
+                    // URL (도메인만 표시)
+                    Text(link.url)
+                        .font(.system(size: 11, weight: .regular, design: .monospaced))
+                        .foregroundStyle(.secondary.opacity(0.8))
+                        .lineLimit(1)
+                        .truncationMode(.middle)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .buttonStyle(.plain)
 
-            // 삭제 버튼
-            Button {
-                let isConfirming = deletingLinkID == link.id
-                if isConfirming {
-                    // 두 번째 클릭: 실제 삭제
-                    HapticManager.medium()
-                    deleteLink(link)
-                    deletingLinkID = nil
-                    deleteConfirmationTask?.cancel()
-                } else {
-                    // 첫 번째 클릭: 확인 상태로 전환
-                    HapticManager.light()
-                    deletingLinkID = link.id
+                // 삭제 버튼
+                Button {
+                    let isConfirming = deletingLinkID == link.id
+                    if isConfirming {
+                        // 두 번째 클릭: 실제 삭제
+                        HapticManager.medium()
+                        deleteLink(link)
+                        deletingLinkID = nil
+                        deleteConfirmationTask?.cancel()
+                    } else {
+                        // 첫 번째 클릭: 확인 상태로 전환
+                        HapticManager.light()
+                        deletingLinkID = link.id
 
-                    // 3초 후 자동으로 확인 상태 해제
-                    deleteConfirmationTask?.cancel()
-                    deleteConfirmationTask = Task {
-                        try? await Task.sleep(for: .seconds(3))
-                        if !Task.isCancelled {
-                            deletingLinkID = nil
+                        // 3초 후 자동으로 확인 상태 해제
+                        deleteConfirmationTask?.cancel()
+                        deleteConfirmationTask = Task {
+                            try? await Task.sleep(for: .seconds(3))
+                            if !Task.isCancelled {
+                                deletingLinkID = nil
+                            }
                         }
                     }
+                } label: {
+                    Image(systemName: deletingLinkID == link.id ? "trash.fill" : "trash")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(deletingLinkID == link.id ? .red : .secondary.opacity(0.7))
+                        .frame(width: 32, height: 32)
                 }
-            } label: {
-                Image(systemName: deletingLinkID == link.id ? "trash.fill" : "trash")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(deletingLinkID == link.id ? .red : .secondary.opacity(0.7))
-                    .frame(width: 32, height: 32)
+                .buttonStyle(.plain)
+                .animation(.easeInOut(duration: 0.2), value: deletingLinkID == link.id)
             }
-            .buttonStyle(.plain)
-            .animation(.easeInOut(duration: 0.2), value: deletingLinkID == link.id)
+            .padding(12)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(colorScheme == .dark
+                          ? Color.white.opacity(0.06)
+                          : Color.white)
+                    .shadow(
+                        color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.08),
+                        radius: 8, x: 0, y: 2
+                    )
+            )
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(colorScheme == .dark
-                      ? Color.white.opacity(0.06)
-                      : Color.white)
-                .shadow(
-                    color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.08),
-                    radius: 8, x: 0, y: 2
-                )
-        )
+        .buttonStyle(.plain)
+    }
+
+    private func extractDomain(from urlString: String) -> String {
+        guard let url = URL(string: urlString),
+              let host = url.host else {
+            return urlString
+        }
+        return host.replacingOccurrences(of: "www.", with: "")
     }
 
     private func deleteLink(_ link: LinkItem) {
