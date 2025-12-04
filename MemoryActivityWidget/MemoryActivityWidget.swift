@@ -25,7 +25,7 @@ private struct CalendarGridView: View {
         let lastWeekStartIndex = (lastDayIndex / 7) * 7
         let numberOfWeeksToShow = (lastWeekStartIndex + 6) / 7 + 1
 
-        VStack(spacing: 3) {
+        VStack(spacing: 4) {
             // 요일 헤더
             HStack(spacing: 0) {
                 ForEach(["일", "월", "화", "수", "목", "금", "토"], id: \.self) { day in
@@ -35,7 +35,7 @@ private struct CalendarGridView: View {
                         .foregroundColor(.white.opacity(0.7))
                 }
             }
-            .padding(.bottom, 3)
+            .padding(.bottom, 4)
 
             // 날짜 그리드
             ForEach(0..<numberOfWeeksToShow, id: \.self) { row in
@@ -47,31 +47,31 @@ private struct CalendarGridView: View {
                             // 이전 달의 날짜
                             Text("\(daysInPreviousMonth + dayNumber)")
                                 .font(.system(size: 9, weight: .regular))
-                                .frame(width: 18, height: 12)
+                                .frame(width: 18, height: 15)
                                 .foregroundColor(.white.opacity(0.3))
                         } else if dayNumber <= daysInMonth {
                             // 현재 달의 날짜
                             Text("\(dayNumber)")
                                 .font(.system(size: 9, weight: today == dayNumber ? .bold : .regular))
-                                .frame(width: 18, height: 12)
+                                .frame(width: 18, height: 15)
                                 .foregroundColor(today == dayNumber ? .black : .white)
                                 .background(
                                     today == dayNumber ?
                                         RoundedRectangle(cornerRadius: 3)
                                             .fill(.white)
-                                            .frame(width: 18, height: 13)
+                                            .frame(width: 18, height: 16)
                                         : nil
                                 )
                         } else if row * 7 + column <= lastWeekStartIndex + 6 {
                             // 다음 달의 날짜
                             Text("\(dayNumber - daysInMonth)")
                                 .font(.system(size: 9, weight: .regular))
-                                .frame(width: 18, height: 12)
+                                .frame(width: 18, height: 15)
                                 .foregroundColor(.white.opacity(0.3))
                         } else {
                             // 빈 공간
                             Text("")
-                                .frame(width: 18, height: 12)
+                                .frame(width: 18, height: 15)
                         }
                     }
                 }
