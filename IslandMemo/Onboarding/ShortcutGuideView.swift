@@ -23,19 +23,19 @@ struct ShortcutGuideView: View {
         GuidePage(
             icon: "text",
             title: "1단계: 자동화 만들기",
-            description: "• '단축어' 앱 실행\n• 하단 '자동화' 탭 선택\n• 우측 상단 '+' 버튼 클릭\n• '개인용 자동화 생성' 선택\n• '특정 시간' 클릭",
+            description: "1. '단축어' 앱 실행\n2. 하단 '자동화' 탭 선택\n3. 우측 상단 '+' 버튼 클릭\n4. '개인용 자동화 생성' 선택\n5. '특정 시간' 클릭",
             step: nil
         ),
         GuidePage(
             icon: "image_step2",
             title: "2단계: 시간 설정",
-            description: "• 시간: 00:00 설정\n• 반복: 매일\n• '즉시 실행' 선택\n• '다음' 버튼 클릭",
+            description: "1. 시간: 00:00 설정\n2. 반복: 매일\n3. '즉시 실행' 선택\n4. '다음' 버튼 클릭",
             step: nil
         ),
         GuidePage(
             icon: "text",
             title: "3단계: 동작 추가",
-            description: "• 검색창에 '\(Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Island Memo")' 입력\n• '잠금화면 표시 시간 연장' 선택",
+            description: "1. 검색창에 '\(Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Island Memo")' 입력\n2. '잠금화면 표시 시간 연장' 선택",
             step: nil
         ),
         GuidePage(

@@ -29,6 +29,8 @@ struct ContentView: View {
     @State private var isShowingShortcutGuide: Bool = false
     @State private var hasSeenShortcutGuide: Bool = UserDefaults.standard.bool(forKey: "hasSeenShortcutGuide")
     @State private var autoStartTask: Task<Void, Never>?
+    @State private var showToast: Bool = false
+    @State private var toastMessage: String = ""
 
     private var categories: [String] {
         storedCategories.map { $0.name }
@@ -85,12 +87,20 @@ struct ContentView: View {
             .padding(20)
         }
         .overlay(alignment: .bottom) {
-            // 색상 팔레트 (동적으로 표시, overlay로 레이아웃 영향 없음)
-            if isColorPaletteVisible {
-                colorPalette
-                    .padding(.bottom, 100) // dock 위에 표시
-                    .transition(.scale.combined(with: .opacity))
+            VStack(spacing: 12) {
+                // 토스트 메시지
+                if showToast {
+                    toastView
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
+                // 색상 팔레트 (동적으로 표시, overlay로 레이아웃 영향 없음)
+                if isColorPaletteVisible {
+                    colorPalette
+                        .transition(.scale.combined(with: .opacity))
+                }
             }
+            .padding(.bottom, 100) // dock 위에 표시
         }
         .onChange(of: memo) { oldValue, newValue in
             // 기존 자동 시작 태스크 취소
@@ -700,6 +710,37 @@ private extension ContentView {
         )
     }
 
+    // MARK: Toast View
+
+    private var toastView: some View {
+        let toastBackground: Color = {
+            if colorScheme == .dark {
+                return Color.white.opacity(0.12)
+            } else {
+                return Color.black.opacity(0.75)
+            }
+        }()
+
+        let toastForeground: Color = {
+            if colorScheme == .dark {
+                return Color.white
+            } else {
+                return Color.white
+            }
+        }()
+
+        return Text(toastMessage)
+            .font(.system(size: 14, weight: .medium, design: .rounded))
+            .foregroundStyle(toastForeground)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .background(
+                Capsule()
+                    .fill(toastBackground)
+                    .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
+            )
+    }
+
     private var formattedDate: String {
         let preferred = Locale.preferredLanguages.first ?? "en"
         let isAsian = preferred.hasPrefix("ko") || preferred.hasPrefix("ja") || preferred.hasPrefix("zh")
@@ -744,10 +785,19 @@ private extension ContentView {
         }
         #endif
 
-        // 클립보드에 유효한 링크가 없으면 빈 상태로 입력 폼 표시
-        pastedLink = ""
-        linkTitle = ""
-        isShowingLinkInputSheet = true
+        // 클립보드에 유효한 링크가 없으면 토스트 메시지 표시
+        toastMessage = "링크를 복사해오세요"
+        withAnimation {
+            showToast = true
+        }
+
+        // 2초 후 토스트 자동 숨김
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            withAnimation {
+                showToast = false
+            }
+        }
     }
 
     func isValidURL(_ string: String) -> Bool {
