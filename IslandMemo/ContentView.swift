@@ -654,7 +654,7 @@ private extension ContentView {
             colorScheme == .dark ? .white : .black
         }()
 
-        return HStack(spacing: 0) {
+        return HStack(spacing: 16) {
             // Color palette toggle
             Button {
                 HapticManager.light()
@@ -679,6 +679,20 @@ private extension ContentView {
             }
             .buttonStyle(.plain)
             .animation(.none, value: activityManager.selectedBackgroundColor)
+
+            // 연장 버튼
+            Button {
+                HapticManager.medium()
+                Task {
+                    await activityManager.extendTime()
+                }
+            } label: {
+                Image(systemName: "clock.arrow.circlepath")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(iconColorActive)
+                    .frame(width: 32, height: 32)
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 22)
         .padding(.vertical, 14)

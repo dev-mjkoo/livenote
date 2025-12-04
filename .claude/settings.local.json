@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(brew install:*)",
-      "Bash(xcodebuild:*)"
+      "Bash(xcodebuild:*)",
+      "WebSearch",
+      "WebFetch(domain:stackoverflow.com)"
     ],
     "deny": [],
     "ask": []
