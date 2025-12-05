@@ -64,7 +64,7 @@ struct InitialOnboardingFlow: View {
                                 }
                             }
                         } label: {
-                            Text(currentPage == totalPages - 1 ? "시작하기" : "다음")
+                            Text(currentPage == totalPages - 1 ? LocalizationManager.shared.string("시작하기") : LocalizationManager.shared.string("다음"))
                                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
@@ -151,7 +151,7 @@ struct MemoOnboardingFlow: View {
                                 }
                             }
                         } label: {
-                            Text(currentPage == totalPages - 1 ? "완료" : "다음")
+                            Text(currentPage == totalPages - 1 ? LocalizationManager.shared.string("완료") : LocalizationManager.shared.string("다음"))
                                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
@@ -225,7 +225,7 @@ struct LinkOnboardingFlow: View {
                             HapticManager.light()
                             completeOnboarding()
                         } label: {
-                            Text("확인")
+                            Text(LocalizationManager.shared.string("확인"))
                                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
@@ -286,11 +286,11 @@ struct LinkGuidePromptView: View {
 
                 // Title
                 VStack(spacing: 12) {
-                    Text("링크 저장 기능도 있어요!")
+                    Text(LocalizationManager.shared.string("링크 저장 기능도 있어요!"))
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
 
-                    Text("Safari나 다른 앱에서\n링크를 바로 저장할 수 있어요")
+                    Text(LocalizationManager.shared.string("Safari나 다른 앱에서\n링크를 바로 저장할 수 있어요"))
                         .font(.system(size: 16, weight: .regular, design: .rounded))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -302,20 +302,20 @@ struct LinkGuidePromptView: View {
                 VStack(spacing: 16) {
                     PromptFeatureRow(
                         icon: "square.and.arrow.up",
-                        title: "공유하기로 저장",
-                        description: "어떤 앱에서든 링크 공유만 하면 돼요"
+                        title: LocalizationManager.shared.string("공유하기로 저장"),
+                        description: LocalizationManager.shared.string("어떤 앱에서든 링크 공유만 하면 돼요")
                     )
 
                     PromptFeatureRow(
                         icon: "folder.fill",
-                        title: "카테고리 분류",
-                        description: "링크를 카테고리별로 정리해요"
+                        title: LocalizationManager.shared.string("카테고리 분류"),
+                        description: LocalizationManager.shared.string("링크를 카테고리별로 정리해요")
                     )
 
                     PromptFeatureRow(
                         icon: "photo.fill",
-                        title: "미리보기 지원",
-                        description: "링크 썸네일과 제목을 자동으로 가져와요"
+                        title: LocalizationManager.shared.string("미리보기 지원"),
+                        description: LocalizationManager.shared.string("링크 썸네일과 제목을 자동으로 가져와요")
                     )
                 }
                 .padding(.horizontal, 32)

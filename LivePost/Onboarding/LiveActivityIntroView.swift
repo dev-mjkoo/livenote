@@ -15,11 +15,11 @@ struct LiveActivityIntroView: View {
 
                 // Title
                 VStack(spacing: 12) {
-                    Text("이제 기억할게 있다면")
+                    Text(LocalizationManager.shared.string("이제 기억할게 있다면"))
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
 
-                    Text("잠금화면에서 바로 작성해보세요!")
+                    Text(LocalizationManager.shared.string("잠금화면에서 바로 작성해보세요!"))
                         .font(.system(size: 20, weight: .semibold, design: .rounded))
                         .foregroundStyle(Color.accentColor)
                         .multilineTextAlignment(.center)
@@ -28,12 +28,12 @@ struct LiveActivityIntroView: View {
 
                 // Description
                 VStack(spacing: 8) {
-                    Text("메모와 달력이 잠금화면에 표시되어")
+                    Text(LocalizationManager.shared.string("메모와 달력이 잠금화면에 표시되어"))
                         .font(.system(size: 15, weight: .regular, design: .rounded))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
 
-                    Text("언제든 빠르게 확인할 수 있어요")
+                    Text(LocalizationManager.shared.string("언제든 빠르게 확인할 수 있어요"))
                         .font(.system(size: 15, weight: .regular, design: .rounded))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -58,7 +58,7 @@ struct LiveActivityIntroView: View {
                     .opacity(animatePreview ? 1.0 : 0.0)
                     .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: animatePreview)
 
-                    Text("잠금화면 미리보기")
+                    Text(LocalizationManager.shared.string("잠금화면 미리보기"))
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundStyle(.secondary.opacity(0.7))
                 }

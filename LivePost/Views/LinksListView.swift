@@ -58,7 +58,7 @@ struct LinksListView: View {
                             .font(.system(size: 64))
                             .foregroundStyle(.secondary.opacity(0.5))
 
-                        Text("카테고리가 없습니다")
+                        Text(LocalizationManager.shared.string("카테고리가 없습니다"))
                             .font(.system(size: 18, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
                     }
@@ -77,12 +77,12 @@ struct LinksListView: View {
                     }
                 }
             }
-            .navigationTitle("저장된 링크")
+            .navigationTitle(LocalizationManager.shared.string("저장된 링크"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     if isEditMode {
-                        Button("취소") {
+                        Button(LocalizationManager.shared.string("취소")) {
                             HapticManager.light()
                             isEditMode = false
                             selectedCategories.removeAll()
@@ -111,7 +111,7 @@ struct LinksListView: View {
                         HStack {
                             Image(systemName: "trash.fill")
                                 .font(.system(size: 16, weight: .semibold))
-                            Text("\(selectedCategories.count)개 카테고리 삭제")
+                            Text(LocalizationManager.shared.deleteCategoriesText(count: selectedCategories.count))
                                 .font(.system(size: 16, weight: .semibold))
                         }
                         .foregroundStyle(.white)
@@ -205,7 +205,7 @@ struct LinksListView: View {
                         .foregroundStyle(colorScheme == .dark ? .white : .black)
                 }
 
-                Text("\(count)개")
+                Text("\(count)\(LocalizationManager.shared.countSuffix())")
                     .font(.system(size: 13, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
             }
@@ -415,7 +415,7 @@ struct CategoryLinksView: View {
                 HapticManager.medium()
                 deleteLink(link)
             } label: {
-                Label("삭제", systemImage: "trash.fill")
+                Label(LocalizationManager.shared.string("삭제"), systemImage: "trash.fill")
             }
 
             // 공유 (파랑)
@@ -425,7 +425,7 @@ struct CategoryLinksView: View {
                     sharingURL = url
                 }
             } label: {
-                Label("공유", systemImage: "square.and.arrow.up")
+                Label(LocalizationManager.shared.string("공유"), systemImage: "square.and.arrow.up")
             }
             .tint(.blue)
         }

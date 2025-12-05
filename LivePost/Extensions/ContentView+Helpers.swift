@@ -6,18 +6,13 @@ extension ContentView {
     // MARK: - Computed Properties
 
     var formattedDate: String {
-        let preferred = Locale.preferredLanguages.first ?? "en"
-        let isAsian = preferred.hasPrefix("ko") || preferred.hasPrefix("ja") || preferred.hasPrefix("zh")
-
-        let dateLocale = isAsian ? Locale(identifier: preferred) : Locale(identifier: "en_US")
-
         return Date.now.formatted(
             .dateTime
                 .year()
                 .month(.wide)
                 .day()
                 .weekday(.wide)
-                .locale(dateLocale)
+                .locale(LocalizationManager.shared.dateLocale)
         )
     }
 
@@ -52,7 +47,7 @@ extension ContentView {
         #endif
 
         // 클립보드에 유효한 링크가 없으면 토스트 메시지 표시
-        toastMessage = "링크를 복사해오세요"
+        toastMessage = LocalizationManager.shared.string("링크를 복사해오세요")
         withAnimation {
             showToast = true
         }
@@ -108,9 +103,18 @@ extension ContentView {
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(timeMessage.color)
 
-                    (Text(endDate, style: .timer) + Text(" 후에 사라짐"))
-                        .font(.system(size: 10, weight: .semibold).monospacedDigit())
-                        .foregroundStyle(timeMessage.color)
+                    // 언어별 타이머 텍스트 순서 처리
+                    if LocalizationManager.shared.isTimerFirst() {
+                        // 영어: "Gone in 7:55:54"
+                        (Text(LocalizationManager.shared.timerPrefixText()) + Text(endDate, style: .timer))
+                            .font(.system(size: 10, weight: .semibold).monospacedDigit())
+                            .foregroundStyle(timeMessage.color)
+                    } else {
+                        // 한국어/일본어/중국어: "7:55:54 후에 사라짐"
+                        (Text(endDate, style: .timer) + Text(LocalizationManager.shared.timerSuffixText()))
+                            .font(.system(size: 10, weight: .semibold).monospacedDigit())
+                            .foregroundStyle(timeMessage.color)
+                    }
 
                     Image(systemName: "lock.slash")
                         .font(.system(size: 10, weight: .regular))
@@ -286,7 +290,7 @@ extension ContentView {
     func addNewCategory(_ name: String) {
         // 중복 체크
         if categories.contains(name) {
-            toastMessage = "이미 존재하는 카테고리입니다"
+            toastMessage = LocalizationManager.shared.string("이미 존재하는 카테고리입니다")
             withAnimation {
                 showToast = true
             }

@@ -74,6 +74,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				LiveActivityManager.swift,
+				Services/LocalizationManager.swift,
 				Shared/Colors.swift,
 				Shared/Constants.swift,
 				Shared/MemoryNoteAttributes.swift,
@@ -100,6 +101,7 @@
 				Models/Category.swift,
 				Models/LinkItem.swift,
 				Services/LinkMetadataService.swift,
+				Services/LocalizationManager.swift,
 				Services/SharedModelContainer.swift,
 				Shared/Colors.swift,
 			);

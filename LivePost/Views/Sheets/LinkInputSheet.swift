@@ -88,7 +88,7 @@ struct LinkInputSheet: View {
                 VStack(spacing: 20) {
                     // 링크 URL 입력
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("링크")
+                        Text(LocalizationManager.shared.string("링크"))
                             .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
 
@@ -109,11 +109,11 @@ struct LinkInputSheet: View {
 
                     // 메모 입력 (선택)
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("메모 (선택)")
+                        Text(LocalizationManager.shared.string("메모 (선택)"))
                             .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
 
-                        TextField("메모를 입력하세요", text: $linkTitle)
+                        TextField(LocalizationManager.shared.string("메모를 입력하세요"), text: $linkTitle)
                             .font(.system(size: 14, weight: .regular, design: .rounded))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 12)
@@ -125,7 +125,7 @@ struct LinkInputSheet: View {
 
                     // 카테고리 선택
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("카테고리")
+                        Text(LocalizationManager.shared.string("카테고리"))
                             .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
 
@@ -214,28 +214,28 @@ struct LinkInputSheet: View {
             .onTapGesture {
                 hideKeyboard()
             }
-            .navigationTitle("링크 붙여넣기")
+            .navigationTitle(LocalizationManager.shared.string("링크 붙여넣기"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("취소") {
+                    Button(LocalizationManager.shared.string("취소")) {
                         onCancel()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("저장") {
+                    Button(LocalizationManager.shared.string("저장")) {
                         onSave()
                     }
                     .fontWeight(.semibold)
                     .disabled(!canSave)
                 }
             }
-            .alert("새 카테고리", isPresented: $isShowingNewCategoryAlert) {
+            .alert(LocalizationManager.shared.string("새 카테고리"), isPresented: $isShowingNewCategoryAlert) {
                 TextField("예: 🎬 영화", text: $newCategoryName)
-                Button("취소", role: .cancel) {
+                Button(LocalizationManager.shared.string("취소"), role: .cancel) {
                     newCategoryName = ""
                 }
-                Button("추가") {
+                Button(LocalizationManager.shared.string("추가")) {
                     if !newCategoryName.isEmpty && !categories.contains(newCategoryName) {
                         addNewCategory(newCategoryName)
                         selectedCategory = newCategoryName
@@ -243,7 +243,7 @@ struct LinkInputSheet: View {
                     newCategoryName = ""
                 }
             } message: {
-                Text("카테고리 이름을 입력하세요 (이모지 포함 가능)")
+                Text(LocalizationManager.shared.string("카테고리 이름을 입력하세요 (이모지 포함 가능)"))
             }
         }
         .task {
