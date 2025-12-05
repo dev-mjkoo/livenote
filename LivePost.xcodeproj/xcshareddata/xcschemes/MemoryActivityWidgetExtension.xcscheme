@@ -19,7 +19,7 @@
                BlueprintIdentifier = "1AD095DF2ED6C1E700A540EC"
                BuildableName = "MemoryActivityWidgetExtension.appex"
                BlueprintName = "MemoryActivityWidgetExtension"
-               ReferencedContainer = "container:IslandMemo.xcodeproj">
+               ReferencedContainer = "container:LivePost.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,9 +31,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1AD095C72ED6BF9D00A540EC"
-               BuildableName = "IslandMemo.app"
-               BlueprintName = "IslandMemo"
-               ReferencedContainer = "container:IslandMemo.xcodeproj">
+               BuildableName = "LivePost.app"
+               BlueprintName = "LivePost"
+               ReferencedContainer = "container:LivePost.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -65,16 +65,16 @@
             BlueprintIdentifier = "1AD095DF2ED6C1E700A540EC"
             BuildableName = "MemoryActivityWidgetExtension.appex"
             BlueprintName = "MemoryActivityWidgetExtension"
-            ReferencedContainer = "container:IslandMemo.xcodeproj">
+            ReferencedContainer = "container:LivePost.xcodeproj">
          </BuildableReference>
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1AD095C72ED6BF9D00A540EC"
-            BuildableName = "IslandMemo.app"
-            BlueprintName = "IslandMemo"
-            ReferencedContainer = "container:IslandMemo.xcodeproj">
+            BuildableName = "LivePost.app"
+            BlueprintName = "LivePost"
+            ReferencedContainer = "container:LivePost.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <EnvironmentVariables>
@@ -108,9 +108,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1AD095C72ED6BF9D00A540EC"
-            BuildableName = "IslandMemo.app"
-            BlueprintName = "IslandMemo"
-            ReferencedContainer = "container:IslandMemo.xcodeproj">
+            BuildableName = "LivePost.app"
+            BlueprintName = "LivePost"
+            ReferencedContainer = "container:LivePost.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

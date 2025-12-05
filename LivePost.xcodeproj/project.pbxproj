@@ -10,7 +10,7 @@
 		1AD095E32ED6C1E700A540EC /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AD095E22ED6C1E700A540EC /* WidgetKit.framework */; };
 		1AD095E52ED6C1E700A540EC /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AD095E42ED6C1E700A540EC /* SwiftUI.framework */; };
 		1AD095F42ED6C1E800A540EC /* MemoryActivityWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		1AD096502EDFEABA00A540EC /* IslandMemoShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1AD096462EDFEABA00A540EC /* IslandMemoShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1AD096502EDFEABA00A540EC /* LivePostShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1AD096462EDFEABA00A540EC /* LivePostShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +38,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				1AD095F42ED6C1E800A540EC /* MemoryActivityWidgetExtension.appex in Embed Foundation Extensions */,
-				1AD096502EDFEABA00A540EC /* IslandMemoShareExtension.appex in Embed Foundation Extensions */,
+				1AD096502EDFEABA00A540EC /* LivePostShareExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -47,21 +47,21 @@
 
 /* Begin PBXFileReference section */
 		1A67CFBE2EE3143700D21851 /* MemoryActivityWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MemoryActivityWidgetExtension.entitlements; sourceTree = "<group>"; };
-		1AD095C82ED6BF9D00A540EC /* IslandMemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IslandMemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AD095C82ED6BF9D00A540EC /* LivePost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LivePost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MemoryActivityWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AD095E22ED6C1E700A540EC /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		1AD095E42ED6C1E700A540EC /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		1AD096462EDFEABA00A540EC /* IslandMemoShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = IslandMemoShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AD096462EDFEABA00A540EC /* LivePostShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LivePostShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		1A67CE4F2EE14F8100D21851 /* Exceptions for "MemoryActivityWidget" folder in "IslandMemo" target */ = {
+		1A67CE4F2EE14F8100D21851 /* Exceptions for "MemoryActivityWidget" folder in "LivePost" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				MemoryActivityWidget.swift,
 				MemoryActivityWidgetControl.swift,
 			);
-			target = 1AD095C72ED6BF9D00A540EC /* IslandMemo */;
+			target = 1AD095C72ED6BF9D00A540EC /* LivePost */;
 		};
 		1AD095F52ED6C1E800A540EC /* Exceptions for "MemoryActivityWidget" folder in "MemoryActivityWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -70,7 +70,7 @@
 			);
 			target = 1AD095DF2ED6C1E700A540EC /* MemoryActivityWidgetExtension */;
 		};
-		1AD095FB2ED6C1F700A540EC /* Exceptions for "IslandMemo" folder in "MemoryActivityWidgetExtension" target */ = {
+		1AD095FB2ED6C1F700A540EC /* Exceptions for "LivePost" folder in "MemoryActivityWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				LiveActivityManager.swift,
@@ -79,21 +79,21 @@
 			);
 			target = 1AD095DF2ED6C1E700A540EC /* MemoryActivityWidgetExtension */;
 		};
-		1AD096002ED6C36C00A540EC /* Exceptions for "IslandMemo" folder in "IslandMemo" target */ = {
+		1AD096002ED6C36C00A540EC /* Exceptions for "LivePost" folder in "LivePost" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 1AD095C72ED6BF9D00A540EC /* IslandMemo */;
+			target = 1AD095C72ED6BF9D00A540EC /* LivePost */;
 		};
-		1AD096542EDFEABA00A540EC /* Exceptions for "IslandMemoShareExtension" folder in "IslandMemoShareExtension" target */ = {
+		1AD096542EDFEABA00A540EC /* Exceptions for "LivePostShareExtension" folder in "LivePostShareExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */;
+			target = 1AD096452EDFEABA00A540EC /* LivePostShareExtension */;
 		};
-		1AD096582EDFFDD400A540EC /* Exceptions for "IslandMemo" folder in "IslandMemoShareExtension" target */ = {
+		1AD096582EDFFDD400A540EC /* Exceptions for "LivePost" folder in "LivePostShareExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Models/Category.swift,
@@ -101,36 +101,36 @@
 				Services/LinkMetadataService.swift,
 				Services/SharedModelContainer.swift,
 			);
-			target = 1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */;
+			target = 1AD096452EDFEABA00A540EC /* LivePostShareExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		1AD095CA2ED6BF9D00A540EC /* IslandMemo */ = {
+		1AD095CA2ED6BF9D00A540EC /* LivePost */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				1AD096002ED6C36C00A540EC /* Exceptions for "IslandMemo" folder in "IslandMemo" target */,
-				1AD095FB2ED6C1F700A540EC /* Exceptions for "IslandMemo" folder in "MemoryActivityWidgetExtension" target */,
-				1AD096582EDFFDD400A540EC /* Exceptions for "IslandMemo" folder in "IslandMemoShareExtension" target */,
+				1AD096002ED6C36C00A540EC /* Exceptions for "LivePost" folder in "LivePost" target */,
+				1AD095FB2ED6C1F700A540EC /* Exceptions for "LivePost" folder in "MemoryActivityWidgetExtension" target */,
+				1AD096582EDFFDD400A540EC /* Exceptions for "LivePost" folder in "LivePostShareExtension" target */,
 			);
-			path = IslandMemo;
+			path = LivePost;
 			sourceTree = "<group>";
 		};
 		1AD095E62ED6C1E700A540EC /* MemoryActivityWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				1A67CE4F2EE14F8100D21851 /* Exceptions for "MemoryActivityWidget" folder in "IslandMemo" target */,
+				1A67CE4F2EE14F8100D21851 /* Exceptions for "MemoryActivityWidget" folder in "LivePost" target */,
 				1AD095F52ED6C1E800A540EC /* Exceptions for "MemoryActivityWidget" folder in "MemoryActivityWidgetExtension" target */,
 			);
 			path = MemoryActivityWidget;
 			sourceTree = "<group>";
 		};
-		1AD096472EDFEABA00A540EC /* IslandMemoShareExtension */ = {
+		1AD096472EDFEABA00A540EC /* LivePostShareExtension */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				1AD096542EDFEABA00A540EC /* Exceptions for "IslandMemoShareExtension" folder in "IslandMemoShareExtension" target */,
+				1AD096542EDFEABA00A540EC /* Exceptions for "LivePostShareExtension" folder in "LivePostShareExtension" target */,
 			);
-			path = IslandMemoShareExtension;
+			path = LivePostShareExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -166,9 +166,9 @@
 			isa = PBXGroup;
 			children = (
 				1A67CFBE2EE3143700D21851 /* MemoryActivityWidgetExtension.entitlements */,
-				1AD095CA2ED6BF9D00A540EC /* IslandMemo */,
+				1AD095CA2ED6BF9D00A540EC /* LivePost */,
 				1AD095E62ED6C1E700A540EC /* MemoryActivityWidget */,
-				1AD096472EDFEABA00A540EC /* IslandMemoShareExtension */,
+				1AD096472EDFEABA00A540EC /* LivePostShareExtension */,
 				1AD095E12ED6C1E700A540EC /* Frameworks */,
 				1AD095C92ED6BF9D00A540EC /* Products */,
 			);
@@ -177,9 +177,9 @@
 		1AD095C92ED6BF9D00A540EC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1AD095C82ED6BF9D00A540EC /* IslandMemo.app */,
+				1AD095C82ED6BF9D00A540EC /* LivePost.app */,
 				1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */,
-				1AD096462EDFEABA00A540EC /* IslandMemoShareExtension.appex */,
+				1AD096462EDFEABA00A540EC /* LivePostShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -196,9 +196,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1AD095C72ED6BF9D00A540EC /* IslandMemo */ = {
+		1AD095C72ED6BF9D00A540EC /* LivePost */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1AD095D52ED6BF9E00A540EC /* Build configuration list for PBXNativeTarget "IslandMemo" */;
+			buildConfigurationList = 1AD095D52ED6BF9E00A540EC /* Build configuration list for PBXNativeTarget "LivePost" */;
 			buildPhases = (
 				1AD095C42ED6BF9D00A540EC /* Sources */,
 				1AD095C52ED6BF9D00A540EC /* Frameworks */,
@@ -212,13 +212,13 @@
 				1AD0964F2EDFEABA00A540EC /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				1AD095CA2ED6BF9D00A540EC /* IslandMemo */,
+				1AD095CA2ED6BF9D00A540EC /* LivePost */,
 			);
-			name = IslandMemo;
+			name = LivePost;
 			packageProductDependencies = (
 			);
 			productName = islandmemo;
-			productReference = 1AD095C82ED6BF9D00A540EC /* IslandMemo.app */;
+			productReference = 1AD095C82ED6BF9D00A540EC /* LivePost.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1AD095DF2ED6C1E700A540EC /* MemoryActivityWidgetExtension */ = {
@@ -243,9 +243,9 @@
 			productReference = 1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */ = {
+		1AD096452EDFEABA00A540EC /* LivePostShareExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1AD096512EDFEABA00A540EC /* Build configuration list for PBXNativeTarget "IslandMemoShareExtension" */;
+			buildConfigurationList = 1AD096512EDFEABA00A540EC /* Build configuration list for PBXNativeTarget "LivePostShareExtension" */;
 			buildPhases = (
 				1AD096422EDFEABA00A540EC /* Sources */,
 				1AD096432EDFEABA00A540EC /* Frameworks */,
@@ -256,13 +256,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				1AD096472EDFEABA00A540EC /* IslandMemoShareExtension */,
+				1AD096472EDFEABA00A540EC /* LivePostShareExtension */,
 			);
-			name = IslandMemoShareExtension;
+			name = LivePostShareExtension;
 			packageProductDependencies = (
 			);
 			productName = IslandMemoShareExtension;
-			productReference = 1AD096462EDFEABA00A540EC /* IslandMemoShareExtension.appex */;
+			productReference = 1AD096462EDFEABA00A540EC /* LivePostShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -286,7 +286,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 1AD095C32ED6BF9D00A540EC /* Build configuration list for PBXProject "IslandMemo" */;
+			buildConfigurationList = 1AD095C32ED6BF9D00A540EC /* Build configuration list for PBXProject "LivePost" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -300,9 +300,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1AD095C72ED6BF9D00A540EC /* IslandMemo */,
+				1AD095C72ED6BF9D00A540EC /* LivePost */,
 				1AD095DF2ED6C1E700A540EC /* MemoryActivityWidgetExtension */,
-				1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */,
+				1AD096452EDFEABA00A540EC /* LivePostShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -363,7 +363,7 @@
 		};
 		1AD0964F2EDFEABA00A540EC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1AD096452EDFEABA00A540EC /* IslandMemoShareExtension */;
+			target = 1AD096452EDFEABA00A540EC /* LivePostShareExtension */;
 			targetProxy = 1AD0964E2EDFEABA00A540EC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -495,13 +495,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = IslandMemo/IslandMemo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = LivePost/LivePost.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GZLLG9NWF4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = IslandMemo/Info.plist;
+				INFOPLIST_FILE = LivePost/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LivePost;
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -532,13 +532,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = IslandMemo/IslandMemo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = LivePost/LivePost.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GZLLG9NWF4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = IslandMemo/Info.plist;
+				INFOPLIST_FILE = LivePost/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LivePost;
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -633,12 +633,12 @@
 		1AD096522EDFEABA00A540EC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = IslandMemoShareExtension/IslandMemoShareExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = LivePostShareExtension/LivePostShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GZLLG9NWF4;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = IslandMemoShareExtension/Info.plist;
+				INFOPLIST_FILE = LivePostShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LivePostShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -662,12 +662,12 @@
 		1AD096532EDFEABA00A540EC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = IslandMemoShareExtension/IslandMemoShareExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = LivePostShareExtension/LivePostShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GZLLG9NWF4;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = IslandMemoShareExtension/Info.plist;
+				INFOPLIST_FILE = LivePostShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LivePostShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -691,7 +691,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1AD095C32ED6BF9D00A540EC /* Build configuration list for PBXProject "IslandMemo" */ = {
+		1AD095C32ED6BF9D00A540EC /* Build configuration list for PBXProject "LivePost" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1AD095D32ED6BF9E00A540EC /* Debug */,
@@ -700,7 +700,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1AD095D52ED6BF9E00A540EC /* Build configuration list for PBXNativeTarget "IslandMemo" */ = {
+		1AD095D52ED6BF9E00A540EC /* Build configuration list for PBXNativeTarget "LivePost" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1AD095D62ED6BF9E00A540EC /* Debug */,
@@ -718,7 +718,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1AD096512EDFEABA00A540EC /* Build configuration list for PBXNativeTarget "IslandMemoShareExtension" */ = {
+		1AD096512EDFEABA00A540EC /* Build configuration list for PBXNativeTarget "LivePostShareExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1AD096522EDFEABA00A540EC /* Debug */,
