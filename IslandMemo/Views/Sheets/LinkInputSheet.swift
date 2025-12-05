@@ -1,7 +1,4 @@
-//
-//  LinkInputSheet.swift
-//  IslandMemo
-//
+
 
 import SwiftUI
 import SwiftData

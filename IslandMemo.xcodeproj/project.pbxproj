@@ -46,6 +46,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1A67CFBE2EE3143700D21851 /* MemoryActivityWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MemoryActivityWidgetExtension.entitlements; sourceTree = "<group>"; };
 		1AD095C82ED6BF9D00A540EC /* IslandMemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IslandMemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MemoryActivityWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AD095E22ED6C1E700A540EC /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -164,6 +165,7 @@
 		1AD095BF2ED6BF9D00A540EC = {
 			isa = PBXGroup;
 			children = (
+				1A67CFBE2EE3143700D21851 /* MemoryActivityWidgetExtension.entitlements */,
 				1AD095CA2ED6BF9D00A540EC /* IslandMemo */,
 				1AD095E62ED6C1E700A540EC /* MemoryActivityWidget */,
 				1AD096472EDFEABA00A540EC /* IslandMemoShareExtension */,
@@ -500,6 +502,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IslandMemo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = LivePost;
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -512,7 +515,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.islandmemo;
+				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.livepost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -536,6 +539,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IslandMemo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = LivePost;
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -548,7 +552,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.islandmemo;
+				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.livepost;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -565,6 +569,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MemoryActivityWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GZLLG9NWF4;
@@ -580,7 +585,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.islandmemo.MemoryActivityWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.livepost.MemoryActivityWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -597,6 +602,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MemoryActivityWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GZLLG9NWF4;
@@ -612,7 +618,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.islandmemo.MemoryActivityWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.livepost.MemoryActivityWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -633,7 +639,7 @@
 				DEVELOPMENT_TEAM = GZLLG9NWF4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IslandMemoShareExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = IslandMemoShareExtension;
+				INFOPLIST_KEY_CFBundleDisplayName = LivePostShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -641,7 +647,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.islandmemo.IslandMemoShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.livepost.LivePostShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -662,7 +668,7 @@
 				DEVELOPMENT_TEAM = GZLLG9NWF4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IslandMemoShareExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = IslandMemoShareExtension;
+				INFOPLIST_KEY_CFBundleDisplayName = LivePostShareExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -670,7 +676,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.islandmemo.IslandMemoShareExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.livepost.LivePostShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;

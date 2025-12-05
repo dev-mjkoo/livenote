@@ -1,7 +1,4 @@
-//
-//  ToastView.swift
-//  IslandMemo
-//
+
 
 import SwiftUI
 

@@ -1,9 +1,3 @@
-//
-//  SharedModelContainer.swift
-//  IslandMemo
-//
-//  Created by Claude on 12/03/25.
-//
 
 import SwiftData
 import Foundation
@@ -22,7 +16,7 @@ actor SharedModelContainer {
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
-            groupContainer: .identifier("group.com.islandmemo.shared"), // ⚠️ 여기 실제 App Group ID로 변경!
+            groupContainer: .identifier("group.com.livepost.shared"),
             cloudKitDatabase: .automatic
         )
 

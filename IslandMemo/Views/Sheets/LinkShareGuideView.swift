@@ -1,7 +1,4 @@
-//
-//  LinkShareGuideView.swift
-//  IslandMemo
-//
+
 
 import SwiftUI
 
@@ -48,8 +45,8 @@ struct LinkShareGuideView: View {
 
                         guideStep(
                             number: "3",
-                            title: "Island Memo 선택",
-                            description: "앱 목록에서 Island Memo를 찾아서 탭",
+                            title: "LivePost 선택",
+                            description: "앱 목록에서 LivePost를 찾아서 탭",
                             icon: "app.badge.checkmark",
                             iconColor: .green
                         )
@@ -146,7 +143,7 @@ struct LinkShareGuideView: View {
                     .foregroundStyle(.primary)
             }
 
-            Text("공유 목록에 Island Memo가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요")
+            Text("공유 목록에 LivePost가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요")
                 .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundStyle(.primary)
                 .lineSpacing(4)
@@ -208,8 +205,8 @@ struct LinkShareGuideContentView: View {
 
                     guideStep(
                         number: "3",
-                        title: "Island Memo 선택",
-                        description: "앱 목록에서 Island Memo를 찾아서 탭",
+                        title: "LivePost 선택",
+                        description: "앱 목록에서 LivePost를 찾아서 탭",
                         icon: "app.badge.checkmark",
                         iconColor: .green
                     )
@@ -292,7 +289,7 @@ struct LinkShareGuideContentView: View {
                     .foregroundStyle(.primary)
             }
 
-            Text("공유 목록에 Island Memo가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요")
+            Text("공유 목록에 LivePost가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요")
                 .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundStyle(.primary)
                 .lineSpacing(4)

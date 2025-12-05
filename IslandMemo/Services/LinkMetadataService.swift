@@ -1,9 +1,4 @@
-//
-//  LinkMetadataService.swift
-//  islandmemo
-//
-//  Created by Claude on 12/03/25.
-//
+
 
 import Foundation
 import LinkPresentation

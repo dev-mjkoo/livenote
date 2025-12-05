@@ -1,7 +1,4 @@
-//
-//  ColorPalette.swift
-//  IslandMemo
-//
+
 
 import SwiftUI
 

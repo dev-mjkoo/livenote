@@ -1,9 +1,4 @@
-//
-//  Item.swift
-//  islandmemo
-//
-//  Created by 구민준 on 11/26/25.
-//
+
 
 import Foundation
 import SwiftData

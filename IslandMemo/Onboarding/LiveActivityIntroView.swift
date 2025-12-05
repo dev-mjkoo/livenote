@@ -1,7 +1,3 @@
-//
-//  LiveActivityIntroView.swift
-//  IslandMemo
-//
 
 import SwiftUI
 

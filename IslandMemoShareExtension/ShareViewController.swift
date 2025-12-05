@@ -1,9 +1,4 @@
-//
-//  ShareViewController.swift
-//  IslandMemoShareExtension
-//
-//  Created by 구민준 on 12/3/25.
-//
+
 
 import UIKit
 import SwiftUI

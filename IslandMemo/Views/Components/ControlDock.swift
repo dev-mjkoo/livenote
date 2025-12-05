@@ -1,7 +1,4 @@
-//
-//  ControlDock.swift
-//  IslandMemo
-//
+
 
 import SwiftUI
 

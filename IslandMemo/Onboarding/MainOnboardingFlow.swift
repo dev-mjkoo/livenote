@@ -1,7 +1,3 @@
-//
-//  MainOnboardingFlow.swift
-//  IslandMemo
-//
 
 import SwiftUI
 

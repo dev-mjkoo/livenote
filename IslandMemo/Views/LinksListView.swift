@@ -1,9 +1,4 @@
-//
-//  LinksListView.swift
-//  islandmemo
-//
-//  Created by Claude on 12/01/25.
-//
+
 
 import SwiftUI
 import SwiftData

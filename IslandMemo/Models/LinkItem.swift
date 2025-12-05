@@ -1,9 +1,3 @@
-//
-//  LinkItem.swift
-//  islandmemo
-//
-//  Created by Claude on 12/01/25.
-//
 
 import Foundation
 import SwiftData

@@ -1,9 +1,4 @@
-//
-//  ShareExtensionView.swift
-//  IslandMemoShareExtension
-//
-//  Created by Claude on 12/03/25.
-//
+
 
 import SwiftUI
 import SwiftData

@@ -1,8 +1,3 @@
-//
-//  ContentView+Helpers.swift
-//  IslandMemo
-//
-
 import SwiftUI
 import ActivityKit
 import SwiftData

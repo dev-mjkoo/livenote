@@ -1,7 +1,4 @@
-//
-//  ShortcutGuideView.swift
-//  IslandMemo
-//
+
 
 import SwiftUI
 
@@ -150,7 +147,7 @@ struct GuidePage {
         GuidePage(
             icon: "text",
             title: "3단계: 동작 추가",
-            description: "1. 검색창에 '\(Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Island Memo")' 입력\n2. '잠금화면 표시 시간 연장' 선택",
+            description: "1. 검색창에 '\(Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "LivePost")' 입력\n2. '잠금화면 표시 시간 연장' 선택",
             step: nil
         ),
         GuidePage(
@@ -386,7 +383,7 @@ struct GuidePageView: View {
         var attributed = AttributedString(text)
 
         // GuidePage.allPages에서 사용하는 것과 정확히 동일한 방식으로 앱 이름 가져오기
-        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Island Memo"
+        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "LivePost"
         let quotedAppName = "'\(appName)'"
 
         // 앱 이름 먼저 강조
@@ -674,7 +671,7 @@ struct GuidePageView: View {
             HStack(spacing: 10) {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 18, weight: .semibold))
-                Text("Island Memo")
+                Text("LivePost")
                     .font(.system(size: 17, weight: .semibold))
             }
             .foregroundColor(.white)
