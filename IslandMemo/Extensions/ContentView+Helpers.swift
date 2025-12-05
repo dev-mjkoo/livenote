@@ -141,6 +141,13 @@ extension ContentView {
             Task {
                 await fetchAndUpdateMetadata(for: linkItem)
             }
+
+            // 링크 최초 저장 시 온보딩 체크
+            if !hasSeenLinkGuide {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    isShowingLinkOnboarding = true
+                }
+            }
         } catch {
             print("❌ 저장 실패: \(error)")
         }
@@ -214,6 +221,39 @@ extension ContentView {
                 print("✅ 카테고리 없는 링크 \(migratedCount)개를 '기타' 카테고리로 마이그레이션 완료")
             } catch {
                 print("❌ 링크 마이그레이션 실패: \(error)")
+            }
+        }
+    }
+
+    // MARK: - Share Extension Link Check
+
+    func checkForShareExtensionLinks() {
+        // needsMetadataFetch가 true인 링크 찾기 (Share Extension으로 저장된 링크)
+        let shareExtensionLinks = savedLinks.filter { $0.needsMetadataFetch }
+
+        guard !shareExtensionLinks.isEmpty else { return }
+
+        // 링크 온보딩 최초 1회만 표시
+        if !hasSeenLinkGuide {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                isShowingLinkOnboarding = true
+            }
+        }
+
+        // 백그라운드에서 메타데이터 가져오기
+        for link in shareExtensionLinks {
+            Task {
+                await fetchAndUpdateMetadata(for: link)
+
+                // 메타데이터 가져온 후 플래그 업데이트
+                await MainActor.run {
+                    link.needsMetadataFetch = false
+                    do {
+                        try modelContext.save()
+                    } catch {
+                        print("❌ needsMetadataFetch 플래그 업데이트 실패: \(error)")
+                    }
+                }
             }
         }
     }

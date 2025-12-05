@@ -13,44 +13,7 @@ struct ShortcutGuideView: View {
     @State private var currentPage = 0
     var onDismiss: (() -> Void)? = nil
 
-    private let pages = [
-        GuidePage(
-            icon: "liveactivity",
-            title: "잠금화면 메모",
-            description: "잠금화면에 표시되는 메모/달력은\n시스템 상 8시간 뒤에 자동으로 꺼집니다",
-            step: "이를 방지하기 위해 단축어 자동화 설정을 추가하면\n24시간 내내 항상 보이게 할 수 있어요"
-        ),
-        GuidePage(
-            icon: "text",
-            title: "1단계: 자동화 만들기",
-            description: "1. '단축어' 앱 실행\n2. 하단 '자동화' 탭 선택\n3. 우측 상단 '+' 버튼 클릭\n4. '개인용 자동화 생성' 선택\n5. '특정 시간' 클릭",
-            step: nil
-        ),
-        GuidePage(
-            icon: "image_step2",
-            title: "2단계: 시간 설정",
-            description: "1. 시간: 00:00 설정\n2. 반복: 매일\n3. '즉시 실행' 선택\n4. '다음' 버튼 클릭",
-            step: nil
-        ),
-        GuidePage(
-            icon: "text",
-            title: "3단계: 동작 추가",
-            description: "1. 검색창에 '\(Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Island Memo")' 입력\n2. '잠금화면 표시 시간 연장' 선택",
-            step: nil
-        ),
-        GuidePage(
-            icon: "step4",
-            title: "4단계: 나머지 2개 추가",
-            description: "같은 방법으로 08:00, 16:00 자동화 생성",
-            step: "총 3개 자동화가 만들어지면\n24시간 자동 연장 설정 완료!"
-        ),
-        GuidePage(
-            icon: "checkmark.circle.fill",
-            title: "설정 완료!",
-            description: "이제 메모가 24시간 내내 유지됩니다",
-            step: "00시, 08시, 16시마다\n자동으로 잠금화면 표시가 연장돼요"
-        )
-    ]
+    private let pages = GuidePage.allPages
 
     var body: some View {
         NavigationView {
@@ -75,21 +38,12 @@ struct ShortcutGuideView: View {
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))
 
-                    // 하단 UI: 건너뛰기 → Page Dots → 다음 버튼
+                    // 하단 UI: Page Dots → 다음 버튼
                     VStack(spacing: 16) {
-                        // 건너뛰기 (마지막 페이지 아닐 때만)
-                        if currentPage != pages.count - 1 {
-                            Button {
-                                HapticManager.light()
-                                onDismiss?()
-                                dismiss()
-                            } label: {
-                                Text("건너뛰기")
-                                    .font(.system(size: 14, weight: .medium, design: .rounded))
-                                    .foregroundStyle(.secondary)
-                            }
-                            .buttonStyle(.plain)
-                        }
+                        // 건너뛰기 제거 (빈 공간으로 대체)
+                        Text("")
+                            .font(.system(size: 14))
+                            .opacity(0)
 
                         // Page Dots
                         HStack(spacing: 8) {
@@ -172,6 +126,46 @@ struct GuidePage {
     let title: String
     let description: String
     let step: String?
+
+    // 공유 pages 배열
+    static let allPages: [GuidePage] = [
+        GuidePage(
+            icon: "liveactivity",
+            title: "잠금화면 메모",
+            description: "잠금화면에 표시되는 메모/달력은\n시스템 상 8시간 뒤에 자동으로 꺼집니다",
+            step: "이를 방지하기 위해 단축어 자동화 설정을 추가하면\n24시간 내내 항상 보이게 할 수 있어요"
+        ),
+        GuidePage(
+            icon: "text",
+            title: "1단계: 자동화 만들기",
+            description: "1. '단축어' 앱 실행\n2. 하단 '자동화' 탭 선택\n3. 우측 상단 '+' 버튼 클릭\n4. '특정 시간' 클릭",
+            step: nil
+        ),
+        GuidePage(
+            icon: "image_step2",
+            title: "2단계: 시간 설정",
+            description: "1. 시간: 00:00 설정\n2. 반복: 매일\n3. '즉시 실행' 선택\n4. '다음' 버튼 클릭",
+            step: nil
+        ),
+        GuidePage(
+            icon: "text",
+            title: "3단계: 동작 추가",
+            description: "1. 검색창에 '\(Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Island Memo")' 입력\n2. '잠금화면 표시 시간 연장' 선택",
+            step: nil
+        ),
+        GuidePage(
+            icon: "step4",
+            title: "4단계: 나머지 2개 추가",
+            description: "같은 방법으로 08:00, 16:00 자동화 생성",
+            step: "총 3개 자동화가 만들어지면\n24시간 자동 연장 설정 완료!"
+        ),
+        GuidePage(
+            icon: "checkmark.circle.fill",
+            title: "설정 완료!",
+            description: "이제 메모가 24시간 내내 유지됩니다",
+            step: "00시, 08시, 16시마다\n자동으로 잠금화면 표시가 연장돼요"
+        )
+    ]
 }
 
 struct GuidePageView: View {
@@ -200,7 +194,7 @@ struct GuidePageView: View {
 
                 // 설명 (AttributedString으로 강조 처리)
                 descriptionView
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, currentStep > 0 ? 24 : 40)
                     .padding(.bottom, 24)
 
                 // 추가 단계 (step이 있으면 먼저 표시)
@@ -245,53 +239,174 @@ struct GuidePageView: View {
         }
     }
 
-    // Step Indicator (1→2→3→4 단계 표시)
+    // Step Indicator (1→2→3→4 단계 표시 - 사각형 스타일)
     @ViewBuilder
     private var stepIndicatorView: some View {
-        GeometryReader { geometry in
-            let totalWidth = geometry.size.width
-            let circleWidth: CGFloat = 32
-            let totalCircles: CGFloat = 4
-            let totalGaps: CGFloat = 3 // 원 사이 간격 3개
-
-            // 사용 가능한 너비 = 전체 너비 - 모든 원의 너비
-            let availableWidth = totalWidth - (circleWidth * totalCircles)
-            // 각 연결선의 너비 = 사용 가능한 너비 / 간격 개수
-            let lineWidth = availableWidth / totalGaps
-
-            HStack(spacing: 0) {
-                ForEach(1...4, id: \.self) { step in
-                    // 원형 숫자
-                    ZStack {
-                        Circle()
-                            .fill(step <= currentStep ? Color.accentColor : Color.secondary.opacity(0.2))
-                            .frame(width: circleWidth, height: circleWidth)
-
-                        Text("\(step)")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundColor(step <= currentStep ? .white : .secondary.opacity(0.5))
-                    }
-
-                    // 연결선 (마지막 아이템 제외)
-                    if step < 4 {
-                        Rectangle()
-                            .fill(step < currentStep ? Color.accentColor : Color.secondary.opacity(0.2))
-                            .frame(width: lineWidth, height: 2)
-                    }
-                }
+        HStack(spacing: 8) {
+            ForEach(1...4, id: \.self) { step in
+                // 사각형 바
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(step <= currentStep ? Color.accentColor : Color.secondary.opacity(0.2))
+                    .frame(height: 8)
             }
         }
-        .frame(height: 32)
         .padding(.horizontal, 40)
     }
 
     // 설명 텍스트 (강조 포함)
     @ViewBuilder
     private var descriptionView: some View {
-        Text(highlightedDescription())
-            .font(.system(size: 16, weight: .regular, design: .rounded))
-            .multilineTextAlignment(.center)
-            .lineSpacing(6)
+        // 1,2,3,4단계는 카드 스타일로
+        if currentStep > 0 {
+            VStack(spacing: 12) {
+                // 2단계(시간 설정)는 특별 처리: 1-3번을 하나의 카드로, 4번을 별도 카드로
+                if page.title.contains("2단계") {
+                    let steps = page.description.split(separator: "\n")
+
+                    // 첫 번째 카드: 1-3번 합침
+                    multiStepCard(number: 1, texts: Array(steps.prefix(3)))
+
+                    // 두 번째 카드: 4번
+                    if steps.count > 3 {
+                        stepCard(number: 2, text: String(steps[3]))
+                    }
+                } else {
+                    // 다른 단계는 기본 처리
+                    let steps = page.description.split(separator: "\n")
+                    ForEach(Array(steps.enumerated()), id: \.offset) { index, stepText in
+                        stepCard(number: index + 1, text: String(stepText))
+                    }
+                }
+            }
+        } else {
+            // 첫 페이지는 기존 스타일 유지
+            Text(highlightedDescription())
+                .font(.system(size: 16, weight: .regular, design: .rounded))
+                .multilineTextAlignment(.center)
+                .lineSpacing(6)
+        }
+    }
+
+    // 여러 단계를 하나의 카드로 (2단계 전용)
+    @ViewBuilder
+    private func multiStepCard(number: Int, texts: [Substring]) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            // 번호
+            ZStack {
+                Circle()
+                    .fill(Color.accentColor.opacity(0.15))
+                    .frame(width: 36, height: 36)
+
+                Text("\(number)")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.accentColor)
+            }
+
+            // 여러 줄 텍스트 (구분선 포함)
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(texts.enumerated()), id: \.offset) { index, text in
+                    Text(highlightKeywords(removeNumberPrefix(String(text))))
+                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .lineSpacing(2)
+                        .padding(.vertical, 6)
+
+                    // 마지막 아이템 제외하고 구분선
+                    if index < texts.count - 1 {
+                        Divider()
+                            .background(Color.secondary.opacity(0.2))
+                    }
+                }
+            }
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.03))
+        )
+    }
+
+    // 단계별 카드 (링크 온보딩 스타일)
+    @ViewBuilder
+    private func stepCard(number: Int, text: String) -> some View {
+        HStack(spacing: 12) {
+            // 번호
+            ZStack {
+                Circle()
+                    .fill(Color.accentColor.opacity(0.15))
+                    .frame(width: 36, height: 36)
+
+                Text("\(number)")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.accentColor)
+            }
+
+            // 텍스트 (번호 제거, 키워드 강조)
+            Text(highlightKeywords(removeNumberPrefix(text)))
+                .font(.system(size: 14, weight: .regular, design: .rounded))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineSpacing(2)
+
+            // 1단계 첫 번째 카드에만 단축어 앱 바로가기 화살표
+            if page.title.contains("1단계") && number == 1 {
+                Button {
+                    HapticManager.light()
+                    if let url = URL(string: "shortcuts://") {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    Image(systemName: "arrow.right.circle.fill")
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundStyle(Color.accentColor)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.03))
+        )
+    }
+
+    // "1. " 또는 "2. " 같은 번호 prefix 제거
+    private func removeNumberPrefix(_ text: String) -> String {
+        // "1. " 형식 제거
+        if let range = text.range(of: "^[0-9]+\\.\\s*", options: .regularExpression) {
+            return String(text[range.upperBound...])
+        }
+        return text
+    }
+
+    // 키워드 강조
+    private func highlightKeywords(_ text: String) -> AttributedString {
+        var attributed = AttributedString(text)
+
+        // GuidePage.allPages에서 사용하는 것과 정확히 동일한 방식으로 앱 이름 가져오기
+        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Island Memo"
+        let quotedAppName = "'\(appName)'"
+
+        // 앱 이름 먼저 강조
+        if let range = attributed.range(of: quotedAppName) {
+            attributed[range].foregroundColor = .accentColor
+            attributed[range].font = .system(size: 14, weight: .semibold, design: .rounded)
+        }
+
+        let keywords = [
+            "'단축어'", "'자동화'", "'+'", "'특정 시간'",
+            "00:00", "매일", "'즉시 실행'", "'다음'",
+            "'잠금화면 표시 시간 연장'",
+            "08:00", "16:00", "3개"
+        ]
+
+        for keyword in keywords {
+            if let range = attributed.range(of: keyword) {
+                attributed[range].foregroundColor = .accentColor
+                attributed[range].font = .system(size: 14, weight: .semibold, design: .rounded)
+            }
+        }
+
+        return attributed
     }
 
     // 강조해야 할 부분들을 AttributedString으로 처리
@@ -301,7 +416,7 @@ struct GuidePageView: View {
         // 강조할 키워드들
         let highlights = [
             "'단축어'", "'자동화'", "'+'",
-            "'개인용 자동화 생성'", "'특정 시간'",
+            "'특정 시간'",
             "00:00", "매일", "'즉시 실행'", "'다음'",
             "'잠금화면 표시 시간 연장'",
             "08:00", "16:00", "3개"
@@ -380,155 +495,71 @@ struct GuidePageView: View {
     // MARK: - Demo Views
 
     private var timeSettingUIDemo: some View {
-        VStack(spacing: 20) {
-            // 특정 시간 섹션
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    Text(NSLocalizedString("특정 시간", comment: ""))
-                        .font(.system(size: 17, weight: .regular))
-                        .foregroundColor(.primary)
-                    Spacer()
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.accentColor)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(Color(uiColor: .secondarySystemGroupedBackground))
-
-                // 시간 피커 모형
-                VStack(spacing: 8) {
-                    // 00:00 선택된 시간
-                    HStack(spacing: 8) {
-                        Text("00")
-                            .font(.system(size: 36, weight: .regular))
-                            .foregroundColor(.primary)
-                        Text(":")
-                            .font(.system(size: 36, weight: .regular))
-                            .foregroundColor(.primary)
-                        Text("00")
-                            .font(.system(size: 36, weight: .regular))
-                            .foregroundColor(.primary)
-                    }
-                    .padding(.vertical, 12)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color(uiColor: .secondarySystemGroupedBackground).opacity(0.5))
-                    )
-                }
-                .padding(.horizontal, 40)
-                .padding(.vertical, 16)
-                .background(Color(uiColor: .secondarySystemGroupedBackground))
-            }
-            .cornerRadius(10)
-
-            // 반복 섹션
-            VStack(alignment: .leading, spacing: 0) {
-                Text(NSLocalizedString("반복", comment: ""))
-                    .font(.system(size: 13, weight: .regular))
+        VStack(spacing: 16) {
+            // 시간 선택 카드
+            VStack(spacing: 12) {
+                Text("시간")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundColor(.secondary)
-                    .textCase(.uppercase)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
-                    .padding(.bottom, 6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-                VStack(spacing: 0) {
-                    // 매일
-                    HStack {
-                        Text(NSLocalizedString("매일", comment: ""))
-                            .font(.system(size: 17, weight: .regular))
-                            .foregroundColor(.primary)
-                        Spacer()
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(.accentColor)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-
-                    Divider()
-                        .padding(.leading, 16)
-
-                    // 매주
-                    HStack {
-                        Text(NSLocalizedString("매주", comment: ""))
-                            .font(.system(size: 17, weight: .regular))
-                            .foregroundColor(.primary)
-                        Spacer()
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-
-                    Divider()
-                        .padding(.leading, 16)
-
-                    // 매월
-                    HStack {
-                        Text(NSLocalizedString("매월", comment: ""))
-                            .font(.system(size: 17, weight: .regular))
-                            .foregroundColor(.primary)
-                        Spacer()
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-                }
-                .cornerRadius(10)
-            }
-
-            // 확인 후 실행 / 즉시 실행 섹션
-            VStack(spacing: 0) {
-                // 확인 후 실행
-                HStack {
-                    Text(NSLocalizedString("확인 후 실행", comment: ""))
-                        .font(.system(size: 17, weight: .regular))
-                        .foregroundColor(.primary)
-                    Spacer()
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(Color(uiColor: .secondarySystemGroupedBackground))
-
-                Divider()
-                    .padding(.leading, 16)
-
-                // 즉시 실행 (선택됨)
-                HStack {
-                    Text(NSLocalizedString("즉시 실행", comment: ""))
-                        .font(.system(size: 17, weight: .regular))
-                        .foregroundColor(.primary)
-                    Spacer()
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 17, weight: .semibold))
+                HStack(spacing: 0) {
+                    Text("00")
+                        .font(.system(size: 48, weight: .bold, design: .rounded))
                         .foregroundColor(.accentColor)
-                        .scaleEffect(animateIcon ? 1.15 : 1.0)
+                    Text(":")
+                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                        .foregroundColor(.accentColor.opacity(0.5))
+                    Text("00")
+                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                        .foregroundColor(.accentColor)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                .frame(maxWidth: .infinity)
+            }
+            .padding(20)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Color.accentColor.opacity(0.08))
+            )
+
+            // 반복 + 즉시 실행 카드
+            VStack(spacing: 0) {
+                // 반복: 매일
+                HStack {
+                    Text("반복")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("매일")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundColor(.accentColor)
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.accentColor)
+                }
+                .padding(16)
 
                 Divider()
-                    .padding(.leading, 16)
 
-                // 실행되면 알리기 (토글)
+                // 즉시 실행
                 HStack {
-                    Text(NSLocalizedString("실행되면 알리기", comment: ""))
-                        .font(.system(size: 17, weight: .regular))
-                        .foregroundColor(.primary)
+                    Text("즉시 실행")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundColor(.secondary)
                     Spacer()
-                    Toggle("", isOn: .constant(false))
-                        .labelsHidden()
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.accentColor)
+                        .scaleEffect(animateIcon ? 1.2 : 1.0)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                .padding(16)
             }
-            .cornerRadius(10)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.03))
+            )
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 32)
         .frame(maxWidth: 350)
     }
 
@@ -756,5 +787,16 @@ struct GuidePageView: View {
             return UIImage(named: lastIcon)
         }
         return nil
+    }
+}
+
+// MARK: - Embeddable Version for MainOnboardingFlow
+
+struct ShortcutGuidePageWrapper: View {
+    let pageIndex: Int
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        GuidePageView(page: GuidePage.allPages[pageIndex])
     }
 }

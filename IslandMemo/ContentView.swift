@@ -26,6 +26,12 @@ struct ContentView: View {
     @State var isShowingLinkInputSheet: Bool = false
     @State var isShowingShortcutGuide: Bool = false
     @State var hasSeenShortcutGuide: Bool = UserDefaults.standard.bool(forKey: "hasSeenShortcutGuide")
+    @State var hasSeenInitialOnboarding: Bool = UserDefaults.standard.bool(forKey: "hasSeenInitialOnboarding")
+    @State var hasSeenMemoGuide: Bool = UserDefaults.standard.bool(forKey: "hasSeenMemoGuide")
+    @State var hasSeenLinkGuide: Bool = UserDefaults.standard.bool(forKey: "hasSeenLinkGuide")
+    @State var isShowingInitialOnboarding: Bool = false
+    @State var isShowingMemoOnboarding: Bool = false
+    @State var isShowingLinkOnboarding: Bool = false
     @State var autoStartTask: Task<Void, Never>?
     @State var showToast: Bool = false
     @State var toastMessage: String = ""
@@ -44,6 +50,13 @@ struct ContentView: View {
                 .onAppear {
                     // 기본 카테고리 생성
                     initializeDefaultCategories()
+
+                    // 최초 온보딩 체크 (앱 처음 설치)
+                    if !hasSeenInitialOnboarding {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            isShowingInitialOnboarding = true
+                        }
+                    }
                 }
                 .task {
                     // Activity 복원 시도
@@ -59,6 +72,13 @@ struct ContentView: View {
                     } else {
                         // Activity가 없으면 기본 메시지로 바로 시작 (메모는 비워둠)
                         await activityManager.startActivity(with: defaultMessage)
+                    }
+                }
+                .onChange(of: scenePhase) { oldPhase, newPhase in
+                    // 앱이 foreground로 돌아올 때 체크
+                    if newPhase == .active {
+                        // Share Extension으로 저장된 링크가 있는지 체크
+                        checkForShareExtensionLinks()
                     }
                 }
 
@@ -105,6 +125,9 @@ struct ContentView: View {
             // 기존 자동 시작 태스크 취소
             autoStartTask?.cancel()
 
+            // 메모 최초 작성 체크 (비어있던 메모에 처음 입력)
+            let isFirstMemoInput = oldValue.isEmpty && !newValue.isEmpty
+
             if activityManager.isActivityRunning {
                 // 이미 실행 중이면 업데이트
                 if newValue.isEmpty {
@@ -113,9 +136,14 @@ struct ContentView: View {
                         await activityManager.updateActivity(with: defaultMessage)
                     }
                 } else {
-                    // 메모 내용으로 업데이트
-                    Task { @MainActor in
-                        await activityManager.updateActivity(with: newValue)
+                    // 메모 최초 입력 시 온보딩 체크
+                    if isFirstMemoInput && !hasSeenMemoGuide {
+                        isShowingMemoOnboarding = true
+                    } else {
+                        // 메모 내용으로 업데이트
+                        Task { @MainActor in
+                            await activityManager.updateActivity(with: newValue)
+                        }
                     }
                 }
             } else {
@@ -131,10 +159,13 @@ struct ContentView: View {
                         try? await Task.sleep(nanoseconds: 500_000_000) // 0.5초
 
                         if !Task.isCancelled && !newValue.isEmpty {
-                            // 첫 시작이고 온보딩을 안 봤으면 온보딩 먼저
-                            if !hasSeenShortcutGuide {
-                                isShowingShortcutGuide = true
+                            // 메모 최초 작성 시 온보딩 체크
+                            if !hasSeenMemoGuide {
+                                await MainActor.run {
+                                    isShowingMemoOnboarding = true
+                                }
                             } else {
+                                // 온보딩을 이미 봤으면 바로 Activity 시작
                                 await activityManager.startActivity(with: newValue)
                             }
                         }
@@ -248,6 +279,41 @@ struct ContentView: View {
             LinkShareGuideView()
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $isShowingInitialOnboarding) {
+            InitialOnboardingFlow {
+                // 완료 플래그 설정
+                hasSeenInitialOnboarding = true
+                UserDefaults.standard.set(true, forKey: "hasSeenInitialOnboarding")
+            }
+            .interactiveDismissDisabled(true)
+        }
+        .sheet(isPresented: $isShowingMemoOnboarding) {
+            MemoOnboardingFlow {
+                // 완료 플래그 설정
+                hasSeenMemoGuide = true
+                UserDefaults.standard.set(true, forKey: "hasSeenMemoGuide")
+
+                // 레거시 플래그도 설정 (호환성)
+                hasSeenShortcutGuide = true
+                UserDefaults.standard.set(true, forKey: "hasSeenShortcutGuide")
+
+                // 온보딩 완료 후 메모로 Activity 시작
+                if !memo.isEmpty && !activityManager.isActivityRunning {
+                    Task {
+                        await activityManager.startActivity(with: memo)
+                    }
+                }
+            }
+            .interactiveDismissDisabled(true)
+        }
+        .sheet(isPresented: $isShowingLinkOnboarding) {
+            LinkOnboardingFlow {
+                // 완료 플래그 설정
+                hasSeenLinkGuide = true
+                UserDefaults.standard.set(true, forKey: "hasSeenLinkGuide")
+            }
+            .interactiveDismissDisabled(true)
         }
     }
 }

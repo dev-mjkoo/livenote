@@ -10,21 +10,6 @@ import SwiftUI
 import WidgetKit
 import ActivityKit
 
-struct MemoryActivityWidgetControl: ControlWidget {
-    @available(iOS 18.0, *)
-    var body: some ControlWidgetConfiguration {
-        StaticControlConfiguration(
-            kind: "mjkoo.islandmemo.MemoryActivityWidget"
-        ) {
-            ControlWidgetButton(action: ExtendTimerIntent()) {
-                Label("시간 연장", systemImage: "clock.arrow.circlepath")
-            }
-        }
-        .displayName("잠금화면 표시 연장")
-        .description("Live Activity 8시간 타이머를 리셋합니다")
-    }
-}
-
 // MARK: - App Shortcuts Provider
 
 struct IslandMemoShortcuts: AppShortcutsProvider {
@@ -32,11 +17,11 @@ struct IslandMemoShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: ExtendTimerIntent(),
             phrases: [
-                "\(.applicationName) 잠금화면 표시 연장",
+                "\(.applicationName) 잠금화면 표시 시간 연장",
                 "\(.applicationName) 시간 연장",
                 "\(.applicationName) 타이머 리셋"
             ],
-            shortTitle: "잠금화면 표시 연장",
+            shortTitle: "잠금화면 표시 시간 연장",
             systemImageName: "clock.arrow.circlepath"
         )
     }
