@@ -27,7 +27,7 @@ struct ShortcutGuideView: View {
                     // TabView
                     TabView(selection: $currentPage) {
                         ForEach(0..<pages.count, id: \.self) { index in
-                            GuidePageView(page: pages[index])
+                            GuidePageView(page: pages[index], pageIndex: index)
                                 .tag(index)
                         }
                     }
@@ -170,6 +170,7 @@ struct GuidePage {
 
 struct GuidePageView: View {
     let page: GuidePage
+    let pageIndex: Int
     @Environment(\.colorScheme) private var colorScheme
     @State private var animateIcon = false
     @State private var typedMemo = ""
@@ -229,19 +230,10 @@ struct GuidePageView: View {
         .scrollIndicators(.hidden)
     }
 
-    // 현재 단계 계산
+    // 현재 단계 계산 (페이지 인덱스 기반)
     private var currentStep: Int {
-        if page.title.contains("1단계") {
-            return 1
-        } else if page.title.contains("2단계") {
-            return 2
-        } else if page.title.contains("3단계") {
-            return 3
-        } else if page.title.contains("4단계") {
-            return 4
-        } else {
-            return 0
-        }
+        // pageIndex: 0(intro), 1(step1), 2(step2), 3(step3), 4(step4), 5(complete)
+        return (pageIndex >= 1 && pageIndex <= 4) ? pageIndex : 0
     }
 
     // Step Indicator (1→2→3→4 단계 표시 - 사각형 스타일)
@@ -873,6 +865,6 @@ struct ShortcutGuidePageWrapper: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        GuidePageView(page: GuidePage.allPages[pageIndex])
+        GuidePageView(page: GuidePage.allPages[pageIndex], pageIndex: pageIndex)
     }
 }
