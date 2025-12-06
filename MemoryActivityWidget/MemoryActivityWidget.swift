@@ -42,7 +42,7 @@ struct CalendarGridView: View {
         VStack(spacing: 4) {
             // 요일 헤더
             HStack(spacing: 0) {
-                ForEach(getWeekdayHeaders(), id: \.self) { day in
+                ForEach(Array(getWeekdayHeaders().enumerated()), id: \.offset) { index, day in
                     Text(day)
                         .font(.system(size: 9, weight: .medium))
                         .frame(width: 18)

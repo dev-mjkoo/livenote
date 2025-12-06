@@ -379,22 +379,51 @@ struct GuidePageView: View {
     private func highlightKeywords(_ text: String) -> AttributedString {
         var attributed = AttributedString(text)
 
+        let lm = LocalizationManager.shared
+        let lang = lm.currentLanguageCode
+
         // GuidePage.allPages에서 사용하는 것과 정확히 동일한 방식으로 앱 이름 가져오기
         let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "LivePost"
-        let quotedAppName = "'\(appName)'"
 
-        // 앱 이름 먼저 강조
-        if let range = attributed.range(of: quotedAppName) {
-            attributed[range].foregroundColor = .accentColor
-            attributed[range].font = .system(size: 14, weight: .semibold, design: .rounded)
+        // 언어별 키워드 정의
+        var keywords: [String] = []
+
+        switch lang {
+        case "ko":
+            keywords = [
+                "'단축어'", "'자동화'", "'+'", "'특정 시간'",
+                "00:00", "매일", "'즉시 실행'", "'다음'",
+                "'잠금화면 표시 시간 연장'",
+                "08:00", "16:00", "3개",
+                "'\(appName)'"
+            ]
+        case "en":
+            keywords = [
+                "'Shortcuts'", "'Automation'", "'+'", "'Time of Day'",
+                "00:00", "Daily", "'Run Immediately'", "'Next'",
+                "'Extend Lock Screen Display'",
+                "08:00", "16:00",
+                "'\(appName)'"
+            ]
+        case "ja":
+            keywords = [
+                "「ショートカット」", "「オートメーション」", "'+'", "「特定の時刻」",
+                "00:00", "毎日", "「即座に実行」", "「次へ」",
+                "「ロック画面表示時間延長」",
+                "08:00", "16:00", "3個",
+                "「\(appName)」"
+            ]
+        case "zh":
+            keywords = [
+                "\"快捷指令\"", "\"自动化\"", "'+'", "\"特定时间\"",
+                "00:00", "每天", "\"立即运行\"", "\"下一步\"",
+                "\"延长锁屏显示时间\"",
+                "08:00", "16:00", "3个",
+                "\"\(appName)\""
+            ]
+        default:
+            keywords = []
         }
-
-        let keywords = [
-            "'단축어'", "'자동화'", "'+'", "'특정 시간'",
-            "00:00", "매일", "'즉시 실행'", "'다음'",
-            "'잠금화면 표시 시간 연장'",
-            "08:00", "16:00", "3개"
-        ]
 
         for keyword in keywords {
             if let range = attributed.range(of: keyword) {
