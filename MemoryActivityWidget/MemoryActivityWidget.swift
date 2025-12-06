@@ -7,6 +7,20 @@ import ActivityKit
 struct CalendarGridView: View {
     @Environment(\.colorScheme) var colorScheme
 
+    private func getWeekdayHeaders() -> [String] {
+        let preferred = Locale.preferredLanguages.first ?? "en"
+
+        if preferred.hasPrefix("ko") {
+            return ["일", "월", "화", "수", "목", "금", "토"]
+        } else if preferred.hasPrefix("ja") {
+            return ["日", "月", "火", "水", "木", "金", "土"]
+        } else if preferred.hasPrefix("zh") {
+            return ["日", "月", "火", "水", "木", "金", "土"]
+        } else {
+            return ["S", "M", "T", "W", "T", "F", "S"]
+        }
+    }
+
     var body: some View {
         let calendar = Calendar.current
         let currentDate = Date()
@@ -28,7 +42,7 @@ struct CalendarGridView: View {
         VStack(spacing: 4) {
             // 요일 헤더
             HStack(spacing: 0) {
-                ForEach(["일", "월", "화", "수", "목", "금", "토"], id: \.self) { day in
+                ForEach(getWeekdayHeaders(), id: \.self) { day in
                     Text(day)
                         .font(.system(size: 9, weight: .medium))
                         .frame(width: 18)
