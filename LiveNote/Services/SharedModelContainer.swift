@@ -16,7 +16,7 @@ actor SharedModelContainer {
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
-            groupContainer: .identifier("group.com.livepost.shared"),
+            groupContainer: .identifier("group.com.livenote.shared"),
             cloudKitDatabase: .automatic
         )
 

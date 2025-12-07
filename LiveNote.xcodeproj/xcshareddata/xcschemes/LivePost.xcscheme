@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1AD095C72ED6BF9D00A540EC"
-               BuildableName = "LivePost.app"
-               BlueprintName = "LivePost"
-               ReferencedContainer = "container:LivePost.xcodeproj">
+               BuildableName = "LiveNote.app"
+               BlueprintName = "LiveNote"
+               ReferencedContainer = "container:LiveNote.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1AD095C72ED6BF9D00A540EC"
-            BuildableName = "LivePost.app"
-            BlueprintName = "LivePost"
-            ReferencedContainer = "container:LivePost.xcodeproj">
+            BuildableName = "LiveNote.app"
+            BlueprintName = "LiveNote"
+            ReferencedContainer = "container:LiveNote.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1AD095C72ED6BF9D00A540EC"
-            BuildableName = "LivePost.app"
-            BlueprintName = "LivePost"
-            ReferencedContainer = "container:LivePost.xcodeproj">
+            BuildableName = "LiveNote.app"
+            BlueprintName = "LiveNote"
+            ReferencedContainer = "container:LiveNote.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -494,17 +494,17 @@ class LocalizationManager {
             "ja": "共有アイコンをタップしてください",
             "zh": "点击分享图标"
         ],
-        "LivePost 선택": [
-            "ko": "LivePost 선택",
-            "en": "Select LivePost",
-            "ja": "LivePostを選択",
-            "zh": "选择LivePost"
+        "LiveNote 선택": [
+            "ko": "LiveNote 선택",
+            "en": "Select LiveNote",
+            "ja": "LiveNoteを選択",
+            "zh": "选择LiveNote"
         ],
-        "앱 목록에서 LivePost를 찾아서 탭": [
-            "ko": "앱 목록에서 LivePost를 찾아서 탭",
-            "en": "Find and tap LivePost in the app list",
-            "ja": "アプリ一覧からLivePostを探してタップ",
-            "zh": "在应用列表中找到并点击LivePost"
+        "앱 목록에서 LiveNote를 찾아서 탭": [
+            "ko": "앱 목록에서 LiveNote를 찾아서 탭",
+            "en": "Find and tap LiveNote in the app list",
+            "ja": "アプリ一覧からLiveNoteを探してタップ",
+            "zh": "在应用列表中找到并点击LiveNote"
         ],
         "자동 저장 완료!": [
             "ko": "자동 저장 완료!",
@@ -556,11 +556,11 @@ class LocalizationManager {
             "ja": "リンクなし",
             "zh": "无链接"
         ],
-        "공유 목록에 LivePost가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요": [
-            "ko": "공유 목록에 LivePost가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요",
-            "en": "If you don't see LivePost in the share menu\nTap 'More' button at the bottom to find it",
-            "ja": "共有メニューにLivePostが表示されない場合\n下部の「その他」ボタンをタップして探してください",
-            "zh": "如果在分享菜单中看不到LivePost\n点击底部的\"更多\"按钮查找"
+        "공유 목록에 LiveNote가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요": [
+            "ko": "공유 목록에 LiveNote가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요",
+            "en": "If you don't see LiveNote in the share menu\nTap 'More' button at the bottom to find it",
+            "ja": "共有メニューにLiveNoteが表示されない場合\n下部の「その他」ボタンをタップして探してください",
+            "zh": "如果在分享菜单中看不到LiveNote\n点击底部的\"更多\"按钮查找"
         ],
         "중요 Tip": [
             "ko": "중요 Tip",

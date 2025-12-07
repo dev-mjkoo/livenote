@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.livepost.shared</string>
+		<string>group.com.livenote.shared</string>
 	</array>
 </dict>
 </plist>

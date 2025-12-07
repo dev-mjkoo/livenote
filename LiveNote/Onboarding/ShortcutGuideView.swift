@@ -124,7 +124,7 @@ struct GuidePage {
 
     // 공유 pages 배열
     static var allPages: [GuidePage] {
-        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "LivePost"
+        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "LiveNote"
         let lm = LocalizationManager.shared
 
         return [
@@ -383,7 +383,7 @@ struct GuidePageView: View {
         let lang = lm.currentLanguageCode
 
         // GuidePage.allPages에서 사용하는 것과 정확히 동일한 방식으로 앱 이름 가져오기
-        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "LivePost"
+        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "LiveNote"
 
         // 언어별 키워드 정의
         var keywords: [String] = []
@@ -440,7 +440,7 @@ struct GuidePageView: View {
         var attributed = AttributedString(page.description)
 
         let lm = LocalizationManager.shared
-        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "LivePost"
+        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "LiveNote"
         let lang = lm.currentLanguageCode
 
         // 언어별 강조 키워드
@@ -743,7 +743,7 @@ struct GuidePageView: View {
             HStack(spacing: 10) {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 18, weight: .semibold))
-                Text("LivePost")
+                Text("LiveNote")
                     .font(.system(size: 17, weight: .semibold))
             }
             .foregroundColor(.white)

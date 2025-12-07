@@ -45,8 +45,8 @@ struct LinkShareGuideView: View {
 
                         guideStep(
                             number: "3",
-                            title: LocalizationManager.shared.string("LivePost 선택"),
-                            description: LocalizationManager.shared.string("앱 목록에서 LivePost를 찾아서 탭"),
+                            title: LocalizationManager.shared.string("LiveNote 선택"),
+                            description: LocalizationManager.shared.string("앱 목록에서 LiveNote를 찾아서 탭"),
                             icon: "app.badge.checkmark",
                             iconColor: .green
                         )
@@ -108,7 +108,7 @@ struct LinkShareGuideView: View {
 
     private func highlightedTipText() -> AttributedString {
         let lm = LocalizationManager.shared
-        let fullText = lm.string("공유 목록에 LivePost가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요")
+        let fullText = lm.string("공유 목록에 LiveNote가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요")
         var attributed = AttributedString(fullText)
 
         // 강조할 부분 (다국어 대응)
@@ -242,8 +242,8 @@ struct LinkShareGuideContentView: View {
 
                     guideStep(
                         number: "3",
-                        title: LocalizationManager.shared.string("LivePost 선택"),
-                        description: LocalizationManager.shared.string("앱 목록에서 LivePost를 찾아서 탭"),
+                        title: LocalizationManager.shared.string("LiveNote 선택"),
+                        description: LocalizationManager.shared.string("앱 목록에서 LiveNote를 찾아서 탭"),
                         icon: "app.badge.checkmark",
                         iconColor: .green
                     )
@@ -283,7 +283,7 @@ struct LinkShareGuideContentView: View {
 
     private func highlightedTipText() -> AttributedString {
         let lm = LocalizationManager.shared
-        let fullText = lm.string("공유 목록에 LivePost가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요")
+        let fullText = lm.string("공유 목록에 LiveNote가 안 보이면\n하단의 '더 보기' 버튼을 눌러서 찾아보세요")
         var attributed = AttributedString(fullText)
 
         // 강조할 부분 (다국어 대응)
