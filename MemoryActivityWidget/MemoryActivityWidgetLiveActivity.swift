@@ -77,9 +77,14 @@ struct DynamicIslandExpandedView: View {
                         .font(.caption2.monospacedDigit())
                 }
             } else {
-                Text(LocalizationManager.shared.string("앱에서 '연장' 버튼을 눌러주세요"))
-                    .font(.caption2)
-                    .multilineTextAlignment(.center)
+                HStack(spacing: 4) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+
+                    Text(LocalizationManager.shared.string("시간 만료 • 앱에서 새로고침"))
+                        .font(.caption2)
+                }
             }
         }
         .padding(.horizontal)
@@ -127,10 +132,15 @@ struct LiveActivityLockScreenView: View {
                             .foregroundColor(.white)
                     }
                 } else {
-                    Text(LocalizationManager.shared.string("앱에서 '연장' 버튼을 눌러주세요"))
-                        .font(.caption)
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+
+                        Text(LocalizationManager.shared.string("시간 만료 • 앱에서 새로고침"))
+                            .font(.caption)
+                            .foregroundColor(.white)
+                    }
                 }
             }
         }

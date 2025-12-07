@@ -573,6 +573,12 @@ class LocalizationManager {
             "en": "Tap 'Extend' in the app",
             "ja": "アプリで「延長」をタップしてください",
             "zh": "在应用中点击\"延长\""
+        ],
+        "시간 만료 • 앱에서 새로고침": [
+            "ko": "시간 만료 • 앱에서 새로고침",
+            "en": "Expired • Refresh in app",
+            "ja": "時間切れ • アプリで更新",
+            "zh": "时间到 • 在应用中刷新"
         ]
     ]
 
