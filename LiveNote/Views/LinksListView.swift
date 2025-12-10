@@ -445,13 +445,13 @@ struct CategoryLinksView: View {
         // 1주일 이내: 상대적 시간 표시
         if let day = components.day, day < 7 {
             if day > 0 {
-                return "\(day)일 전"
+                return "\(day)\(LocalizationManager.shared.string("일 전"))"
             } else if let hour = components.hour, hour > 0 {
-                return "\(hour)시간 전"
+                return "\(hour)\(LocalizationManager.shared.string("시간 전"))"
             } else if let minute = components.minute, minute > 0 {
-                return "\(minute)분 전"
+                return "\(minute)\(LocalizationManager.shared.string("분 전"))"
             } else {
-                return "방금"
+                return LocalizationManager.shared.string("방금")
             }
         }
 
