@@ -189,8 +189,21 @@ extension ContentView {
         // 중복 카테고리 제거
         removeDuplicateCategories()
 
-        // 기본 카테고리가 없으면 생성
-        let defaultCategories = ["💻 개발", "🎨 디자인", "📌 기타"]
+        // 기본 카테고리가 없으면 생성 (언어별)
+        let lang = LocalizationManager.shared.currentLanguageCode
+        let defaultCategories: [String]
+
+        switch lang {
+        case "en":
+            defaultCategories = ["💻 Development", "🎨 Design", "📌 Others"]
+        case "ja":
+            defaultCategories = ["💻 開発", "🎨 デザイン", "📌 その他"]
+        case "zh":
+            defaultCategories = ["💻 开发", "🎨 设计", "📌 其他"]
+        default:
+            defaultCategories = ["💻 개발", "🎨 디자인", "📌 기타"]
+        }
+
         for name in defaultCategories {
             if !categories.contains(name) {
                 let category = Category(name: name)

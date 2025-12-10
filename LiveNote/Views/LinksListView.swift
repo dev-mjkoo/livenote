@@ -29,16 +29,6 @@ struct LinksListView: View {
         }
     }
 
-    // 카테고리 이름에서 이모지 추출
-    private func extractEmoji(from categoryName: String) -> String {
-        let emoji = categoryName.first(where: { $0.isEmoji }) ?? "📁"
-        return String(emoji)
-    }
-
-    // 카테고리 이름에서 텍스트 부분 추출
-    private func extractText(from categoryName: String) -> String {
-        return categoryName.filter { !$0.isEmoji }.trimmingCharacters(in: .whitespaces)
-    }
 
     var body: some View {
         NavigationView {
@@ -140,8 +130,6 @@ struct LinksListView: View {
 
     @ViewBuilder
     func categoryCard(category: String, count: Int) -> some View {
-        let emoji = extractEmoji(from: category)
-        let text = extractText(from: category)
         let isSelected = selectedCategories.contains(category)
 
         Button {
@@ -155,24 +143,29 @@ struct LinksListView: View {
                 }
             }
         } label: {
-            ZStack(alignment: .topLeading) {
+            ZStack(alignment: .topTrailing) {
                 // 메인 카드 컨텐츠
                 if isEditMode {
-                    cardContent(emoji: emoji, text: text, count: count)
+                    cardContent(category: category, count: count)
                 } else {
                     // 일반 모드: NavigationLink
                     NavigationLink(destination: CategoryLinksView(category: category)) {
-                        cardContent(emoji: emoji, text: text, count: count)
+                        cardContent(category: category, count: count)
                     }
                     .buttonStyle(.plain)
                 }
 
-                // 체크박스 (편집 모드일 때만)
+                // 체크박스 (편집 모드일 때만 - 오른쪽 상단)
                 if isEditMode {
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 24, weight: .semibold))
+                        .font(.system(size: 22, weight: .semibold))
                         .foregroundStyle(isSelected ? Color.accentColor : Color.secondary.opacity(0.5))
-                        .padding(12)
+                        .padding(8)
+                        .background(
+                            Circle()
+                                .fill(AppColors.Card.background(for: colorScheme))
+                        )
+                        .padding(8)
                         .transition(.scale.combined(with: .opacity))
                 }
             }
@@ -193,31 +186,36 @@ struct LinksListView: View {
     }
 
     @ViewBuilder
-    private func cardContent(emoji: String, text: String, count: Int) -> some View {
-        VStack(spacing: 12) {
-            Text(emoji)
-                .font(.system(size: 40))
+    private func cardContent(category: String, count: Int) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(category)
+                .font(.system(size: 17, weight: .semibold, design: .rounded))
+                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
 
-            VStack(spacing: 4) {
-                if !text.isEmpty {
-                    Text(text)
-                        .font(.system(size: 15, weight: .bold, design: .rounded))
-                        .foregroundStyle(colorScheme == .dark ? .white : .black)
-                }
-
-                Text("\(count)\(LocalizationManager.shared.countSuffix())")
+            HStack(spacing: 4) {
+                Text("\(count)")
                     .font(.system(size: 13, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
+
+                Text("links")
+                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                    .foregroundStyle(.secondary.opacity(0.8))
+
+                Text("•")
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundStyle(.secondary.opacity(0.5))
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 24)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(AppColors.Card.background(for: colorScheme))
                 .shadow(
                     color: AppColors.Card.shadowLight(for: colorScheme),
-                    radius: 12, x: 0, y: 4
+                    radius: 8, x: 0, y: 2
                 )
         )
     }
@@ -516,15 +514,6 @@ struct CategoryLinksView: View {
                 try? modelContext.save()
             }
         }
-    }
-}
-
-// MARK: - Character Extension
-
-extension Character {
-    var isEmoji: Bool {
-        guard let scalar = unicodeScalars.first else { return false }
-        return scalar.properties.isEmoji && (scalar.value > 0x238C || unicodeScalars.count > 1)
     }
 }
 

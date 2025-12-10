@@ -17,6 +17,8 @@ struct ShareExtensionView: View {
     @State private var isShowingNewCategoryAlert: Bool = false
     @State private var newCategoryName: String = ""
     @State private var isSaving: Bool = false
+    @State private var showToast: Bool = false
+    @State private var toastMessage: String = ""
 
     private var categories: [String] {
         storedCategories.map { $0.name }
@@ -145,14 +147,31 @@ struct ShareExtensionView: View {
                     newCategoryName = ""
                 }
                 Button(LocalizationManager.shared.string("추가")) {
-                    if !newCategoryName.isEmpty && !categories.contains(newCategoryName) {
-                        addNewCategory(newCategoryName)
-                        selectedCategory = newCategoryName
+                    let trimmedName = newCategoryName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !trimmedName.isEmpty {
+                        if addNewCategory(trimmedName) {
+                            selectedCategory = trimmedName
+                        }
                     }
                     newCategoryName = ""
                 }
             } message: {
                 Text(LocalizationManager.shared.string("카테고리 이름을 입력하세요 (이모지 포함 가능)"))
+            }
+            .overlay(alignment: .bottom) {
+                if showToast {
+                    Text(toastMessage)
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(
+                            Capsule()
+                                .fill(Color.red.opacity(0.9))
+                        )
+                        .padding(.bottom, 20)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
         }
         .task {
@@ -200,15 +219,36 @@ struct ShareExtensionView: View {
         }
     }
 
-    private func addNewCategory(_ name: String) {
-        let category = Category(name: name)
+    private func addNewCategory(_ name: String) -> Bool {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedName.isEmpty else { return false }
+
+        // 중복 체크
+        if categories.contains(trimmedName) {
+            toastMessage = LocalizationManager.shared.string("이미 있는 카테고리명입니다")
+            withAnimation {
+                showToast = true
+            }
+            Task {
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                withAnimation {
+                    showToast = false
+                }
+            }
+            return false
+        }
+
+        let category = Category(name: trimmedName)
         modelContext.insert(category)
 
         do {
             try modelContext.save()
-            print("✅ Share Extension: 카테고리 '\(name)' 추가 성공")
+            print("✅ Share Extension: 카테고리 '\(trimmedName)' 추가 성공")
+            return true
         } catch {
             print("❌ Share Extension: 카테고리 추가 실패 - \(error)")
+            return false
         }
     }
 
