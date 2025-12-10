@@ -376,6 +376,90 @@ class LocalizationManager {
             "ja": "認証に失敗しました",
             "zh": "身份验证失败"
         ],
+        "잠금 방식 선택": [
+            "ko": "잠금 방식 선택",
+            "en": "Select Lock Type",
+            "ja": "ロック方式選択",
+            "zh": "选择锁定方式"
+        ],
+        "Face ID/기기 암호": [
+            "ko": "Face ID/기기 암호",
+            "en": "Face ID/Passcode",
+            "ja": "Face ID/パスコード",
+            "zh": "Face ID/设备密码"
+        ],
+        "별도 암호 설정": [
+            "ko": "별도 암호 설정",
+            "en": "Set Custom Password",
+            "ja": "個別パスワード設定",
+            "zh": "设置自定义密码"
+        ],
+        "카테고리를 어떻게 잠그시겠습니까?": [
+            "ko": "카테고리를 어떻게 잠그시겠습니까?",
+            "en": "How would you like to lock this category?",
+            "ja": "カテゴリをどのようにロックしますか？",
+            "zh": "您想如何锁定此分类？"
+        ],
+        "이 암호는 Face ID와 별개로 작동합니다": [
+            "ko": "이 암호는 Face ID와 별개로 작동합니다",
+            "en": "This password works independently from Face ID",
+            "ja": "このパスワードはFace IDとは別に動作します",
+            "zh": "此密码独立于Face ID运行"
+        ],
+        "암호 입력 (최소 4자)": [
+            "ko": "암호 입력 (최소 4자)",
+            "en": "Enter Password (min. 4 characters)",
+            "ja": "パスワード入力（最低4文字）",
+            "zh": "输入密码（至少4个字符）"
+        ],
+        "암호": [
+            "ko": "암호",
+            "en": "Password",
+            "ja": "パスワード",
+            "zh": "密码"
+        ],
+        "암호 확인": [
+            "ko": "암호 확인",
+            "en": "Confirm Password",
+            "ja": "パスワード確認",
+            "zh": "确认密码"
+        ],
+        "암호 다시 입력": [
+            "ko": "암호 다시 입력",
+            "en": "Re-enter Password",
+            "ja": "パスワード再入力",
+            "zh": "重新输入密码"
+        ],
+        "설정 완료": [
+            "ko": "설정 완료",
+            "en": "Complete",
+            "ja": "設定完了",
+            "zh": "设置完成"
+        ],
+        "암호는 최소 4자 이상이어야 합니다": [
+            "ko": "암호는 최소 4자 이상이어야 합니다",
+            "en": "Password must be at least 4 characters",
+            "ja": "パスワードは4文字以上である必要があります",
+            "zh": "密码必须至少4个字符"
+        ],
+        "암호가 일치하지 않습니다": [
+            "ko": "암호가 일치하지 않습니다",
+            "en": "Passwords do not match",
+            "ja": "パスワードが一致しません",
+            "zh": "密码不匹配"
+        ],
+        "암호 저장에 실패했습니다": [
+            "ko": "암호 저장에 실패했습니다",
+            "en": "Failed to save password",
+            "ja": "パスワードの保存に失敗しました",
+            "zh": "保存密码失败"
+        ],
+        "암호를 입력하세요": [
+            "ko": "암호를 입력하세요",
+            "en": "Enter password",
+            "ja": "パスワードを入力してください",
+            "zh": "请输入密码"
+        ],
 
         // MARK: - 온보딩 - 단축어 가이드
         "잠금화면 메모": [

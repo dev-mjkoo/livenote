@@ -19,6 +19,17 @@ struct LinksListView: View {
     @State private var toastMessage: String = ""
     @State private var authenticatedCategory: String? = nil
     @State private var isAuthenticating: Bool = false
+    @State private var showLockTypeSelection: Bool = false
+    @State private var lockingCategory: String? = nil
+    @State private var showPasswordSheet: Bool = false
+    @State private var showPasswordInputSheet: Bool = false
+    @State private var passwordInputCategory: String? = nil
+    @State private var passwordInputAction: PasswordInputAction = .navigate
+
+    enum PasswordInputAction {
+        case navigate
+        case unlock
+    }
 
     private struct CategoryWithCount: Identifiable {
         let id: String
@@ -125,15 +136,77 @@ struct LinksListView: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
+            .alert(LocalizationManager.shared.string("잠금 방식 선택"), isPresented: $showLockTypeSelection) {
+                Button(LocalizationManager.shared.string("Face ID/기기 암호")) {
+                    if let category = lockingCategory {
+                        setLock(for: category, type: "biometric")
+                    }
+                    lockingCategory = nil
+                }
+                Button(LocalizationManager.shared.string("별도 암호 설정")) {
+                    showPasswordSheet = true
+                }
+                Button(LocalizationManager.shared.string("취소"), role: .cancel) {
+                    lockingCategory = nil
+                }
+            } message: {
+                Text(LocalizationManager.shared.string("카테고리를 어떻게 잠그시겠습니까?"))
+            }
+            .sheet(isPresented: $showPasswordSheet) {
+                if let category = lockingCategory {
+                    PasswordSetupSheet(
+                        categoryName: category,
+                        onSave: { password in
+                            setLockWithPassword(for: category, password: password)
+                            showPasswordSheet = false
+                            lockingCategory = nil
+                        },
+                        onCancel: {
+                            showPasswordSheet = false
+                            lockingCategory = nil
+                        }
+                    )
+                }
+            }
+            .sheet(isPresented: $showPasswordInputSheet) {
+                if let category = passwordInputCategory {
+                    PasswordInputSheet(
+                        categoryName: category,
+                        onSuccess: {
+                            if passwordInputAction == .navigate {
+                                // 인증 성공: 카테고리로 이동
+                                authenticatedCategory = category
+                            } else {
+                                // 인증 성공: 잠금 해제
+                                toggleLock(for: category)
+                            }
+                            showPasswordInputSheet = false
+                            passwordInputCategory = nil
+                        },
+                        onCancel: {
+                            showPasswordInputSheet = false
+                            passwordInputCategory = nil
+                        }
+                    )
+                }
+            }
         }
     }
 
     @ViewBuilder
     func categoryCard(category: String, count: Int, isLocked: Bool) -> some View {
+        let lockType = storedCategories.first(where: { $0.name == category })?.lockType ?? "biometric"
+
         Button {
             if isLocked {
-                // 잠긴 카테고리: 인증 요청
-                authenticateAndNavigate(to: category)
+                // 잠긴 카테고리: 타입에 따라 인증
+                if lockType == "password" {
+                    // 별도 암호 인증
+                    showPasswordInputSheet(for: category, action: .navigate)
+                } else {
+                    // Face ID/기기 암호 인증
+                    authenticateAndNavigate(to: category)
+                }
             } else {
                 // 잠기지 않은 카테고리: 바로 이동
                 authenticatedCategory = category
@@ -166,11 +239,16 @@ struct LinksListView: View {
             Button {
                 HapticManager.light()
                 if isLocked {
-                    // 잠금 해제: 인증 필요
-                    authenticateAndUnlock(category: category)
+                    // 잠금 해제: 타입에 따라 인증
+                    if lockType == "password" {
+                        showPasswordInputSheet(for: category, action: .unlock)
+                    } else {
+                        authenticateAndUnlock(category: category)
+                    }
                 } else {
-                    // 잠금 설정: 바로 설정
-                    toggleLock(for: category)
+                    // 잠금 설정: 타입 선택
+                    lockingCategory = category
+                    showLockTypeSelection = true
                 }
             } label: {
                 Label(
@@ -284,15 +362,62 @@ struct LinksListView: View {
         }
     }
 
-    private func toggleLock(for categoryName: String) {
+    private func showPasswordInputSheet(for category: String, action: PasswordInputAction) {
+        passwordInputCategory = category
+        passwordInputAction = action
+        showPasswordInputSheet = true
+    }
+
+    private func setLock(for categoryName: String, type: String) {
         if let category = storedCategories.first(where: { $0.name == categoryName }) {
-            category.isLocked.toggle()
+            category.isLocked = true
+            category.lockType = type
 
             do {
                 try modelContext.save()
-                print("✅ 카테고리 '\(categoryName)' 잠금 상태 변경: \(category.isLocked ? "잠금" : "해제")")
+                print("✅ 카테고리 '\(categoryName)' 잠금 설정: \(type)")
             } catch {
-                print("❌ 카테고리 잠금 상태 변경 실패: \(error)")
+                print("❌ 카테고리 잠금 설정 실패: \(error)")
+            }
+        }
+    }
+
+    private func setLockWithPassword(for categoryName: String, password: String) {
+        // Keychain에 암호 저장
+        let success = KeychainManager.shared.savePassword(password, for: categoryName)
+
+        if success {
+            // 카테고리 잠금 설정
+            setLock(for: categoryName, type: "password")
+        } else {
+            toastMessage = LocalizationManager.shared.string("암호 저장에 실패했습니다")
+            withAnimation {
+                showToast = true
+            }
+            Task {
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                withAnimation {
+                    showToast = false
+                }
+            }
+        }
+    }
+
+    private func toggleLock(for categoryName: String) {
+        if let category = storedCategories.first(where: { $0.name == categoryName }) {
+            let wasLocked = category.isLocked
+            category.isLocked = false
+
+            // 암호 타입이었으면 Keychain에서 삭제
+            if wasLocked && category.lockType == "password" {
+                _ = KeychainManager.shared.deletePassword(for: categoryName)
+            }
+
+            do {
+                try modelContext.save()
+                print("✅ 카테고리 '\(categoryName)' 잠금 해제")
+            } catch {
+                print("❌ 카테고리 잠금 해제 실패: \(error)")
             }
         }
     }
