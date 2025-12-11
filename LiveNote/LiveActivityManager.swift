@@ -117,6 +117,7 @@ final class LiveActivityManager: ObservableObject {
 
         let attributes = MemoryNoteAttributes(label: AppStrings.appMessage)
         let startDate = Date()
+        let endDate = startDate.addingTimeInterval(8 * 60 * 60) // 8시간 후
         let initialState = MemoryNoteAttributes.ContentState(
             memo: memo,
             startDate: startDate,
@@ -126,7 +127,7 @@ final class LiveActivityManager: ObservableObject {
         do {
             let activity = try Activity.request(
                 attributes: attributes,
-                content: .init(state: initialState, staleDate: nil),
+                content: .init(state: initialState, staleDate: endDate),
                 pushType: nil // 로컬 업데이트만 사용
             )
             currentActivity = activity
@@ -193,6 +194,7 @@ final class LiveActivityManager: ObservableObject {
         print("🆕 Live Activity 재시작 중...")
         let attributes = MemoryNoteAttributes(label: AppStrings.appMessage)
         let newStartDate = Date()
+        let newEndDate = newStartDate.addingTimeInterval(8 * 60 * 60) // 8시간 후
         let initialState = MemoryNoteAttributes.ContentState(
             memo: currentMemo,
             startDate: newStartDate,
@@ -202,7 +204,7 @@ final class LiveActivityManager: ObservableObject {
         do {
             let newActivity = try Activity.request(
                 attributes: attributes,
-                content: .init(state: initialState, staleDate: nil),
+                content: .init(state: initialState, staleDate: newEndDate),
                 pushType: nil
             )
             currentActivity = newActivity

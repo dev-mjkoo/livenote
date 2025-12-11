@@ -26,13 +26,8 @@ struct MemoryActivityWidgetLiveActivity: Widget {
                 Image(systemName: "brain.head.profile")
             } compactTrailing: {
                 let endDate = context.state.startDate.addingTimeInterval(8 * 60 * 60)
-                if Date() < endDate {
-                    Text(endDate, style: .timer)
-                        .font(.caption2.monospacedDigit())
-                } else {
-                    Text("0:00")
-                        .font(.caption2.monospacedDigit())
-                }
+                Text(timerInterval: Date()...endDate, pauseTime: endDate)
+                    .font(.caption2.monospacedDigit())
             } minimal: {
                 Image(systemName: "brain.head.profile")
             }
@@ -68,15 +63,7 @@ struct DynamicIslandExpandedView: View {
             ProgressView(value: progress)
                 .tint(.cyan)
 
-            if Date() < endDate {
-                HStack {
-                    Text(LocalizationManager.shared.string("남은 시간:"))
-                        .font(.caption2)
-
-                    Text(endDate, style: .timer)
-                        .font(.caption2.monospacedDigit())
-                }
-            } else {
+            if context.isStale {
                 HStack(spacing: 4) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.caption2)
@@ -84,6 +71,14 @@ struct DynamicIslandExpandedView: View {
 
                     Text(LocalizationManager.shared.string("시간 만료 • 앱에서 새로고침"))
                         .font(.caption2)
+                }
+            } else {
+                HStack {
+                    Text(LocalizationManager.shared.string("유효 시간:"))
+                        .font(.caption2)
+
+                    Text(timerInterval: Date()...endDate, pauseTime: endDate)
+                        .font(.caption2.monospacedDigit())
                 }
             }
         }
@@ -121,17 +116,7 @@ struct LiveActivityLockScreenView: View {
                 ProgressView(value: progress)
                     .tint(.white)
 
-                if Date() < endDate {
-                    HStack {
-                        Text(LocalizationManager.shared.string("남은 시간:"))
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
-
-                        Text(endDate, style: .timer)
-                            .font(.caption.monospacedDigit())
-                            .foregroundColor(.white)
-                    }
-                } else {
+                if context.isStale {
                     HStack(spacing: 4) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.caption)
@@ -139,6 +124,16 @@ struct LiveActivityLockScreenView: View {
 
                         Text(LocalizationManager.shared.string("시간 만료 • 앱에서 새로고침"))
                             .font(.caption)
+                            .foregroundColor(.white)
+                    }
+                } else {
+                    HStack {
+                        Text(LocalizationManager.shared.string("유효 시간:"))
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.8))
+
+                        Text(timerInterval: Date()...endDate, pauseTime: endDate)
+                            .font(.caption.monospacedDigit())
                             .foregroundColor(.white)
                     }
                 }

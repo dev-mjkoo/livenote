@@ -193,11 +193,11 @@ struct LiveActivityLockScreenPreview: View {
                         .foregroundColor(timeMessage.color)
 
                     if LocalizationManager.shared.isTimerFirst() {
-                        (Text(LocalizationManager.shared.timerPrefixText()) + Text(endDate, style: .timer))
+                        (Text(LocalizationManager.shared.timerPrefixText()) + Text(timerInterval: Date()...endDate, pauseTime: endDate))
                             .font(.system(size: 10, weight: .semibold).monospacedDigit())
                             .foregroundColor(timeMessage.color)
                     } else {
-                        (Text(endDate, style: .timer) + Text(LocalizationManager.shared.timerSuffixText()))
+                        (Text(timerInterval: Date()...endDate, pauseTime: endDate) + Text(LocalizationManager.shared.timerSuffixText()))
                             .font(.system(size: 10, weight: .semibold).monospacedDigit())
                             .foregroundColor(timeMessage.color)
                     }
@@ -285,11 +285,11 @@ private struct ExpandedIslandView: View {
                     .tint(timeMessage.color)
 
                 if LocalizationManager.shared.isTimerFirst() {
-                    (Text(LocalizationManager.shared.timerPrefixText()) + Text(endDate, style: .timer))
+                    (Text(LocalizationManager.shared.timerPrefixText()) + Text(timerInterval: Date()...endDate, pauseTime: endDate))
                         .font(.system(size: 11, weight: .semibold).monospacedDigit())
                         .foregroundColor(timeMessage.color)
                 } else {
-                    (Text(endDate, style: .timer) + Text(LocalizationManager.shared.timerSuffixText()))
+                    (Text(timerInterval: Date()...endDate, pauseTime: endDate) + Text(LocalizationManager.shared.timerSuffixText()))
                         .font(.system(size: 11, weight: .semibold).monospacedDigit())
                         .foregroundColor(timeMessage.color)
                 }
