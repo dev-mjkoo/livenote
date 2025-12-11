@@ -821,6 +821,32 @@ class LocalizationManager {
             "en": "Just now",
             "ja": "たった今",
             "zh": "刚刚"
+        ],
+
+        // MARK: - 분석 데이터 수집 알림
+        "분석 데이터 수집을 끄시겠습니까?": [
+            "ko": "분석 데이터 수집을 끄시겠습니까?",
+            "en": "Turn off analytics data collection?",
+            "ja": "分析データの収集をオフにしますか？",
+            "zh": "关闭数据分析收集？"
+        ],
+        "메모, 링크 등 개인 데이터는 수집하지 않으며, 앱 오류 분석과 개선을 위해서만 사용됩니다.": [
+            "ko": "메모, 링크 등 개인 데이터는 수집하지 않으며, 앱 오류 분석과 개선을 위해서만 사용됩니다.",
+            "en": "We do not collect personal data such as notes or links. Analytics are used only for bug analysis and app improvement.",
+            "ja": "メモやリンクなどの個人データは収集せず、アプリのバグ分析と改善のためにのみ使用されます。",
+            "zh": "我们不会收集备忘录、链接等个人数据，仅用于应用错误分析和改进。"
+        ],
+        "끄기": [
+            "ko": "끄기",
+            "en": "Turn Off",
+            "ja": "オフにする",
+            "zh": "关闭"
+        ],
+        "유지하기": [
+            "ko": "유지하기",
+            "en": "Keep On",
+            "ja": "オンのまま",
+            "zh": "保持开启"
         ]
     ]
 

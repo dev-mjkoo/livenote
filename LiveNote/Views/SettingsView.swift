@@ -5,6 +5,7 @@ struct SettingsView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.openURL) var openURL
     @AppStorage("analyticsEnabled") private var analyticsEnabled: Bool = true
+    @State private var showAnalyticsDisableAlert = false
 
     var body: some View {
         NavigationView {
@@ -48,8 +49,13 @@ struct SettingsView: View {
                     Toggle(isOn: Binding(
                         get: { analyticsEnabled },
                         set: { newValue in
-                            analyticsEnabled = newValue
-                            FirebaseAnalyticsManager.shared.setAnalyticsEnabled(newValue)
+                            // 끄려고 할 때만 확인 알림 표시
+                            if !newValue && analyticsEnabled {
+                                showAnalyticsDisableAlert = true
+                            } else {
+                                analyticsEnabled = newValue
+                                FirebaseAnalyticsManager.shared.setAnalyticsEnabled(newValue)
+                            }
                         }
                     )) {
                         VStack(alignment: .leading, spacing: 4) {
@@ -81,6 +87,18 @@ struct SettingsView: View {
                             .font(.system(size: 16, weight: .semibold))
                     }
                 }
+            }
+            .alert(
+                LocalizationManager.shared.string("분석 데이터 수집을 끄시겠습니까?"),
+                isPresented: $showAnalyticsDisableAlert
+            ) {
+                Button(LocalizationManager.shared.string("끄기"), role: .destructive) {
+                    analyticsEnabled = false
+                    FirebaseAnalyticsManager.shared.setAnalyticsEnabled(false)
+                }
+                Button(LocalizationManager.shared.string("유지하기"), role: .cancel) {}
+            } message: {
+                Text(LocalizationManager.shared.string("메모, 링크 등 개인 데이터는 수집하지 않으며, 앱 오류 분석과 개선을 위해서만 사용됩니다."))
             }
         }
     }
