@@ -142,6 +142,9 @@ extension ContentView {
             try modelContext.save()
             print("✅ 링크 저장 성공 (iCloud 자동 동기화)")
 
+            // Firebase Analytics: 링크 저장
+            FirebaseAnalyticsManager.shared.logLinkSaved(category: selectedCategory)
+
             // 백그라운드에서 메타데이터 가져오기
             Task {
                 await fetchAndUpdateMetadata(for: linkItem)
@@ -332,6 +335,9 @@ extension ContentView {
         do {
             try modelContext.save()
             print("✅ 카테고리 '\(name)' 추가 성공 (iCloud 자동 동기화)")
+
+            // Firebase Analytics: 카테고리 생성
+            FirebaseAnalyticsManager.shared.logCategoryCreated(name: name)
         } catch {
             print("❌ 카테고리 추가 실패: \(error)")
         }

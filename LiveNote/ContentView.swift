@@ -36,6 +36,7 @@ struct ContentView: View {
     @State var showToast: Bool = false
     @State var toastMessage: String = ""
     @State var isShowingLinkGuide: Bool = false
+    @State var isShowingSettings: Bool = false
 
     var categories: [String] {
         storedCategories.map { $0.name }
@@ -48,6 +49,21 @@ struct ContentView: View {
             // 배경: 탭하면 키보드 내려감
             background
                 .onAppear {
+                    // Firebase Analytics: 기본 활성화 (처음 실행 시)
+                    if UserDefaults.standard.object(forKey: "analyticsEnabled") == nil {
+                        // 처음 설치하는 경우 기본으로 활성화
+                        UserDefaults.standard.set(true, forKey: "analyticsEnabled")
+                        FirebaseAnalyticsManager.shared.setAnalyticsEnabled(true)
+                    } else {
+                        // 기존 사용자는 저장된 설정 적용
+                        let isEnabled = UserDefaults.standard.bool(forKey: "analyticsEnabled")
+                        FirebaseAnalyticsManager.shared.setAnalyticsEnabled(isEnabled)
+                    }
+
+                    // Firebase Analytics: 앱 열기
+                    FirebaseAnalyticsManager.shared.logAppOpen()
+                    FirebaseAnalyticsManager.shared.setUserLanguage(LocalizationManager.shared.currentLanguageCode)
+
                     // 기본 카테고리 생성
                     initializeDefaultCategories()
 
@@ -319,6 +335,9 @@ struct ContentView: View {
             }
             .interactiveDismissDisabled(true)
         }
+        .sheet(isPresented: $isShowingSettings) {
+            SettingsView()
+        }
     }
 }
 
@@ -390,6 +409,22 @@ extension ContentView {
                     .overlay(
                         Text(AppStrings.appIcon)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundStyle(headerForeground)
+                    )
+            }
+            .buttonStyle(.plain)
+
+            // 설정 버튼
+            Button {
+                HapticManager.light()
+                isShowingSettings = true
+            } label: {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(headerForeground.opacity(0.3), lineWidth: 1)
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        Image(systemName: "info.circle.fill")
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(headerForeground)
                     )
             }

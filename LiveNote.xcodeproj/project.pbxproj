@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A8DAE712EEA746200C5DD71 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1A8DAE702EEA746200C5DD71 /* FirebaseAnalytics */; };
+		1A8DAE732EEA746200C5DD71 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1A8DAE722EEA746200C5DD71 /* FirebaseCore */; };
+		1A8DAE752EEA747400C5DD71 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1A8DAE742EEA747400C5DD71 /* FirebaseAnalytics */; };
+		1A8DAE772EEA747400C5DD71 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1A8DAE762EEA747400C5DD71 /* FirebaseCore */; };
+		1AB6D0D72EE9E27100196EEA /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1AB6D0D62EE9E27100196EEA /* FirebaseAnalytics */; };
+		1AB6D0D92EE9E27100196EEA /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1AB6D0D82EE9E27100196EEA /* FirebaseAnalyticsCore */; };
+		1AB6D0DB2EE9E27100196EEA /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1AB6D0DA2EE9E27100196EEA /* FirebaseCore */; };
+		1AB6D0DD2EE9E27100196EEA /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1AB6D0DC2EE9E27100196EEA /* FirebaseCrashlytics */; };
 		1AD095E32ED6C1E700A540EC /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AD095E22ED6C1E700A540EC /* WidgetKit.framework */; };
 		1AD095E52ED6C1E700A540EC /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AD095E42ED6C1E700A540EC /* SwiftUI.framework */; };
 		1AD095F42ED6C1E800A540EC /* MemoryActivityWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -73,7 +81,9 @@
 		1AD095FB2ED6C1F700A540EC /* Exceptions for "LiveNote" folder in "MemoryActivityWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"GoogleService-Info.plist",
 				LiveActivityManager.swift,
+				Services/FirebaseAnalyticsManager.swift,
 				Services/LocalizationManager.swift,
 				Shared/Colors.swift,
 				Shared/Constants.swift,
@@ -99,8 +109,10 @@
 		1AD096582EDFFDD400A540EC /* Exceptions for "LiveNote" folder in "LiveNoteShareExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"GoogleService-Info.plist",
 				Models/Category.swift,
 				Models/LinkItem.swift,
+				Services/FirebaseAnalyticsManager.swift,
 				Services/LinkMetadataService.swift,
 				Services/LocalizationManager.swift,
 				Services/SharedModelContainer.swift,
@@ -145,6 +157,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AB6D0D72EE9E27100196EEA /* FirebaseAnalytics in Frameworks */,
+				1AB6D0DD2EE9E27100196EEA /* FirebaseCrashlytics in Frameworks */,
+				1AB6D0DB2EE9E27100196EEA /* FirebaseCore in Frameworks */,
+				1AB6D0D92EE9E27100196EEA /* FirebaseAnalyticsCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +170,8 @@
 			files = (
 				1AD095E52ED6C1E700A540EC /* SwiftUI.framework in Frameworks */,
 				1AD095E32ED6C1E700A540EC /* WidgetKit.framework in Frameworks */,
+				1A8DAE732EEA746200C5DD71 /* FirebaseCore in Frameworks */,
+				1A8DAE712EEA746200C5DD71 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,6 +179,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A8DAE772EEA747400C5DD71 /* FirebaseCore in Frameworks */,
+				1A8DAE752EEA747400C5DD71 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,6 +241,10 @@
 			);
 			name = LiveNote;
 			packageProductDependencies = (
+				1AB6D0D62EE9E27100196EEA /* FirebaseAnalytics */,
+				1AB6D0D82EE9E27100196EEA /* FirebaseAnalyticsCore */,
+				1AB6D0DA2EE9E27100196EEA /* FirebaseCore */,
+				1AB6D0DC2EE9E27100196EEA /* FirebaseCrashlytics */,
 			);
 			productName = islandmemo;
 			productReference = 1AD095C82ED6BF9D00A540EC /* LiveNote.app */;
@@ -243,6 +267,8 @@
 			);
 			name = MemoryActivityWidgetExtension;
 			packageProductDependencies = (
+				1A8DAE702EEA746200C5DD71 /* FirebaseAnalytics */,
+				1A8DAE722EEA746200C5DD71 /* FirebaseCore */,
 			);
 			productName = MemoryActivityWidgetExtension;
 			productReference = 1AD095E02ED6C1E700A540EC /* MemoryActivityWidgetExtension.appex */;
@@ -265,6 +291,8 @@
 			);
 			name = LiveNoteShareExtension;
 			packageProductDependencies = (
+				1A8DAE742EEA747400C5DD71 /* FirebaseAnalytics */,
+				1A8DAE762EEA747400C5DD71 /* FirebaseCore */,
 			);
 			productName = IslandMemoShareExtension;
 			productReference = 1AD096462EDFEABA00A540EC /* LiveNoteShareExtension.appex */;
@@ -300,6 +328,9 @@
 			);
 			mainGroup = 1AD095BF2ED6BF9D00A540EC;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1AD095C92ED6BF9D00A540EC /* Products */;
 			projectDirPath = "";
@@ -653,7 +684,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.livenote.LiveNoteShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -682,7 +713,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = mjkoo.livenote.LiveNoteShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -735,6 +766,60 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1A8DAE702EEA746200C5DD71 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		1A8DAE722EEA746200C5DD71 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		1A8DAE742EEA747400C5DD71 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		1A8DAE762EEA747400C5DD71 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		1AB6D0D62EE9E27100196EEA /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		1AB6D0D82EE9E27100196EEA /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		1AB6D0DA2EE9E27100196EEA /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		1AB6D0DC2EE9E27100196EEA /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A875D192EE9DFCF00FFFD2D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1AD095C02ED6BF9D00A540EC /* Project object */;
 }

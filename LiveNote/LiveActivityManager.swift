@@ -2,6 +2,7 @@
 import Foundation
 import ActivityKit
 import Combine
+import FirebaseAnalytics
 
 @MainActor
 final class LiveActivityManager: ObservableObject {
@@ -133,6 +134,9 @@ final class LiveActivityManager: ObservableObject {
             lastUpdateDate = Date()
             print("Activity started: \(activity.id)")
 
+            // Firebase Analytics: Live Activity 시작
+            FirebaseAnalyticsManager.shared.logLiveActivityStarted()
+
             // 8시간 후 자동 종료 스케줄
             scheduleAutoDismissal()
 
@@ -205,6 +209,9 @@ final class LiveActivityManager: ObservableObject {
             activityStartDate = newStartDate
             lastUpdateDate = Date()
             print("✅ Live Activity 재시작 완료: 8시간 타이머 리셋")
+
+            // Firebase Analytics: Live Activity 시간 연장
+            FirebaseAnalyticsManager.shared.logLiveActivityExtended()
 
             // 8시간 후 자동 종료 스케줄
             scheduleAutoDismissal()

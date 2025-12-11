@@ -376,6 +376,9 @@ struct LinksListView: View {
             do {
                 try modelContext.save()
                 print("✅ 카테고리 '\(categoryName)' 잠금 설정: \(type)")
+
+                // Firebase Analytics: 카테고리 잠금
+                FirebaseAnalyticsManager.shared.logCategoryLocked(lockType: type)
             } catch {
                 print("❌ 카테고리 잠금 설정 실패: \(error)")
             }
