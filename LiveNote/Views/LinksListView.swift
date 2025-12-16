@@ -40,7 +40,7 @@ struct LinksListView: View {
 
     private var categoriesWithLinks: [CategoryWithCount] {
         storedCategories.map { categoryObj in
-            let count = links.filter { $0.category == categoryObj.name }.count
+            let count = links.filter { $0.category?.id == categoryObj.id }.count
             return CategoryWithCount(
                 id: categoryObj.name,
                 category: categoryObj.name,
@@ -386,8 +386,11 @@ struct LinksListView: View {
     }
 
     private func setLockWithPassword(for categoryName: String, password: String) {
-        // Keychain에 암호 저장
-        let success = KeychainManager.shared.savePassword(password, for: categoryName)
+        // 카테고리 객체 찾기
+        guard let category = storedCategories.first(where: { $0.name == categoryName }) else { return }
+
+        // Keychain에 암호 저장 (UUID 사용)
+        let success = KeychainManager.shared.savePassword(password, for: category.id)
 
         if success {
             // 카테고리 잠금 설정
@@ -411,9 +414,9 @@ struct LinksListView: View {
             let wasLocked = category.isLocked
             category.isLocked = false
 
-            // 암호 타입이었으면 Keychain에서 삭제
+            // 암호 타입이었으면 Keychain에서 삭제 (UUID 사용)
             if wasLocked && category.lockType == "password" {
-                _ = KeychainManager.shared.deletePassword(for: categoryName)
+                _ = KeychainManager.shared.deletePassword(for: category.id)
             }
 
             do {
@@ -426,20 +429,16 @@ struct LinksListView: View {
     }
 
     private func deleteCategory(_ categoryName: String) {
-        // 카테고리에 속한 모든 링크 삭제
-        let linksToDelete = links.filter { $0.category == categoryName }
-        for link in linksToDelete {
-            modelContext.delete(link)
-        }
+        // 카테고리 객체 찾기
+        guard let category = storedCategories.first(where: { $0.name == categoryName }) else { return }
 
-        // 카테고리 삭제
-        if let category = storedCategories.first(where: { $0.name == categoryName }) {
-            modelContext.delete(category)
-        }
+        // 카테고리 삭제 (cascade delete 설정으로 인해 관련 링크도 자동 삭제됨)
+        let linksCount = links.filter { $0.category?.id == category.id }.count
+        modelContext.delete(category)
 
         do {
             try modelContext.save()
-            print("✅ 카테고리 '\(categoryName)' 및 관련 링크 \(linksToDelete.count)개 삭제 성공")
+            print("✅ 카테고리 '\(categoryName)' 및 관련 링크 \(linksCount)개 삭제 성공 (cascade)")
         } catch {
             print("❌ 카테고리 삭제 실패: \(error)")
         }
@@ -471,22 +470,17 @@ struct LinksListView: View {
             return
         }
 
-        // 카테고리명 변경
+        // 카테고리명 변경 (UUID 관계이므로 링크 업데이트 불필요)
         if let category = storedCategories.first(where: { $0.name == oldName }) {
+            let linksCount = links.filter { $0.category?.id == category.id }.count
             category.name = trimmedName
-        }
 
-        // 해당 카테고리의 모든 링크 업데이트
-        let linksToUpdate = links.filter { $0.category == oldName }
-        for link in linksToUpdate {
-            link.category = trimmedName
-        }
-
-        do {
-            try modelContext.save()
-            print("✅ 카테고리 '\(oldName)' → '\(trimmedName)' 변경 및 관련 링크 \(linksToUpdate.count)개 업데이트 성공")
-        } catch {
-            print("❌ 카테고리 변경 실패: \(error)")
+            do {
+                try modelContext.save()
+                print("✅ 카테고리 '\(oldName)' → '\(trimmedName)' 변경 성공 (연결된 링크 \(linksCount)개 자동 유지)")
+            } catch {
+                print("❌ 카테고리 변경 실패: \(error)")
+            }
         }
     }
 }
@@ -505,7 +499,7 @@ struct CategoryLinksView: View {
     @State private var hasFetchedMetadata: Bool = false  // 메타데이터 가져왔는지 추적
 
     private var links: [LinkItem] {
-        allLinks.filter { $0.category == category }
+        allLinks.filter { $0.category?.name == category }
     }
 
     private var pendingLinksCount: Int {

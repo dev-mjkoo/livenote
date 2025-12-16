@@ -1,5 +1,6 @@
 
 import SwiftUI
+import SwiftData
 
 struct PasswordInputSheet: View {
     let categoryName: String
@@ -7,6 +8,7 @@ struct PasswordInputSheet: View {
     let onCancel: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
+    @Query(sort: \Category.createdAt, order: .reverse) private var storedCategories: [Category]
     @State private var password: String = ""
     @State private var showError: Bool = false
 
@@ -96,7 +98,16 @@ struct PasswordInputSheet: View {
     }
 
     private func verifyPassword() {
-        let isValid = KeychainManager.shared.verifyPassword(password, for: categoryName)
+        // categoryName으로 Category 객체 찾기
+        guard let category = storedCategories.first(where: { $0.name == categoryName }) else {
+            withAnimation {
+                showError = true
+            }
+            return
+        }
+
+        // UUID를 사용하여 암호 검증
+        let isValid = KeychainManager.shared.verifyPassword(password, for: category.id)
 
         if isValid {
             onSuccess()

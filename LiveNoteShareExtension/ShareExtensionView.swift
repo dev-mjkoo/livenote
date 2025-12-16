@@ -197,11 +197,14 @@ struct ShareExtensionView: View {
     private func saveLink() async {
         isSaving = true
 
+        // selectedCategory(String)에 해당하는 Category 객체 찾기
+        let categoryObject = storedCategories.first(where: { $0.name == selectedCategory })
+
         // 링크만 빠르게 저장, 메타데이터는 나중에 메인 앱에서 가져오기
         let linkItem = LinkItem(
             url: url,
             title: linkTitle.isEmpty ? nil : linkTitle,
-            category: selectedCategory,
+            category: categoryObject,
             needsMetadataFetch: true  // 메인 앱에서 메타데이터 가져오도록 플래그 설정
         )
 

@@ -116,7 +116,10 @@ extension ContentView {
     func saveLinkWithTitle(title: String?) {
         guard let link = pastedLink else { return }
 
-        let linkItem = LinkItem(url: link, title: title, category: selectedCategory, needsMetadataFetch: false)
+        // selectedCategory(String)에 해당하는 Category 객체 찾기
+        let categoryObject = storedCategories.first(where: { $0.name == selectedCategory })
+
+        let linkItem = LinkItem(url: link, title: title, category: categoryObject, needsMetadataFetch: false)
         modelContext.insert(linkItem)
 
         do {
@@ -212,10 +215,13 @@ extension ContentView {
     func migrateCategorylessLinks() {
         var migratedCount = 0
 
-        // 카테고리가 빈 문자열이거나 존재하지 않는 카테고리인 링크 찾기
+        // "기타" 카테고리 찾기
+        let defaultCategory = storedCategories.first(where: { $0.name.contains("기타") || $0.name.contains("Others") || $0.name.contains("その他") || $0.name.contains("其他") })
+
+        // 카테고리가 없는 링크 찾기
         for link in savedLinks {
-            if link.category.isEmpty || !categories.contains(link.category) {
-                link.category = "📌 기타"
+            if link.category == nil {
+                link.category = defaultCategory
                 migratedCount += 1
             }
         }

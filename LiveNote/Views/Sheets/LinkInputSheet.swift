@@ -80,16 +80,8 @@ struct LinkInputSheet: View {
     }
 
     private func deleteCategory(_ categoryName: String) {
-        // 카테고리에 속한 모든 링크 삭제
-        let linksToDelete = allLinks.filter { $0.category == categoryName }
-        for link in linksToDelete {
-            modelContext.delete(link)
-        }
-
-        // 카테고리 삭제
-        if let category = storedCategories.first(where: { $0.name == categoryName }) {
-            modelContext.delete(category)
-        }
+        // 카테고리 객체 찾기
+        guard let category = storedCategories.first(where: { $0.name == categoryName }) else { return }
 
         // 삭제된 카테고리가 선택되어 있었다면 다른 카테고리로 변경
         if selectedCategory == categoryName {
@@ -97,9 +89,13 @@ struct LinkInputSheet: View {
             selectedCategory = storedCategories.first(where: { $0.name != categoryName })?.name ?? ""
         }
 
+        // 카테고리 삭제 (cascade delete 설정으로 인해 관련 링크도 자동 삭제됨)
+        let linksCount = allLinks.filter { $0.category?.id == category.id }.count
+        modelContext.delete(category)
+
         do {
             try modelContext.save()
-            print("✅ 카테고리 '\(categoryName)' 및 관련 링크 \(linksToDelete.count)개 삭제 성공")
+            print("✅ 카테고리 '\(categoryName)' 및 관련 링크 \(linksCount)개 삭제 성공 (cascade)")
         } catch {
             print("❌ 카테고리 삭제 실패: \(error)")
         }
