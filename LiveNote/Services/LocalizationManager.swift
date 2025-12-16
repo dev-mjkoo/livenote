@@ -847,6 +847,32 @@ class LocalizationManager {
             "en": "Keep On",
             "ja": "オンのまま",
             "zh": "保持开启"
+        ],
+
+        // MARK: - 리뷰 요청
+        "앱이 마음에 드시나요?": [
+            "ko": "앱이 마음에 드시나요?",
+            "en": "Enjoying the app?",
+            "ja": "アプリは気に入りましたか？",
+            "zh": "喜欢这个应用吗？"
+        ],
+        "이 앱에는 광고도 없고 수익도 못 내요.\n리뷰 하나면 충분히 힘날 것 같아요 🥺": [
+            "ko": "이 앱에는 광고도 없고 수익도 못 내요.\n리뷰 하나면 충분히 힘날 것 같아요 🥺",
+            "en": "This app has no ads and makes no money.\nJust one review would really keep me going 🥺",
+            "ja": "このアプリには広告もなく収益も出ていません。\nレビュー一つで十分励みになります 🥺",
+            "zh": "这个应用没有广告也没有收益。\n只要一个评价就足够让我坚持下去 🥺"
+        ],
+        "리뷰 작성하기": [
+            "ko": "리뷰 작성하기",
+            "en": "Write a Review",
+            "ja": "レビューを書く",
+            "zh": "写评价"
+        ],
+        "나중에": [
+            "ko": "나중에",
+            "en": "Maybe Later",
+            "ja": "後で",
+            "zh": "以后再说"
         ]
     ]
 

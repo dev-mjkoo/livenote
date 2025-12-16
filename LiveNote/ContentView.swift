@@ -37,6 +37,7 @@ struct ContentView: View {
     @State var toastMessage: String = ""
     @State var isShowingLinkGuide: Bool = false
     @State var isShowingSettings: Bool = false
+    @State var showReviewAlert: Bool = false
 
     var categories: [String] {
         storedCategories.map { $0.name }
@@ -143,6 +144,17 @@ struct ContentView: View {
 
             // 메모 최초 작성 체크 (비어있던 메모에 처음 입력)
             let isFirstMemoInput = oldValue.isEmpty && !newValue.isEmpty
+
+            // 메모 최초 작성 시 카운트 증가 및 리뷰 요청 체크
+            if isFirstMemoInput {
+                let shouldShowReview = ReviewManager.shared.incrementMemoCount()
+                if shouldShowReview {
+                    // 약간의 딜레이 후 리뷰 Alert 표시
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        showReviewAlert = true
+                    }
+                }
+            }
 
             if activityManager.isActivityRunning {
                 // 이미 실행 중이면 업데이트
@@ -326,6 +338,21 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isShowingSettings) {
             SettingsView()
+        }
+        .alert(
+            LocalizationManager.shared.string("앱이 마음에 드시나요?"),
+            isPresented: $showReviewAlert
+        ) {
+            Button(LocalizationManager.shared.string("리뷰 작성하기")) {
+                ReviewManager.shared.markReviewRequested()
+                ReviewManager.shared.openAppStoreReview()
+            }
+            Button(LocalizationManager.shared.string("나중에"), role: .cancel) {
+                // 나중에 버튼을 눌러도 다시 표시하지 않도록 기록
+                ReviewManager.shared.markReviewRequested()
+            }
+        } message: {
+            Text(LocalizationManager.shared.string("이 앱에는 광고도 없고 수익도 못 내요.\n리뷰 하나면 충분히 힘날 것 같아요 🥺"))
         }
     }
 }
