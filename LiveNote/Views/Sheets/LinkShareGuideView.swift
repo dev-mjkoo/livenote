@@ -48,7 +48,7 @@ struct LinkShareGuideView: View {
                             title: LocalizationManager.shared.string("LiveNote 선택"),
                             description: LocalizationManager.shared.string("앱 목록에서 LiveNote를 찾아서 탭"),
                             icon: "app.badge.checkmark",
-                            iconColor: .green
+                            iconColor: .blue
                         )
 
                         guideStep(
@@ -56,7 +56,7 @@ struct LinkShareGuideView: View {
                             title: LocalizationManager.shared.string("자동 저장 완료!"),
                             description: LocalizationManager.shared.string("카테고리 선택하고 저장하면 끝"),
                             icon: "checkmark.circle.fill",
-                            iconColor: .green
+                            iconColor: .blue
                         )
                     }
 
@@ -245,7 +245,7 @@ struct LinkShareGuideContentView: View {
                         title: LocalizationManager.shared.string("LiveNote 선택"),
                         description: LocalizationManager.shared.string("앱 목록에서 LiveNote를 찾아서 탭"),
                         icon: "app.badge.checkmark",
-                        iconColor: .green
+                        iconColor: .blue
                     )
 
                     guideStep(
@@ -253,7 +253,7 @@ struct LinkShareGuideContentView: View {
                         title: LocalizationManager.shared.string("자동 저장 완료!"),
                         description: LocalizationManager.shared.string("카테고리 선택하고 저장하면 끝"),
                         icon: "checkmark.circle.fill",
-                        iconColor: .green
+                        iconColor: .blue
                     )
                 }
 
