@@ -166,7 +166,7 @@ struct LinkInputSheet: View {
                                 }
                                 .buttonStyle(.plain)
 
-                                ForEach(storedCategories, id: \.name) { category in
+                                ForEach(storedCategories, id: \.id) { category in
                                     let isDeleting = deletingCategoryName == category.name
 
                                     HStack(spacing: 0) {

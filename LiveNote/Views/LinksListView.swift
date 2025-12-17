@@ -36,7 +36,7 @@ struct LinksListView: View {
     }
 
     private struct CategoryWithCount: Identifiable {
-        let id: String
+        let id: UUID
         let category: String
         let count: Int
         let isLocked: Bool
@@ -46,7 +46,7 @@ struct LinksListView: View {
         storedCategories.map { categoryObj in
             let count = links.filter { $0.category?.id == categoryObj.id }.count
             return CategoryWithCount(
-                id: categoryObj.name,
+                id: categoryObj.id,
                 category: categoryObj.name,
                 count: count,
                 isLocked: categoryObj.isLocked

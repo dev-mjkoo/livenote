@@ -177,33 +177,37 @@ extension ContentView {
         removeDuplicateCategories()
 
         // 카테고리가 1개도 없을 때만 기본 카테고리 생성 (언어별)
-        guard categories.isEmpty else {
-            print("✅ 기존 카테고리 있음 (\(categories.count)개), 기본 카테고리 생성 스킵")
+        guard storedCategories.isEmpty else {
+            print("✅ 기존 카테고리 있음 (\(storedCategories.count)개), 기본 카테고리 생성 스킵")
             return
         }
 
         let lang = LocalizationManager.shared.currentLanguageCode
-        let defaultCategories: [String]
+        let defaultCategoryName: String
 
         switch lang {
         case "en":
-            defaultCategories = ["💻 Development", "🎨 Design", "📌 Others"]
+            defaultCategoryName = "📌 Others"
         case "ja":
-            defaultCategories = ["💻 開発", "🎨 デザイン", "📌 その他"]
+            defaultCategoryName = "📌 その他"
         case "zh":
-            defaultCategories = ["💻 开发", "🎨 设计", "📌 其他"]
+            defaultCategoryName = "📌 其他"
         default:
-            defaultCategories = ["💻 개발", "🎨 디자인", "📌 기타"]
+            defaultCategoryName = "📌 기타"
         }
 
-        for name in defaultCategories {
-            let category = Category(name: name)
-            modelContext.insert(category)
+        // 중복 방지: 이미 같은 이름의 카테고리가 있는지 확인
+        if storedCategories.contains(where: { $0.name == defaultCategoryName }) {
+            print("✅ 기본 카테고리 '\(defaultCategoryName)' 이미 존재, 생성 스킵")
+            return
         }
+
+        let category = Category(name: defaultCategoryName)
+        modelContext.insert(category)
 
         do {
             try modelContext.save()
-            print("✅ 기본 카테고리 초기화 완료 (카테고리 없음 → \(defaultCategories.count)개 생성)")
+            print("✅ 기본 카테고리 초기화 완료 (카테고리 없음 → '\(defaultCategoryName)' 생성)")
         } catch {
             print("❌ 카테고리 초기화 실패: \(error)")
         }
