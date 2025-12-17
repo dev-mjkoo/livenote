@@ -1,3 +1,42 @@
+//
+// MemoryNoteAttributes.swift
+// LiveNote
+//
+// ⚠️ 경고: 이 파일은 Live Activity 및 UserDefaults에 저장되는 Codable 타입입니다.
+//         출시 후 변경 시 사용자 설정 손실 및 앱 크래시 위험!
+//
+// 🔴 절대 변경 금지 사항 (ActivityBackgroundColor enum):
+// 1. Raw Value 변경 금지
+//    - case darkGray = "darkGray" ❌ "dark_gray"로 변경 금지
+//    - UserDefaults 키 "selectedBackgroundColor"에 저장됨
+//    - Live Activity state에도 저장됨
+//
+// 2. Enum Case 삭제 금지
+//    - 기존 사용자가 해당 색상을 사용 중일 수 있음
+//    - 삭제 시 앱 크래시 발생
+//    - 숨기려면: isAvailableInPalette에서 false 반환
+//
+// 3. Codable 준수 유지
+//    - 시스템이 자동으로 직렬화/역직렬화
+//    - 구조 변경 시 기존 데이터 복원 불가
+//
+// ✅ 안전하게 변경 가능한 것:
+// - 새로운 case 추가 (맨 끝에만)
+// - color 계산 속성 수정 (UI 색상 변경)
+// - displayName 수정 (표시 이름 변경)
+// - isAvailableInPalette로 색상 숨기기/보이기
+//
+// 📝 새 색상 추가 방법:
+// 1. enum 맨 끝에 새 case 추가
+// 2. color, displayName, isAvailableInPalette에 케이스 추가
+// 3. AppColors.ActivityPalette에 컬러 정의
+//
+// 📚 관련 파일:
+// - LiveActivityManager.swift (색상 저장/로딩)
+// - Views/ColorPalette.swift (색상 선택 UI)
+// - Services/AppColors.swift (실제 색상 정의)
+//
+
 import ActivityKit
 import Foundation
 import SwiftUI

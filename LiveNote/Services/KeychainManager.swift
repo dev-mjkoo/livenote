@@ -1,3 +1,45 @@
+//
+// KeychainManager.swift
+// LiveNote
+//
+// ⚠️ 경고: 이 파일은 카테고리 비밀번호를 Keychain에 저장합니다.
+//         출시 후 변경 시 모든 사용자의 비밀번호 손실 위험!
+//
+// 🔴 절대 변경 금지 사항:
+// 1. Service Identifier: "com.livenote.category.lock"
+//    - 변경 시 기존에 저장된 모든 비밀번호 접근 불가
+//    - Keychain 쿼리의 핵심 식별자
+//
+// 2. Account Key: categoryId.uuidString
+//    - Category 모델의 UUID를 키로 사용
+//    - Category.id 타입 변경 시 모든 비밀번호 손실
+//    - Category PK 시스템 변경 시 마이그레이션 필수
+//
+// 3. iCloud Keychain 동기화: kSecAttrSynchronizable = true
+//    - 사용자의 비밀번호가 iCloud로 동기화됨
+//    - 앱 삭제 후 재설치해도 비밀번호 유지
+//    - 여러 기기 간 자동 동기화
+//
+// ⚠️ Category 모델과의 강한 결합:
+// - Category.id: UUID 타입에 의존
+// - Category PK가 String 등으로 변경되면 비밀번호 데이터 손실
+// - 마이그레이션 시 Keychain 데이터도 함께 변환 필요
+//
+// 📝 변경이 필요한 경우:
+// 1. 새 service identifier로 마이그레이션 코드 작성
+// 2. 기존 Keychain 데이터를 새 키로 복사
+// 3. 사용자에게 재인증 요청 (최후의 수단)
+//
+// 💡 Keychain 특징:
+// - 앱 삭제 후에도 데이터 유지 (iCloud 동기화 시)
+// - 다른 앱과 데이터 공유 불가 (service identifier로 격리)
+// - iOS 시스템이 암호화하여 안전하게 보관
+//
+// 📚 관련 파일:
+// - Models/Category.swift (UUID PK 정의)
+// - Views/LinksListView.swift (비밀번호 검증 사용)
+// - Views/CategoryPasswordSheet.swift (비밀번호 설정 UI)
+//
 
 import Foundation
 import Security
