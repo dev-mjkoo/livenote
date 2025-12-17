@@ -251,11 +251,11 @@ final class LiveActivityManager: ObservableObject {
     // MARK: - Color Persistence
 
     private func saveSelectedColor() {
-        UserDefaults.standard.set(selectedBackgroundColor.rawValue, forKey: "selectedBackgroundColor")
+        UserDefaults.standard.set(selectedBackgroundColor.rawValue, forKey: PersistenceKeys.UserDefaults.selectedBackgroundColor)
     }
 
     private func loadSelectedColor() {
-        if let rawValue = UserDefaults.standard.string(forKey: "selectedBackgroundColor"),
+        if let rawValue = UserDefaults.standard.string(forKey: PersistenceKeys.UserDefaults.selectedBackgroundColor),
            let color = ActivityBackgroundColor(rawValue: rawValue) {
             selectedBackgroundColor = color
             print("✅ 저장된 색상 불러옴: \(color.displayName)")

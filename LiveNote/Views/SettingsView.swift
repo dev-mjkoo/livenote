@@ -4,7 +4,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.openURL) var openURL
-    @AppStorage("analyticsEnabled") private var analyticsEnabled: Bool = true
+    @AppStorage(PersistenceKeys.UserDefaults.analyticsEnabled) private var analyticsEnabled: Bool = true
     @State private var showAnalyticsDisableAlert = false
 
     var body: some View {

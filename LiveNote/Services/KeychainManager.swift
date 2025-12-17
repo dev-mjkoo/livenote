@@ -49,8 +49,6 @@ class KeychainManager {
 
     private init() {}
 
-    private let service = "com.livenote.category.lock"
-
     /// 카테고리 암호 저장 (iCloud Keychain 동기화)
     func savePassword(_ password: String, for categoryId: UUID) -> Bool {
         guard let data = password.data(using: .utf8) else { return false }
@@ -60,7 +58,7 @@ class KeychainManager {
 
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
+            kSecAttrService as String: PersistenceKeys.Keychain.categoryLockService,
             kSecAttrAccount as String: categoryId.uuidString,
             kSecValueData as String: data,
             kSecAttrSynchronizable as String: true  // iCloud Keychain 동기화
@@ -81,7 +79,7 @@ class KeychainManager {
     func getPassword(for categoryId: UUID) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
+            kSecAttrService as String: PersistenceKeys.Keychain.categoryLockService,
             kSecAttrAccount as String: categoryId.uuidString,
             kSecAttrSynchronizable as String: kSecAttrSynchronizableAny,  // 동기화된 항목 포함
             kSecReturnData as String: true,
@@ -105,7 +103,7 @@ class KeychainManager {
     func deletePassword(for categoryId: UUID) -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
+            kSecAttrService as String: PersistenceKeys.Keychain.categoryLockService,
             kSecAttrAccount as String: categoryId.uuidString,
             kSecAttrSynchronizable as String: kSecAttrSynchronizableAny  // 동기화된 항목 포함
         ]

@@ -25,10 +25,10 @@ struct ContentView: View {
     @State var isShowingLinksSheet: Bool = false
     @State var isShowingLinkInputSheet: Bool = false
     @State var isShowingShortcutGuide: Bool = false
-    @State var hasSeenShortcutGuide: Bool = UserDefaults.standard.bool(forKey: "hasSeenShortcutGuide")
-    @State var hasSeenInitialOnboarding: Bool = UserDefaults.standard.bool(forKey: "hasSeenInitialOnboarding")
-    @State var hasSeenMemoGuide: Bool = UserDefaults.standard.bool(forKey: "hasSeenMemoGuide")
-    @State var hasSeenLinkGuide: Bool = UserDefaults.standard.bool(forKey: "hasSeenLinkGuide")
+    @State var hasSeenShortcutGuide: Bool = UserDefaults.standard.bool(forKey: PersistenceKeys.UserDefaults.hasSeenShortcutGuide)
+    @State var hasSeenInitialOnboarding: Bool = UserDefaults.standard.bool(forKey: PersistenceKeys.UserDefaults.hasSeenInitialOnboarding)
+    @State var hasSeenMemoGuide: Bool = UserDefaults.standard.bool(forKey: PersistenceKeys.UserDefaults.hasSeenMemoGuide)
+    @State var hasSeenLinkGuide: Bool = UserDefaults.standard.bool(forKey: PersistenceKeys.UserDefaults.hasSeenLinkGuide)
     @State var isShowingInitialOnboarding: Bool = false
     @State var isShowingMemoOnboarding: Bool = false
     @State var isShowingLinkOnboarding: Bool = false
@@ -53,11 +53,11 @@ struct ContentView: View {
                     // Firebase Analytics: 기본 활성화 (처음 실행 시)
                     if UserDefaults.standard.object(forKey: "analyticsEnabled") == nil {
                         // 처음 설치하는 경우 기본으로 활성화
-                        UserDefaults.standard.set(true, forKey: "analyticsEnabled")
+                        UserDefaults.standard.set(true, forKey: PersistenceKeys.UserDefaults.analyticsEnabled)
                         FirebaseAnalyticsManager.shared.setAnalyticsEnabled(true)
                     } else {
                         // 기존 사용자는 저장된 설정 적용
-                        let isEnabled = UserDefaults.standard.bool(forKey: "analyticsEnabled")
+                        let isEnabled = UserDefaults.standard.bool(forKey: PersistenceKeys.UserDefaults.analyticsEnabled)
                         FirebaseAnalyticsManager.shared.setAnalyticsEnabled(isEnabled)
                     }
 
@@ -256,7 +256,7 @@ struct ContentView: View {
             ShortcutGuideView {
                 // 온보딩을 봤다고 표시
                 hasSeenShortcutGuide = true
-                UserDefaults.standard.set(true, forKey: "hasSeenShortcutGuide")
+                UserDefaults.standard.set(true, forKey: PersistenceKeys.UserDefaults.hasSeenShortcutGuide)
 
                 // 온보딩 완료 후 메모가 있으면 자동 시작
                 if !memo.isEmpty && !activityManager.isActivityRunning {
@@ -293,7 +293,7 @@ struct ContentView: View {
             InitialOnboardingFlow {
                 // 완료 플래그 설정
                 hasSeenInitialOnboarding = true
-                UserDefaults.standard.set(true, forKey: "hasSeenInitialOnboarding")
+                UserDefaults.standard.set(true, forKey: PersistenceKeys.UserDefaults.hasSeenInitialOnboarding)
             }
             .interactiveDismissDisabled(true)
         }
@@ -301,11 +301,11 @@ struct ContentView: View {
             MemoOnboardingFlow {
                 // 완료 플래그 설정
                 hasSeenMemoGuide = true
-                UserDefaults.standard.set(true, forKey: "hasSeenMemoGuide")
+                UserDefaults.standard.set(true, forKey: PersistenceKeys.UserDefaults.hasSeenMemoGuide)
 
                 // 레거시 플래그도 설정 (호환성)
                 hasSeenShortcutGuide = true
-                UserDefaults.standard.set(true, forKey: "hasSeenShortcutGuide")
+                UserDefaults.standard.set(true, forKey: PersistenceKeys.UserDefaults.hasSeenShortcutGuide)
 
                 // 온보딩 완료 후 메모로 Activity 시작
                 if !memo.isEmpty && !activityManager.isActivityRunning {
@@ -320,7 +320,7 @@ struct ContentView: View {
             LinkOnboardingFlow {
                 // 완료 플래그 설정
                 hasSeenLinkGuide = true
-                UserDefaults.standard.set(true, forKey: "hasSeenLinkGuide")
+                UserDefaults.standard.set(true, forKey: PersistenceKeys.UserDefaults.hasSeenLinkGuide)
             }
             .interactiveDismissDisabled(true)
         }

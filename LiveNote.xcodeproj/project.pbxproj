@@ -81,6 +81,7 @@
 		1AD095FB2ED6C1F700A540EC /* Exceptions for "LiveNote" folder in "MemoryActivityWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Constants/PersistenceKeys.swift,
 				LiveActivityManager.swift,
 				Services/FirebaseAnalyticsManager.swift,
 				Services/LocalizationManager.swift,
@@ -108,6 +109,7 @@
 		1AD096582EDFFDD400A540EC /* Exceptions for "LiveNote" folder in "LiveNoteShareExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Constants/PersistenceKeys.swift,
 				Models/Category.swift,
 				Models/LinkItem.swift,
 				Services/FirebaseAnalyticsManager.swift,

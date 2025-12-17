@@ -10,15 +10,11 @@ class ReviewManager {
 
     private init() {}
 
-    // MARK: - UserDefaults Keys
-    private let memoCountKey = "memoWrittenCount"
-    private let hasRequestedReviewKey = "hasRequestedReview"
-
     // MARK: - 메모 작성 카운트
 
     /// 현재까지 작성한 메모 횟수
     var memoCount: Int {
-        UserDefaults.standard.integer(forKey: memoCountKey)
+        UserDefaults.standard.integer(forKey: PersistenceKeys.UserDefaults.memoWrittenCount)
     }
 
     /// 메모 작성 횟수 증가 및 리뷰 요청 체크
@@ -26,7 +22,7 @@ class ReviewManager {
     func incrementMemoCount() -> Bool {
         let currentCount = memoCount
         let newCount = currentCount + 1
-        UserDefaults.standard.set(newCount, forKey: memoCountKey)
+        UserDefaults.standard.set(newCount, forKey: PersistenceKeys.UserDefaults.memoWrittenCount)
 
         print("📝 메모 작성 횟수: \(newCount)")
 
@@ -44,7 +40,7 @@ class ReviewManager {
     /// - Returns: Alert을 표시해야 하면 true
     private func shouldShowReviewAlert() -> Bool {
         // 이미 리뷰를 요청한 적이 있으면 표시하지 않음
-        let hasRequested = UserDefaults.standard.bool(forKey: hasRequestedReviewKey)
+        let hasRequested = UserDefaults.standard.bool(forKey: PersistenceKeys.UserDefaults.hasRequestedReview)
 
         if hasRequested {
             print("⭐️ 이미 리뷰를 요청한 적이 있습니다")
@@ -57,7 +53,7 @@ class ReviewManager {
 
     /// 리뷰 요청을 완료했다고 기록
     func markReviewRequested() {
-        UserDefaults.standard.set(true, forKey: hasRequestedReviewKey)
+        UserDefaults.standard.set(true, forKey: PersistenceKeys.UserDefaults.hasRequestedReview)
         print("⭐️ 리뷰 요청 완료 기록")
     }
 
