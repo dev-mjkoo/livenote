@@ -84,8 +84,15 @@ struct ContentView: View {
                             memo = content
                         }
                     } else {
-                        // Activity가 없으면 기본 메시지로 바로 시작 (메모는 비워둠)
-                        await activityManager.startActivity(with: defaultMessage)
+                        // Activity가 없을 때: 저장된 메모 복원 시도
+                        if let savedMemo = activityManager.loadSavedMemo(), !savedMemo.isEmpty {
+                            // 저장된 메모가 있으면 복원하고 Activity 시작
+                            memo = savedMemo
+                            await activityManager.startActivity(with: savedMemo)
+                        } else {
+                            // 저장된 메모도 없으면 기본 메시지로 시작
+                            await activityManager.startActivity(with: defaultMessage)
+                        }
                     }
                 }
                 .onChange(of: scenePhase) { oldPhase, newPhase in
@@ -151,6 +158,15 @@ struct ContentView: View {
                         showReviewAlert = true
                     }
                 }
+            }
+
+            // 메모 변경 시 App Group UserDefaults에 저장
+            if newValue.isEmpty {
+                // 메모가 비워지면 저장된 메모도 삭제
+                activityManager.clearSavedMemo()
+            } else {
+                // 메모 내용 저장
+                activityManager.saveMemo(newValue)
             }
 
             if activityManager.isActivityRunning {

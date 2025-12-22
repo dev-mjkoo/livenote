@@ -27,7 +27,7 @@
 // enum SchemaV1: VersionedSchema {
 //     static var versionIdentifier = "1.0.0"
 //     static var models: [any PersistentModel.Type] {
-//         [LinkItem.self, Category.self]
+//         [LinkItem.self, CategoFry.self]
 //     }
 // }
 //

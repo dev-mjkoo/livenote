@@ -283,4 +283,39 @@ final class LiveActivityManager: ObservableObject {
             print("✅ 저장된 색상 불러옴: \(color.displayName)")
         }
     }
+
+    // MARK: - Memo Persistence
+
+    /// 메모를 App Group UserDefaults에 저장
+    func saveMemo(_ memo: String) {
+        guard let groupDefaults = UserDefaults(suiteName: PersistenceKeys.AppGroup.identifier) else {
+            print("❌ App Group UserDefaults 초기화 실패")
+            return
+        }
+        groupDefaults.set(memo, forKey: PersistenceKeys.UserDefaults.currentMemo)
+        print("💾 메모 저장됨: \(memo.prefix(20))...")
+    }
+
+    /// App Group UserDefaults에서 저장된 메모 로드
+    func loadSavedMemo() -> String? {
+        guard let groupDefaults = UserDefaults(suiteName: PersistenceKeys.AppGroup.identifier) else {
+            print("❌ App Group UserDefaults 초기화 실패")
+            return nil
+        }
+        let savedMemo = groupDefaults.string(forKey: PersistenceKeys.UserDefaults.currentMemo)
+        if let memo = savedMemo {
+            print("✅ 저장된 메모 불러옴: \(memo.prefix(20))...")
+        }
+        return savedMemo
+    }
+
+    /// 저장된 메모 삭제 (Activity 종료 시 사용)
+    func clearSavedMemo() {
+        guard let groupDefaults = UserDefaults(suiteName: PersistenceKeys.AppGroup.identifier) else {
+            print("❌ App Group UserDefaults 초기화 실패")
+            return
+        }
+        groupDefaults.removeObject(forKey: PersistenceKeys.UserDefaults.currentMemo)
+        print("🗑️  저장된 메모 삭제됨")
+    }
 }

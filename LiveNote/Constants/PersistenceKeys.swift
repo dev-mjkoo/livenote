@@ -32,6 +32,9 @@ enum PersistenceKeys {
         static let analyticsEnabled = "analyticsEnabled"
         static let selectedBackgroundColor = "selectedBackgroundColor"
 
+        /// 메모 관련
+        static let currentMemo = "currentMemo"
+
         /// 리뷰 관련
         static let memoWrittenCount = "memoWrittenCount"
         static let hasRequestedReview = "hasRequestedReview"
