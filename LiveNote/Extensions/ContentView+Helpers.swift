@@ -77,7 +77,6 @@ extension ContentView {
         let activityDuration: TimeInterval = 8 * 60 * 60 // 8시간
         let startDate = activityManager.activityStartDate ?? Date()
         let endDate = startDate.addingTimeInterval(activityDuration)
-        let isExpired = Date() > endDate // 만료 여부 체크
 
         HStack {
             Text(AppStrings.statusOnScreen)
@@ -91,16 +90,27 @@ extension ContentView {
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(secondaryTextColor.opacity(0.8))
 
-                if isExpired {
-                    // 시간 만료 시 "00:00:00" 표시
-                    Text("00:00:00")
-                        .font(.system(size: 10, weight: .semibold).monospacedDigit())
-                        .foregroundStyle(textColor.opacity(0.5))
-                } else {
-                    // Apple 공식 타이머
-                    Text(timerInterval: Date()...endDate, pauseTime: endDate)
-                        .font(.system(size: 10, weight: .semibold).monospacedDigit())
-                        .foregroundStyle(textColor)
+                // TimelineView를 사용해서 1초마다 자동 업데이트
+                TimelineView(.periodic(from: Date(), by: 1.0)) { context in
+                    let now = context.date
+                    let isExpired = now > endDate
+
+                    if isExpired {
+                        // 시간 만료 시 "00:00:00" 표시
+                        Text("00:00:00")
+                            .font(.system(size: 10, weight: .semibold).monospacedDigit())
+                            .foregroundStyle(textColor.opacity(0.5))
+                    } else {
+                        // 남은 시간 계산
+                        let remaining = endDate.timeIntervalSince(now)
+                        let hours = Int(remaining) / 3600
+                        let minutes = Int(remaining) / 60 % 60
+                        let seconds = Int(remaining) % 60
+
+                        Text(String(format: "%02d:%02d:%02d", hours, minutes, seconds))
+                            .font(.system(size: 10, weight: .semibold).monospacedDigit())
+                            .foregroundStyle(textColor)
+                    }
                 }
 
                 // 연장 버튼
