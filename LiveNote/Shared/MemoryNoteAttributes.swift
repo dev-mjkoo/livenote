@@ -131,6 +131,7 @@ struct MemoryNoteAttributes: ActivityAttributes {
         var memo: String
         var startDate: Date
         var backgroundColor: ActivityBackgroundColor
+        var usePhoto: Bool = false  // 달력 대신 사진 사용 여부 (기본값: false)
     }
 
     var label: String

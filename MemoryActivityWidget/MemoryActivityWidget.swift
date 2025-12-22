@@ -2,6 +2,51 @@ import WidgetKit
 import SwiftUI
 import ActivityKit
 
+// MARK: - Photo View
+
+struct PhotoView: View {
+    var body: some View {
+        // App Group container에서 이미지 로드
+        let containerURL = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: "group.com.livenote.shared"
+        )
+
+        let imageURL = containerURL?.appendingPathComponent("calendar_image.jpg")
+        let fileExists = imageURL != nil && FileManager.default.fileExists(atPath: imageURL!.path)
+
+        if let url = imageURL,
+           fileExists,
+           let imageData = try? Data(contentsOf: url),
+           let image = UIImage(data: imageData) {
+            // 이미지 로드 성공
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 130, height: 130)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        } else {
+            // 이미지가 없거나 로드 실패 시 플레이스홀더
+            VStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(.white.opacity(0.2))
+                    .frame(width: 130, height: 130)
+                    .overlay(
+                        VStack(spacing: 4) {
+                            Image(systemName: fileExists ? "exclamationmark.triangle" : "photo")
+                                .font(.system(size: 30))
+                                .foregroundColor(.white.opacity(0.5))
+
+                            // 디버그 정보 (실제 배포 시 제거)
+                            Text(containerURL == nil ? "No URL" : (fileExists ? "Load fail" : "No file"))
+                                .font(.system(size: 8))
+                                .foregroundColor(.white.opacity(0.3))
+                        }
+                    )
+            }
+        }
+    }
+}
+
 // MARK: - Calendar Grid View
 
 struct CalendarGridView: View {
@@ -129,6 +174,7 @@ struct LiveActivityLockScreenPreview: View {
     let memo: String
     let startDate: Date
     let backgroundColor: ActivityBackgroundColor
+    let usePhoto: Bool
 
     private let activityDuration: TimeInterval = 8 * 60 * 60 // 8시간
 
@@ -152,8 +198,12 @@ struct LiveActivityLockScreenPreview: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 4) {
-            // 왼쪽: 달력
-            CalendarGridView()
+            // 왼쪽: 달력 또는 사진
+            if usePhoto {
+                PhotoView()
+            } else {
+                CalendarGridView()
+            }
 
             // 구분선
             Rectangle()
@@ -192,7 +242,8 @@ private struct LockScreenView: View {
             label: context.attributes.label,
             memo: context.state.memo,
             startDate: context.state.startDate,
-            backgroundColor: context.state.backgroundColor
+            backgroundColor: context.state.backgroundColor,
+            usePhoto: context.state.usePhoto
         )
     }
 }

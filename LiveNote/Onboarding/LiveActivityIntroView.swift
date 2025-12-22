@@ -5,6 +5,7 @@ struct LiveActivityIntroView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var animatePreview = false
     @State private var typedMemo = ""
+    @State private var showPhoto = false  // 달력 <-> 사진 토글
 
     private var fullMemo: String {
         LocalizationManager.shared.string("엄마한테 전화하기")
@@ -48,7 +49,8 @@ struct LiveActivityIntroView: View {
                         label: AppStrings.appMessage,
                         memo: typedMemo,
                         startDate: Date().addingTimeInterval(-30 * 60), // 30분 전 시작
-                        backgroundColor: .darkGray
+                        backgroundColor: .darkGray,
+                        usePhoto: showPhoto
                     )
                     .background(
                         RoundedRectangle(cornerRadius: 20)
@@ -60,9 +62,20 @@ struct LiveActivityIntroView: View {
                     .opacity(animatePreview ? 1.0 : 0.0)
                     .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: animatePreview)
 
-                    Text(LocalizationManager.shared.string("잠금화면 미리보기"))
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(.secondary.opacity(0.7))
+                    HStack(spacing: 4) {
+                        Text(LocalizationManager.shared.string("잠금화면 미리보기"))
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundStyle(.secondary.opacity(0.7))
+
+                        Text("•")
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundStyle(.secondary.opacity(0.5))
+
+                        Text(showPhoto ? LocalizationManager.shared.string("사진 모드") : LocalizationManager.shared.string("달력 모드"))
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundStyle(.secondary.opacity(0.7))
+                    }
+                    .animation(.easeInOut, value: showPhoto)
                 }
 
                 Spacer(minLength: 40)
@@ -71,6 +84,7 @@ struct LiveActivityIntroView: View {
         .onAppear {
             animatePreview = true
             startTypingAnimation()
+            startPhotoToggleAnimation()
         }
     }
 
@@ -89,6 +103,25 @@ struct LiveActivityIntroView: View {
 
                 // 글자별 딜레이 (0.08초)
                 try? await Task.sleep(nanoseconds: 80_000_000)
+            }
+        }
+    }
+
+    private func startPhotoToggleAnimation() {
+        Task {
+            // 3초 대기 후 시작
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+
+            // 3초마다 달력 <-> 사진 토글
+            while true {
+                await MainActor.run {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        showPhoto.toggle()
+                    }
+                }
+
+                // 3초 대기
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
             }
         }
     }

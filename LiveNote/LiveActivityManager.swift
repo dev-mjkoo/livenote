@@ -129,7 +129,8 @@ final class LiveActivityManager: ObservableObject {
         let initialState = MemoryNoteAttributes.ContentState(
             memo: memo,
             startDate: startDate,
-            backgroundColor: selectedBackgroundColor
+            backgroundColor: selectedBackgroundColor,
+            usePhoto: shouldUsePhoto
         )
 
         do {
@@ -208,7 +209,8 @@ final class LiveActivityManager: ObservableObject {
         let initialState = MemoryNoteAttributes.ContentState(
             memo: currentMemo,
             startDate: newStartDate,
-            backgroundColor: currentColor
+            backgroundColor: currentColor,
+            usePhoto: shouldUsePhoto
         )
 
         do {
@@ -236,7 +238,8 @@ final class LiveActivityManager: ObservableObject {
         let updatedState = MemoryNoteAttributes.ContentState(
             memo: memo,
             startDate: startDate,
-            backgroundColor: backgroundColor
+            backgroundColor: backgroundColor,
+            usePhoto: shouldUsePhoto
         )
         await activity.update(.init(state: updatedState, staleDate: nil))
         print("Activity updated")
@@ -250,7 +253,8 @@ final class LiveActivityManager: ObservableObject {
         let updatedState = MemoryNoteAttributes.ContentState(
             memo: memo,
             startDate: startDate,
-            backgroundColor: backgroundColor
+            backgroundColor: backgroundColor,
+            usePhoto: shouldUsePhoto
         )
         await activity.update(.init(state: updatedState, staleDate: nil))
         print("Activity updated with new color: \(backgroundColor.displayName)")
@@ -262,7 +266,8 @@ final class LiveActivityManager: ObservableObject {
         let finalState = MemoryNoteAttributes.ContentState(
             memo: "",
             startDate: Date(),
-            backgroundColor: activity.content.state.backgroundColor
+            backgroundColor: activity.content.state.backgroundColor,
+            usePhoto: shouldUsePhoto
         )
         await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
         currentActivity = nil
@@ -282,6 +287,13 @@ final class LiveActivityManager: ObservableObject {
             selectedBackgroundColor = color
             print("✅ 저장된 색상 불러옴: \(color.displayName)")
         }
+    }
+
+    // MARK: - Photo Mode Helper
+
+    /// 달력 대신 사진을 사용할지 여부
+    private var shouldUsePhoto: Bool {
+        UserDefaults.standard.bool(forKey: PersistenceKeys.UserDefaults.usePhotoInsteadOfCalendar)
     }
 
     // MARK: - Memo Persistence

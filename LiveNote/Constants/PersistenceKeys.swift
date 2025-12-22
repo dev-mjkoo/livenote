@@ -31,6 +31,7 @@ enum PersistenceKeys {
         /// 설정 관련
         static let analyticsEnabled = "analyticsEnabled"
         static let selectedBackgroundColor = "selectedBackgroundColor"
+        static let usePhotoInsteadOfCalendar = "usePhotoInsteadOfCalendar"
 
         /// 메모 관련
         static let currentMemo = "currentMemo"
@@ -60,6 +61,10 @@ enum PersistenceKeys {
         /// - 사용: SharedModelContainer.swift
         /// - entitlements 파일과 동일해야 함
         static let identifier = "group.com.livenote.shared"
+
+        /// Live Activity에 표시할 이미지 파일명
+        /// - App Group container에 저장됨
+        static let calendarImageFileName = "calendar_image.jpg"
     }
 
     // MARK: - CloudKit

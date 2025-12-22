@@ -641,7 +641,8 @@ struct GuidePageView: View {
             label: AppStrings.appMessage,
             memo: typedMemo,
             startDate: Date().addingTimeInterval(-30 * 60), // 30분 전 시작 (7시간 30분 남음)
-            backgroundColor: .darkGray
+            backgroundColor: .darkGray,
+            usePhoto: false  // 가이드에서는 달력만 표시
         )
         .background(
             RoundedRectangle(cornerRadius: 20)
